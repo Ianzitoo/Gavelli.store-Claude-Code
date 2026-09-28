@@ -1,0 +1,54 @@
+{%- comment -%}
+  GAVELLI — design system loader.
+  Loads the shared design system (gavelli-system.css) and the motion script
+  once per page. The inline gate enables reveal animations before content
+  renders (no flash), and only when the visitor has not asked for reduced
+  motion. If the motion script fails to load, content is shown after 3s.
+{%- endcomment -%}
+<script>
+  (function (d) {
+    try {
+      if (window.matchMedia && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window && !(window.Shopify && window.Shopify.designMode)) {
+        d.classList.add('gv-motion');
+        setTimeout(function () { if (!window.GVMotion) d.classList.remove('gv-motion'); }, 3000);
+      }
+    } catch (e) {}
+  })(document.documentElement);
+</script>
+{{ 'gavelli-system.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'gavelli-motion.js' | asset_url }}" defer="defer"></script>
+
+{%- comment -%}
+  Search and Account links for the mobile drawer. Below 990px the header
+  shows only menu, logo and basket, so both are offered inside the drawer.
+  Inserted synchronously (the header is already parsed at this point).
+{%- endcomment -%}
+<template id="GvDrawerUtility">
+  <ul class="gv-drawer-utility" role="list">
+    <li><a class="gv-drawer-utility__link link focus-inset" href="{{ routes.search_url }}">Search</a></li>
+    {%- if shop.customer_accounts_enabled -%}
+      <li><a class="gv-drawer-utility__link link focus-inset" href="{{ routes.account_url }}" rel="nofollow">Account</a></li>
+    {%- endif -%}
+  </ul>
+</template>
+<script>
+  (function () {
+    var t = document.getElementById('GvDrawerUtility');
+    var u = document.querySelector('.menu-drawer__utility-links');
+    if (t && u && !u.querySelector('.gv-drawer-utility')) u.insertBefore(t.content.cloneNode(true), u.firstChild);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "GAVELLI design system",
+  "class": "gv-system-section",
+  "limit": 1,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Loads the GAVELLI design system and motion. Keep this section in the header group."
+    }
+  ]
+}
+{% endschema %}

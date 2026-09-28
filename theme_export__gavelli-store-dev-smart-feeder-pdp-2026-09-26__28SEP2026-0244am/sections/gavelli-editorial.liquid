@@ -1,0 +1,266 @@
+{%- comment -%}
+  GAVELLI — editorial (image + text).
+  A large photograph (about two thirds of the width, bleeding to one edge on
+  desktop) with a short text column offset lower, magazine-style.
+  "Compact" size: a smaller photograph inside the page width (used for a
+  single editorial moment on the homepage).
+  Motion: media reveal, subtle parallax layer, slow scale on scroll (CSS).
+  Without an image, an honest placeholder describes the photograph needed,
+  unless "text only" is selected. Reusable on any page (also product
+  landing pages: set "Heading" blank to use the product title there).
+{%- endcomment -%}
+
+{%- liquid
+  assign image = section.settings.image
+  assign heading = section.settings.heading
+  if heading == blank and section.settings.use_product and product
+    assign heading = product.title
+  endif
+  if image == blank and section.settings.use_product and product
+    assign image = product.featured_media.preview_image
+  endif
+
+  case section.settings.image_ratio
+    when 'portrait'
+      assign ratio = '4 / 5'
+    when 'tall'
+      assign ratio = '3 / 4'
+    when 'landscape'
+      assign ratio = '3 / 2'
+    when 'natural'
+      assign ratio = image.aspect_ratio | default: 1.5
+  endcase
+
+  comment
+    Near the top of a page (e.g. the product landing hero, the About
+    manifesto) the photograph is likely the largest thing on screen: load it
+    straight away with high priority. Further down it loads lazily.
+  endcomment
+  assign img_loading = 'lazy'
+  assign img_priority = 'auto'
+  assign rv = 'data-gv-reveal'
+  if section.index != blank and section.index <= 2
+    assign img_loading = 'eager'
+    if section.index == 1
+      assign img_priority = 'high'
+      comment
+        First section: no scroll reveal (it would hold back the largest
+        paint); the text uses the CSS on-load entrance instead.
+      endcomment
+      assign rv = 'data-gv-static'
+    endif
+  endif
+
+  assign show_media = true
+  if image == blank and section.settings.text_only
+    assign show_media = false
+  endif
+
+  assign img_sizes = '(min-width: 990px) 66vw, 100vw'
+  if section.settings.size == 'compact'
+    assign img_sizes = '(min-width: 990px) 44vw, 100vw'
+  endif
+-%}
+
+{%- if image != blank or heading != blank or section.settings.text != blank -%}
+<style>
+  .gv-editorial__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--gv-gap);
+  }
+
+  .gv-editorial__media { margin-left: -1.5rem; margin-right: -1.5rem; }
+
+  .gv-editorial__content { max-width: var(--gv-measure); }
+
+  .gv-editorial__content .gv-h2 { margin-top: 2rem; }
+  .gv-editorial__content .gv-body { margin-top: 2.4rem; }
+  .gv-editorial__content .gv-link { margin-top: 3.2rem; }
+
+  .gv-editorial--text-only .gv-editorial__grid { gap: 3.2rem; }
+
+  @media screen and (min-width: 750px) {
+    .gv-editorial__media { margin-left: -5rem; margin-right: -5rem; }
+  }
+
+  @media screen and (min-width: 990px) {
+    .gv-editorial__grid {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+      gap: var(--gv-gap-lg);
+      align-items: end;
+    }
+
+    .gv-editorial__media {
+      margin-right: 0;
+      margin-left: calc(-5rem - max(0px, (100vw - var(--page-width)) / 2));
+    }
+
+    .gv-editorial__content { padding-bottom: var(--gv-space-sm); }
+
+    .gv-editorial--right .gv-editorial__grid { grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); }
+    .gv-editorial--right .gv-editorial__media {
+      order: 2;
+      margin-left: 0;
+      margin-right: calc(-5rem - max(0px, (100vw - var(--page-width)) / 2));
+    }
+
+    .gv-editorial--text-only .gv-editorial__grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      align-items: start;
+    }
+    .gv-editorial--text-only .gv-editorial__content { padding-bottom: 0; }
+  }
+
+  /* Compact: photograph stays inside the page width (tablet and desktop). */
+  @media screen and (min-width: 750px) {
+    .gv-editorial--compact .gv-editorial__media { margin-left: 0; margin-right: 0; max-width: 56rem; }
+  }
+
+  @media screen and (min-width: 990px) {
+    .gv-editorial--compact .gv-editorial__grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 4fr);
+      align-items: center;
+    }
+    .gv-editorial--compact .gv-editorial__media { max-width: none; }
+    .gv-editorial--compact .gv-editorial__content { padding-bottom: 0; }
+    .gv-editorial--compact.gv-editorial--right .gv-editorial__grid { grid-template-columns: minmax(0, 4fr) minmax(0, 5fr); }
+    .gv-editorial--compact.gv-editorial--right .gv-editorial__media { margin-right: 0; }
+  }
+</style>
+
+<section
+  {% if section.settings.anchor != blank %}id="{{ section.settings.anchor | handleize }}"{% endif %}
+  class="gv-editorial gv-editorial--{{ section.settings.image_position }}{% if section.settings.size == 'compact' %} gv-editorial--compact{% endif %}{% unless show_media %} gv-editorial--text-only{% endunless %} color-{{ section.settings.color_scheme }} gradient gv-pt-{{ section.settings.spacing_top }} gv-pb-{{ section.settings.spacing_bottom }}"
+  {% if heading != blank %}aria-labelledby="GvEditorial-{{ section.id }}"{% endif %}
+>
+  <div class="page-width gv-editorial__grid">
+    {%- if show_media -%}
+      <div class="gv-editorial__media">
+        <div
+          class="gv-media{% if section.settings.parallax %} gv-parallax gv-scroll-scale{% endif %}"
+          style="--gv-ratio: {{ ratio }};"
+          {{ rv }}="media"
+        >
+          {%- if image != blank -%}
+            <div class="gv-media__layer">
+              {%- assign img_alt = section.settings.image_alt | default: image.alt -%}
+              {{
+                image
+                | image_url: width: 2400
+                | image_tag:
+                  loading: img_loading,
+                  fetchpriority: img_priority,
+                  widths: '600, 900, 1200, 1600, 2000, 2400',
+                  sizes: img_sizes,
+                  alt: img_alt
+              }}
+            </div>
+          {%- else -%}
+            <div class="gv-placeholder" role="img" aria-label="{{ section.settings.placeholder_note | escape }}">
+              <span class="gv-placeholder__label">Photograph to come</span>
+              {%- if section.settings.placeholder_note != blank -%}
+                <span class="gv-placeholder__note">{{ section.settings.placeholder_note | escape }}</span>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    <div class="gv-editorial__content{% if rv == 'data-gv-static' %} gv-enter{% endif %}">
+      {%- if section.settings.label != blank -%}
+        <p class="gv-label" {{ rv }}="fade">{{ section.settings.label | escape }}</p>
+      {%- endif -%}
+      {%- if heading != blank -%}
+        <{{ section.settings.heading_tag }} id="GvEditorial-{{ section.id }}" class="gv-h2" {{ rv }}>
+          {{- heading | escape | newline_to_br -}}
+        </{{ section.settings.heading_tag }}>
+      {%- endif -%}
+      {%- if section.settings.text != blank -%}
+        <div class="gv-body" {{ rv }} style="--gv-delay: 0.1s;">{{ section.settings.text }}</div>
+      {%- endif -%}
+      {%- if section.settings.link_label != blank and section.settings.link != blank -%}
+        <a href="{{ section.settings.link }}" class="gv-link" {{ rv }}="fade" style="--gv-delay: 0.2s;">
+          {{- section.settings.link_label | escape -}}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+{%- elsif request.design_mode -%}
+  <div class="page-width gv-pt-sm gv-pb-sm"><p class="gv-todo">GAVELLI editorial: add a heading, text or photograph to show this section.</p></div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "GAVELLI editorial",
+  "class": "section-gavelli-editorial",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Photograph" },
+    { "type": "text", "id": "image_alt", "label": "Alt text", "info": "Describe the photograph. Leave blank to use the image's own alt text." },
+    {
+      "type": "textarea", "id": "placeholder_note", "label": "Photograph needed (shown until an image is added)",
+      "default": "A lifestyle photograph of a pet at home in soft natural light."
+    },
+    { "type": "checkbox", "id": "text_only", "label": "Text only when no photograph is chosen", "default": false },
+    {
+      "type": "select", "id": "size", "label": "Photograph size",
+      "options": [
+        { "value": "large", "label": "Large (bleeds to the edge)" },
+        { "value": "compact", "label": "Compact (inside the page width)" }
+      ],
+      "default": "large"
+    },
+    {
+      "type": "select", "id": "image_ratio", "label": "Photograph proportions",
+      "options": [
+        { "value": "portrait", "label": "Portrait 4:5" },
+        { "value": "tall", "label": "Portrait 3:4" },
+        { "value": "landscape", "label": "Landscape 3:2" },
+        { "value": "natural", "label": "Original" }
+      ],
+      "default": "landscape"
+    },
+    {
+      "type": "select", "id": "image_position", "label": "Photograph position (desktop)",
+      "options": [{ "value": "left", "label": "Left" }, { "value": "right", "label": "Right" }],
+      "default": "left"
+    },
+    { "type": "checkbox", "id": "parallax", "label": "Subtle parallax and scale on scroll", "default": true },
+    { "type": "text", "id": "label", "label": "Label" },
+    { "type": "textarea", "id": "heading", "label": "Heading" },
+    {
+      "type": "select", "id": "heading_tag", "label": "Heading level",
+      "options": [{ "value": "h1", "label": "H1" }, { "value": "h2", "label": "H2" }],
+      "default": "h2"
+    },
+    { "type": "richtext", "id": "text", "label": "Text" },
+    { "type": "text", "id": "link_label", "label": "Link label" },
+    { "type": "url", "id": "link", "label": "Link" },
+    {
+      "type": "checkbox", "id": "use_product", "label": "On product pages: use the product's title and image when empty",
+      "default": false
+    },
+    { "type": "text", "id": "anchor", "label": "Anchor (for links)" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-1" },
+    {
+      "type": "select", "id": "spacing_top", "label": "Space above",
+      "options": [
+        { "value": "none", "label": "None" }, { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }
+      ],
+      "default": "md"
+    },
+    {
+      "type": "select", "id": "spacing_bottom", "label": "Space below",
+      "options": [
+        { "value": "none", "label": "None" }, { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }
+      ],
+      "default": "md"
+    }
+  ],
+  "presets": [{ "name": "GAVELLI editorial" }]
+}
+{% endschema %}

@@ -1,0 +1,16 @@
+{%- comment -%}
+  GAVELLI — anchor. An invisible jump target (e.g. #purchase before the
+  product purchase area) for "Shop now" buttons on landing pages.
+{%- endcomment -%}
+<div id="{{ section.settings.anchor | default: 'purchase' | handleize }}" style="scroll-margin-top: 10rem;"></div>
+
+{% schema %}
+{
+  "name": "GAVELLI anchor",
+  "class": "section-gavelli-anchor",
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor name", "default": "purchase" }
+  ],
+  "presets": [{ "name": "GAVELLI anchor" }]
+}
+{% endschema %}

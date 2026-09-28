@@ -1,0 +1,12 @@
+{%- comment -%}
+  GAVELLI — text basket label used inside #cart-icon-bubble.
+  Rendered by sections/header.liquid (initial load) and
+  sections/cart-icon-bubble.liquid (Dawn re-renders it after add to basket).
+{%- endcomment -%}
+<span class="gv-header-label" aria-hidden="true">
+  {{- 'templates.cart.cart' | t -}}
+  {%- if cart.item_count > 0 %} <span class="gv-basket-count">({{ cart.item_count }})</span>{% endif -%}
+</span>
+<span class="visually-hidden">
+  {{- 'templates.cart.cart' | t }}, {{ 'sections.header.cart_count' | t: count: cart.item_count -}}
+</span>

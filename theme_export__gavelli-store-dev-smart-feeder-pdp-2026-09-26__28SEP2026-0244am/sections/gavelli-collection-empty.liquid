@@ -1,0 +1,115 @@
+{%- comment -%}
+  GAVELLI — collection empty state.
+  Placed above Dawn's product grid on collection pages. Renders only when the
+  collection has no products available to customers at all (not when
+  filters return nothing). It then replaces Dawn's "No products found / Use
+  fewer filters or remove all" message — which reads like an error and
+  mentions filters nobody used — with a calm, honest note. It never shows
+  or implies products that do not exist.
+{%- endcomment -%}
+
+{%- if collection and collection.all_products_count == 0 -%}
+  {%- style -%}
+    .collection--empty,
+    .shopify-section:has(.collection--empty) { display: none; }
+  {%- endstyle -%}
+
+  <style>
+    .gv-coll-empty__panel {
+      position: relative;
+      display: grid;
+      place-items: center;
+      padding: var(--gv-space-md) 2.4rem;
+      text-align: center;
+      background: rgba(var(--color-foreground), 0.035);
+    }
+
+    .gv-coll-empty__panel::before {
+      content: '';
+      position: absolute;
+      inset: 1.6rem;
+      border: 1px solid rgba(var(--color-foreground), 0.12);
+      pointer-events: none;
+    }
+
+    .gv-coll-empty__inner { position: relative; display: grid; justify-items: center; gap: 2rem; max-width: 56rem; }
+
+    .gv-coll-empty__note {
+      margin: 0;
+      font-family: var(--font-heading-family);
+      font-weight: var(--font-heading-weight);
+      font-style: italic;
+      font-size: clamp(2.4rem, 1.9rem + 1.4vw, 3.6rem);
+      line-height: 1.25;
+      color: rgba(var(--color-foreground), 0.85);
+      text-wrap: balance;
+    }
+
+    .gv-coll-empty__links { display: flex; flex-wrap: wrap; justify-content: center; gap: 2.4rem 4rem; margin-top: 1.2rem; }
+  </style>
+
+  <section class="gv-coll-empty color-{{ section.settings.color_scheme }} gradient gv-pt-{{ section.settings.spacing_top }} gv-pb-{{ section.settings.spacing_bottom }}">
+    <div class="page-width">
+      <div class="gv-coll-empty__panel" data-gv-reveal>
+        <div class="gv-coll-empty__inner">
+          {%- if section.settings.label != blank -%}
+            <p class="gv-label">{{ section.settings.label | escape }}</p>
+          {%- endif -%}
+          <h2 class="gv-coll-empty__note">{{ section.settings.note | escape }}</h2>
+          {%- if section.settings.text != blank -%}
+            <div class="gv-body">{{ section.settings.text }}</div>
+          {%- endif -%}
+          {%- liquid
+            assign has_link_1 = false
+            assign has_link_2 = false
+            if section.settings.link_1_label != blank and section.settings.link_1 != blank
+              assign has_link_1 = true
+            endif
+            if section.settings.link_2_label != blank and section.settings.link_2 != blank
+              assign has_link_2 = true
+            endif
+          -%}
+          {%- if has_link_1 or has_link_2 -%}
+            <div class="gv-coll-empty__links">
+              {%- if has_link_1 -%}
+                <a class="gv-link" href="{{ section.settings.link_1 }}">{{ section.settings.link_1_label | escape }}</a>
+              {%- endif -%}
+              {%- if has_link_2 -%}
+                <a class="gv-link" href="{{ section.settings.link_2 }}">{{ section.settings.link_2_label | escape }}</a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "GAVELLI empty collection",
+  "class": "section-gavelli-collection-empty",
+  "settings": [
+    { "type": "paragraph", "content": "Shown only when a collection has no products yet. It replaces Dawn's 'No products found' message." },
+    { "type": "text", "id": "label", "label": "Label", "default": "The collection" },
+    { "type": "text", "id": "note", "label": "Message", "default": "The collection is being carefully selected." },
+    { "type": "richtext", "id": "text", "label": "Text" },
+    { "type": "text", "id": "link_1_label", "label": "Link 1 label", "default": "Discover GAVELLI" },
+    { "type": "url", "id": "link_1", "label": "Link 1" },
+    { "type": "text", "id": "link_2_label", "label": "Link 2 label", "default": "Sign up for updates" },
+    { "type": "url", "id": "link_2", "label": "Link 2", "info": "E.g. #newsletter (the sign-up in the footer)." },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-1" },
+    {
+      "type": "select", "id": "spacing_top", "label": "Space above",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "sm"
+    },
+    {
+      "type": "select", "id": "spacing_bottom", "label": "Space below",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "lg"
+    }
+  ],
+  "enabled_on": { "templates": ["collection"] }
+}
+{% endschema %}

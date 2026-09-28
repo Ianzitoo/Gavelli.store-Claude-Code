@@ -1,0 +1,95 @@
+{%- comment -%}
+  GAVELLI — page header (H1).
+  Editorial opening for content pages (About, FAQ, Contact, future pages).
+  The heading falls back to the page title. Always at the top of a page, so
+  it uses the CSS on-load entrance (.gv-enter) rather than a scroll reveal:
+  the H1 is usually the largest paint and must not wait for JavaScript.
+{%- endcomment -%}
+
+<style>
+  .gv-page-head__inner { max-width: var(--gv-measure-lg); }
+  .gv-page-head .gv-display { margin-top: 2rem; }
+  .gv-page-head__intro { margin-top: 2.8rem; }
+  .gv-page-head__links { display: flex; flex-wrap: wrap; gap: 2.4rem 4rem; margin-top: 3.6rem; }
+  .gv-page-head--center .gv-page-head__inner { margin: 0 auto; text-align: center; }
+  .gv-page-head--center .gv-lede { margin-left: auto; margin-right: auto; }
+  .gv-page-head--center .gv-page-head__links { justify-content: center; }
+</style>
+
+<section class="gv-page-head gv-page-head--{{ section.settings.alignment }} color-{{ section.settings.color_scheme }} gradient gv-pt-{{ section.settings.spacing_top }} gv-pb-{{ section.settings.spacing_bottom }}">
+  <div class="page-width">
+    <div class="gv-page-head__inner gv-enter">
+      {%- if section.settings.label != blank -%}
+        <p class="gv-label">{{ section.settings.label | escape }}</p>
+      {%- endif -%}
+      <h1 class="gv-display">{{ section.settings.heading | default: page.title | escape | newline_to_br }}</h1>
+      {%- if section.settings.text != blank -%}
+        <div class="gv-lede gv-page-head__intro">{{ section.settings.text }}</div>
+      {%- endif -%}
+      {%- liquid
+        comment
+          Up to five links (e.g. FAQ: Orders, Delivery, Returns, Products, Care).
+          A link shows only when it has both a label and a URL.
+        endcomment
+        assign gv_link_count = 0
+        for i in (1..5)
+          assign gv_label_key = 'link_' | append: i | append: '_label'
+          assign gv_url_key = 'link_' | append: i
+          if section.settings[gv_label_key] != blank and section.settings[gv_url_key] != blank
+            assign gv_link_count = gv_link_count | plus: 1
+          endif
+        endfor
+      -%}
+      {%- if gv_link_count > 0 -%}
+        <div class="gv-page-head__links">
+          {%- for i in (1..5) -%}
+            {%- assign gv_label_key = 'link_' | append: i | append: '_label' -%}
+            {%- assign gv_url_key = 'link_' | append: i -%}
+            {%- if section.settings[gv_label_key] != blank and section.settings[gv_url_key] != blank -%}
+              <a class="gv-link" href="{{ section.settings[gv_url_key] }}">{{ section.settings[gv_label_key] | escape }}</a>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "GAVELLI page header",
+  "class": "section-gavelli-page-header",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label" },
+    { "type": "textarea", "id": "heading", "label": "Heading", "info": "Leave blank to use the page title." },
+    { "type": "richtext", "id": "text", "label": "Introduction" },
+    { "type": "text", "id": "link_1_label", "label": "Link 1 label" },
+    { "type": "url", "id": "link_1", "label": "Link 1" },
+    { "type": "text", "id": "link_2_label", "label": "Link 2 label" },
+    { "type": "url", "id": "link_2", "label": "Link 2" },
+    { "type": "text", "id": "link_3_label", "label": "Link 3 label" },
+    { "type": "url", "id": "link_3", "label": "Link 3" },
+    { "type": "text", "id": "link_4_label", "label": "Link 4 label" },
+    { "type": "url", "id": "link_4", "label": "Link 4" },
+    { "type": "text", "id": "link_5_label", "label": "Link 5 label", "info": "Links 1–5 can point to sections on the same page, e.g. #returns." },
+    { "type": "url", "id": "link_5", "label": "Link 5" },
+    {
+      "type": "select", "id": "alignment", "label": "Alignment",
+      "options": [{ "value": "left", "label": "Left" }, { "value": "center", "label": "Centre" }],
+      "default": "left"
+    },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-1" },
+    {
+      "type": "select", "id": "spacing_top", "label": "Space above",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "md"
+    },
+    {
+      "type": "select", "id": "spacing_bottom", "label": "Space below",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "sm"
+    }
+  ],
+  "presets": [{ "name": "GAVELLI page header" }]
+}
+{% endschema %}

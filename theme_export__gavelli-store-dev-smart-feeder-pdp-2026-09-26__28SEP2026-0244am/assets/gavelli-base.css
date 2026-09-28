@@ -1,0 +1,705 @@
+/* ==========================================================================
+   GAVELLI — global brand layer
+   Loaded after base.css (via sections/header.liquid). Refines Dawn's
+   defaults; it does not replace Dawn components.
+   Colours and fonts live in theme settings (config/settings_data.json).
+   ========================================================================== */
+
+:root {
+  --gv-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --gv-hairline: rgba(var(--color-foreground), 0.12);
+  --gv-letter-wide: 0.16em;
+  --gv-letter-nav: 0.14em;
+  --gv-section-space: 9.6rem;
+  --gv-section-space-mobile: 6.4rem;
+}
+
+body {
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* --- Typography ---------------------------------------------------------- */
+
+h1, h2, h3, h4, h5,
+.h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl {
+  letter-spacing: -0.005em;
+  line-height: 1.12;
+  font-weight: var(--font-heading-weight);
+}
+
+.h0, .hxl, .hxxl { line-height: 1.04; }
+
+.rte p, .rte li { line-height: 1.75; }
+
+.caption-with-letter-spacing,
+.gv-eyebrow {
+  font-family: var(--font-body-family);
+  font-size: 1.1rem;
+  letter-spacing: var(--gv-letter-wide);
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: rgba(var(--color-foreground), 0.68);
+}
+
+.gv-eyebrow { margin: 0 0 2rem; }
+
+::selection {
+  background: rgba(var(--color-foreground), 0.12);
+}
+
+/* --- Links ---------------------------------------------------------------- */
+
+.gv-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--font-body-family);
+  font-size: 1.2rem;
+  letter-spacing: var(--gv-letter-wide);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgb(var(--color-foreground));
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(var(--color-foreground), 0.35);
+  transition: border-color 0.3s var(--gv-ease), opacity 0.3s var(--gv-ease);
+}
+
+.gv-link:hover {
+  border-color: rgb(var(--color-foreground));
+}
+
+/* --- Buttons -------------------------------------------------------------- */
+
+.button,
+.shopify-challenge__button,
+.customer button,
+button.shopify-payment-button__button--unbranded {
+  font-family: var(--font-body-family);
+  font-size: 1.2rem;
+  letter-spacing: var(--gv-letter-wide);
+  text-transform: uppercase;
+  min-height: 5.2rem;
+  padding: 0 3.6rem;
+  transition: background-color 0.3s var(--gv-ease), color 0.3s var(--gv-ease), opacity 0.3s var(--gv-ease);
+}
+
+.button:not([disabled]):hover::after,
+.shopify-payment-button__button--unbranded:hover:not([disabled]) {
+  box-shadow: none;
+}
+
+.button:not(.button--secondary):not(.button--tertiary):not([disabled]):hover {
+  opacity: 0.86;
+}
+
+.button--secondary:not([disabled]):hover {
+  background-color: rgb(var(--color-foreground));
+  color: rgb(var(--color-background));
+}
+
+/* Add to basket is the primary action; Buy it now sits quietly beneath. */
+.product-form__submit.button--secondary {
+  --color-button: var(--color-foreground);
+  --color-button-text: var(--color-background);
+  background-color: rgb(var(--color-foreground));
+  color: rgb(var(--color-background));
+}
+
+.product-form__submit.button--secondary:not([disabled]):hover {
+  opacity: 0.86;
+}
+
+.shopify-payment-button__button--unbranded {
+  background-color: transparent !important;
+  color: rgb(var(--color-foreground)) !important;
+  box-shadow: inset 0 0 0 1px rgb(var(--color-foreground)) !important;
+}
+
+.shopify-payment-button__button--unbranded:hover:not([disabled]) {
+  background-color: rgb(var(--color-foreground)) !important;
+  color: rgb(var(--color-background)) !important;
+}
+
+.shopify-payment-button__more-options {
+  font-size: 1.2rem;
+  letter-spacing: 0.04em;
+}
+
+/* --- Forms ----------------------------------------------------------------- */
+
+.field__input,
+.select__select,
+.customer .field input,
+.customer select {
+  font-family: var(--font-body-family);
+}
+
+.field:after,
+.select:after,
+.customer .field:after,
+.customer select:after {
+  box-shadow: 0 0 0 var(--inputs-border-width) rgba(var(--color-foreground), 0.28);
+}
+
+/* --- Header ---------------------------------------------------------------- */
+
+.header-wrapper--border-bottom {
+  border-bottom: 1px solid var(--gv-hairline);
+}
+
+.header__heading,
+.header__heading-link {
+  margin: 0;
+}
+
+.gv-logo {
+  display: block;
+  color: rgb(var(--color-foreground));
+  line-height: 0;
+}
+
+.gv-logo svg {
+  display: block;
+  width: 12.8rem;
+  height: auto;
+}
+
+@media screen and (min-width: 990px) {
+  .gv-logo svg { width: 16.4rem; }
+}
+
+.header__menu-item,
+.header__secondary-menu-item {
+  font-size: 1.25rem;
+  letter-spacing: var(--gv-letter-nav);
+  text-transform: uppercase;
+  color: rgba(var(--color-foreground), 0.92);
+}
+
+.header__menu-item:hover,
+.header__menu-item:hover span {
+  color: rgb(var(--color-foreground));
+  text-decoration: none;
+}
+
+.header__menu-item span {
+  position: relative;
+}
+
+.header__menu-item span::after,
+.header__active-menu-item::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.4rem;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--gv-ease);
+}
+
+.header__menu-item:hover span::after,
+.header__active-menu-item::after {
+  transform: scaleX(1);
+}
+
+.header__active-menu-item {
+  text-decoration: none;
+}
+
+@media screen and (min-width: 990px) {
+  .header__inline-menu .list-menu--inline {
+    gap: 0.4rem;
+  }
+
+  .header__inline-menu .header__menu-item {
+    padding: 1.2rem 1.4rem;
+  }
+
+  .header__inline-menu li:first-child .header__menu-item {
+    padding-left: 0;
+  }
+}
+
+/* Text labels for search / account / basket (desktop); quiet on mobile. */
+.gv-header-label {
+  font-family: var(--font-body-family);
+  font-size: 1.25rem;
+  letter-spacing: var(--gv-letter-nav);
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  color: rgba(var(--color-foreground), 0.92);
+}
+
+.header__icons .header__icon,
+.header__icons .header__icon:hover {
+  text-decoration: none;
+}
+
+.header__icon:hover .gv-header-label {
+  color: rgb(var(--color-foreground));
+}
+
+.header__icons {
+  gap: 0.4rem;
+}
+
+@media screen and (min-width: 990px) {
+  .header__icons .header__icon--search .svg-wrapper:not(.header__icon-close),
+  .header__icons .header__icon--account .svg-wrapper {
+    display: none;
+  }
+
+  .header__icons .header__icon {
+    width: auto;
+    padding: 0 1.2rem;
+  }
+
+  .header__icons .header__icon--cart {
+    padding-right: 0;
+  }
+
+  .header__icon--search .header__icon-close {
+    display: none;
+  }
+
+  details[open] > .header__icon--search .gv-header-label {
+    visibility: visible;
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .header__icons .header__search,
+  .header__icons .header__icon--account,
+  .header__icons .header__search .gv-header-label {
+    display: none;
+  }
+
+  .header__icon--cart {
+    width: auto;
+    min-width: 4.4rem;
+    padding: 0;
+  }
+
+  .gv-header-label { font-size: 1.2rem; }
+}
+
+.gv-basket-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.header__icon--cart .svg-wrapper,
+.header__icon--cart .cart-count-bubble {
+  display: none;
+}
+
+/* Mobile drawer */
+.menu-drawer__menu-item {
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: 2.6rem;
+  letter-spacing: 0;
+  padding: 1.1rem 3.2rem;
+}
+
+.menu-drawer__menu-item--active,
+.menu-drawer__menu-item:hover {
+  background-color: transparent;
+}
+
+.menu-drawer__utility-links {
+  background-color: transparent;
+  border-top: 1px solid var(--gv-hairline);
+}
+
+.menu-drawer__account {
+  font-size: 1.2rem;
+  letter-spacing: var(--gv-letter-nav);
+  text-transform: uppercase;
+}
+
+/* Search modal */
+.search-modal {
+  border-bottom: 1px solid var(--gv-hairline);
+}
+
+/* --- Sections: generous rhythm ---------------------------------------- */
+
+.section-template--padded {
+  padding-top: var(--gv-section-space-mobile);
+  padding-bottom: var(--gv-section-space-mobile);
+}
+
+@media screen and (min-width: 750px) {
+  .section-template--padded {
+    padding-top: var(--gv-section-space);
+    padding-bottom: var(--gv-section-space);
+  }
+}
+
+/* Rich text (philosophy / closing statement) */
+.rich-text__blocks {
+  max-width: 76rem;
+}
+
+.rich-text__heading.hxl,
+.rich-text__heading.h1 {
+  font-weight: var(--font-heading-weight);
+}
+
+.rich-text__caption {
+  margin-bottom: 2.4rem;
+}
+
+.rich-text__text {
+  color: rgba(var(--color-foreground), 0.78);
+}
+
+/* Multicolumn (product features, how it works) */
+.multicolumn .title {
+  margin-bottom: 1.2rem;
+}
+
+.multicolumn-card__info {
+  padding: 0;
+}
+
+.multicolumn-card__info h3 {
+  font-size: calc(var(--font-heading-scale) * 2.4rem);
+  margin-bottom: 1.4rem;
+}
+
+.multicolumn-card__info .rte {
+  color: rgba(var(--color-foreground), 0.78);
+}
+
+.multicolumn-card__info .rte ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.multicolumn-card__info .rte li {
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--gv-hairline);
+}
+
+.multicolumn-card__info .rte li:last-child {
+  border-bottom: 1px solid var(--gv-hairline);
+}
+
+.multicolumn .background-none .multicolumn-card {
+  background: transparent;
+}
+
+@media screen and (min-width: 990px) {
+  .multicolumn .multicolumn-list {
+    --grid-desktop-horizontal-spacing: 6.4rem;
+  }
+}
+
+/* Collapsible content / accordions */
+.accordion {
+  border-top-color: var(--gv-hairline);
+  border-bottom-color: var(--gv-hairline);
+}
+
+.accordion + .accordion {
+  border-top: none;
+}
+
+.accordion__title {
+  font-family: var(--font-body-family);
+  font-size: 1.25rem;
+  letter-spacing: var(--gv-letter-nav);
+  text-transform: uppercase;
+}
+
+.accordion summary {
+  padding: 2rem 0;
+}
+
+.accordion__content {
+  padding: 0 0 2.4rem;
+  color: rgba(var(--color-foreground), 0.8);
+}
+
+.collapsible-content .accordion__title {
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: calc(var(--font-heading-scale) * 2rem);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.collapsible-content__wrapper .collapsible-content__header {
+  margin-bottom: 3.2rem;
+}
+
+/* Clearly marked, owner-facing placeholders for unconfirmed information. */
+.gv-todo,
+.rte .gv-todo {
+  display: inline-block;
+  padding: 0.2rem 0.8rem;
+  border: 1px dashed rgba(var(--color-foreground), 0.45);
+  font-family: var(--font-body-family);
+  font-size: 0.9em;
+  letter-spacing: 0.02em;
+  color: rgba(var(--color-foreground), 0.75);
+  background: rgba(var(--color-foreground), 0.04);
+}
+
+/* --- Product cards --------------------------------------------------------- */
+
+.card-wrapper .card__inner {
+  overflow: hidden;
+}
+
+.card-wrapper .card__media .media img {
+  transition: transform 1.2s var(--gv-ease), opacity 0.6s var(--gv-ease);
+}
+
+@media (hover: hover) {
+  .card-wrapper:hover .card__media .media img:only-child,
+  .card-wrapper:hover .card__media .media img:first-child:not(:only-child) {
+    transform: scale(1.03);
+  }
+}
+
+.card__heading {
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: calc(var(--font-heading-scale) * 2rem);
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.card__heading a { text-decoration: none; }
+
+.card__heading a:hover { text-decoration: none; opacity: 0.75; }
+
+.card-information {
+  padding-top: 0.4rem;
+}
+
+.card-information > .price {
+  font-size: 1.35rem;
+  letter-spacing: 0.04em;
+  color: rgba(var(--color-foreground), 0.8);
+}
+
+.card__content .card__information {
+  padding: 1.6rem 0 0;
+}
+
+.card--standard > .card__content .card__information {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* No promotional badges — only factual availability ("Sold out"). */
+.card__badge .badge {
+  border-radius: 0;
+  font-size: 1rem;
+  letter-spacing: var(--gv-letter-wide);
+  text-transform: uppercase;
+  padding: 0.6rem 1rem;
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  border: none;
+}
+
+.product-grid {
+  --grid-mobile-vertical-spacing: 4.8rem;
+}
+
+@media screen and (min-width: 750px) {
+  .product-grid {
+    --grid-desktop-vertical-spacing: 7.2rem;
+  }
+}
+
+/* Collection banner */
+.collection-hero__title {
+  font-weight: var(--font-heading-weight);
+}
+
+.collection-hero__description {
+  color: rgba(var(--color-foreground), 0.75);
+  max-width: 56rem;
+}
+
+.collection-hero__text-wrapper {
+  padding-top: 2.4rem;
+}
+
+.facets-container,
+.facet-filters__label,
+.product-count__text {
+  font-size: 1.2rem;
+  letter-spacing: var(--gv-letter-nav);
+  text-transform: uppercase;
+}
+
+/* --- Product page ------------------------------------------------------ */
+
+.product__title h1,
+.product__title .h1 {
+  font-size: calc(var(--font-heading-scale) * 3.4rem);
+  line-height: 1.08;
+}
+
+@media screen and (min-width: 990px) {
+  .product__title h1,
+  .product__title .h1 {
+    font-size: calc(var(--font-heading-scale) * 4.4rem);
+  }
+}
+
+.product__info-container > * + * {
+  margin: 1.6rem 0;
+}
+
+.product__text.subtitle,
+.product__info-container .product__text {
+  font-size: 1.6rem;
+  line-height: 1.6;
+  color: rgba(var(--color-foreground), 0.75);
+  letter-spacing: 0.01em;
+}
+
+.product .price--large,
+.product .price .price-item {
+  font-size: 1.9rem;
+  letter-spacing: 0.04em;
+}
+
+.product__tax {
+  font-size: 1.2rem;
+  color: rgba(var(--color-foreground), 0.6);
+}
+
+.product-form__input .form__label,
+.product-form__input legend,
+.quantity__label,
+.product-form__quantity .form__label {
+  font-size: 1.1rem;
+  letter-spacing: var(--gv-letter-wide);
+  text-transform: uppercase;
+  color: rgba(var(--color-foreground), 0.7);
+  margin-bottom: 1rem;
+}
+
+.product-form__input--pill input[type='radio'] + label {
+  min-width: 12rem;
+  min-height: 4.8rem;
+  justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  margin: 0.6rem 0.8rem 0.2rem 0;
+  padding: 1rem 2.4rem;
+  font-size: 1.25rem;
+  letter-spacing: var(--gv-letter-nav);
+  text-transform: uppercase;
+  transition: background-color 0.25s var(--gv-ease), color 0.25s var(--gv-ease);
+}
+
+.quantity {
+  min-height: 4.8rem;
+}
+
+.quantity:after {
+  box-shadow: 0 0 0 var(--inputs-border-width) rgba(var(--color-foreground), 0.28);
+}
+
+.product-form__buttons {
+  max-width: 48rem;
+}
+
+.product-form__submit {
+  margin-bottom: 1.2rem;
+}
+
+.product__description {
+  color: rgba(var(--color-foreground), 0.8);
+}
+
+.product__accordion .accordion__content {
+  font-size: 1.45rem;
+}
+
+.product__media-wrapper .product__media-item .media {
+  background-color: rgb(var(--color-background));
+}
+
+@media screen and (min-width: 990px) {
+  .product--large:not(.product--no-media) .product__info-wrapper {
+    padding-left: 6.4rem;
+  }
+}
+
+/* --- Pages ----------------------------------------------------------- */
+
+.main-page-title {
+  font-weight: var(--font-heading-weight);
+  margin-bottom: 3.2rem;
+}
+
+.page-width--narrow .rte {
+  font-size: 1.6rem;
+}
+
+.contact .field__input,
+.contact textarea.text-area {
+  background: transparent;
+}
+
+/* --- Cart / basket -------------------------------------------------- */
+
+.title--primary,
+.cart__empty-text {
+  font-weight: var(--font-heading-weight);
+}
+
+.cart-notification {
+  border-width: 0 1px 1px;
+  border-color: var(--gv-hairline);
+}
+
+.cart-item__name {
+  font-family: var(--font-heading-family);
+  font-size: 1.9rem;
+  letter-spacing: 0;
+  text-decoration: none;
+}
+
+/* --- Footer (mobile rhythm) ------------------------------------------ */
+
+@media screen and (max-width: 989px) {
+  .gv-footer .gv-footer__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 4.8rem 2.4rem;
+  }
+
+  .gv-footer .gv-footer__brand,
+  .gv-footer .gv-footer__newsletter {
+    grid-column: 1 / -1;
+  }
+}
+
+/* --- Motion: extremely subtle, and off for reduced-motion users ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .card-wrapper .card__media .media img,
+  .header__menu-item span::after,
+  .gv-link,
+  .button {
+    transition: none !important;
+  }
+}

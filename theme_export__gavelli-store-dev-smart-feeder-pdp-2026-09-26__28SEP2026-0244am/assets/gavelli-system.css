@@ -1,0 +1,781 @@
+/* ==========================================================================
+   GAVELLI — design system
+   Tokens, type, spacing, buttons, media, motion and shared component
+   refinements. Loaded once from sections/gavelli-system.liquid (header group).
+   gavelli-base.css keeps the earlier Dawn refinements; new work goes here.
+   ========================================================================== */
+
+:root {
+  /* Easing & duration — one motion language for the whole site.
+     Everything moves on the same two curves: --gv-ease for state changes
+     (hover, header, accordions) and --gv-ease-out for entrances (reveals,
+     crossfades). No bounce, no elastic, no infinite loops. */
+  --gv-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --gv-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --gv-dur-fast: 0.3s;
+  --gv-dur: 0.6s;
+  --gv-dur-reveal: 1.2s;
+  --gv-dur-slow: 1.8s;
+
+  /* Motion amplitudes (kept deliberately small: cinematic, not flashy) */
+  --gv-rise: 2.4rem;          /* reveal: upward travel */
+  --gv-settle: 1.035;         /* reveal: photographs settle from this scale */
+  --gv-parallax: 3.5%;        /* scroll parallax: travel each way */
+
+  /* Vertical rhythm (section padding) */
+  --gv-space-xs: clamp(2.4rem, 2rem + 1vw, 3.2rem);
+  --gv-space-sm: clamp(4rem, 3rem + 2.5vw, 6.4rem);
+  --gv-space-md: clamp(6.4rem, 4.4rem + 4.5vw, 11.2rem);
+  --gv-space-lg: clamp(8.8rem, 5.6rem + 7vw, 16rem);
+
+  /* Gaps */
+  --gv-gap-sm: clamp(1.6rem, 1.2rem + 1vw, 2.4rem);
+  --gv-gap: clamp(2.4rem, 1.6rem + 2vw, 4.8rem);
+  --gv-gap-lg: clamp(4rem, 2.4rem + 4vw, 9.6rem);
+
+  /* Content widths */
+  --gv-measure: 58rem;
+  --gv-measure-sm: 44rem;
+  --gv-measure-lg: 92rem;
+
+  /* Type scale (serif headings, sans UI) */
+  --gv-t-display: clamp(4rem, 2.8rem + 3.4vw, 7.2rem);
+  --gv-t-h2: clamp(3.2rem, 2.4rem + 2.3vw, 5.6rem);
+  --gv-t-h3: clamp(2.4rem, 2rem + 1vw, 3.2rem);
+  --gv-t-statement: clamp(2.6rem, 1.9rem + 2vw, 4.4rem);
+  --gv-t-lede: clamp(1.6rem, 1.5rem + 0.3vw, 1.8rem);
+  --gv-t-label: 1.2rem;
+}
+
+/* --- Typography --------------------------------------------------------- */
+
+.gv-label {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: var(--gv-t-label);
+  font-weight: var(--font-body-weight);
+  line-height: 1.4;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(var(--color-foreground), 0.78);
+}
+
+.gv-display,
+.gv-h2,
+.gv-h3,
+.gv-statement {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  color: rgb(var(--color-foreground));
+  text-wrap: balance;
+}
+
+.gv-display { font-size: var(--gv-t-display); line-height: 1.02; letter-spacing: -0.015em; }
+.gv-h2 { font-size: var(--gv-t-h2); line-height: 1.06; letter-spacing: -0.01em; }
+.gv-h3 { font-size: var(--gv-t-h3); line-height: 1.15; letter-spacing: -0.005em; }
+.gv-statement { font-size: var(--gv-t-statement); line-height: 1.2; letter-spacing: -0.005em; }
+
+.gv-lede,
+.gv-body {
+  margin: 0;
+  max-width: var(--gv-measure-sm);
+  color: rgba(var(--color-foreground), 0.8);
+  text-wrap: pretty;
+}
+
+.gv-lede { font-size: var(--gv-t-lede); line-height: 1.7; }
+.gv-body { font-size: 1.5rem; line-height: 1.75; }
+.gv-body p, .gv-lede p { margin: 0 0 1.2em; }
+.gv-body p:last-child, .gv-lede p:last-child { margin-bottom: 0; }
+
+.gv-stack > * + * { margin-top: var(--gv-stack, 2.4rem); }
+
+/* --- Spacing utilities (section padding) -------------------------------- */
+
+.gv-pt-none { padding-top: 0; }
+.gv-pt-sm { padding-top: var(--gv-space-sm); }
+.gv-pt-md { padding-top: var(--gv-space-md); }
+.gv-pt-lg { padding-top: var(--gv-space-lg); }
+.gv-pb-none { padding-bottom: 0; }
+.gv-pb-sm { padding-bottom: var(--gv-space-sm); }
+.gv-pb-md { padding-bottom: var(--gv-space-md); }
+.gv-pb-lg { padding-bottom: var(--gv-space-lg); }
+
+/* --- Links & buttons: states ------------------------------------------- */
+
+.gv-link {
+  position: relative;
+  border-bottom: 0;
+  padding-bottom: 0.6rem;
+  background: linear-gradient(currentColor, currentColor) left bottom / 100% 1px no-repeat;
+  transition: background-size var(--gv-dur) var(--gv-ease-out), opacity var(--gv-dur-fast) var(--gv-ease);
+}
+
+.gv-link::after {
+  content: '';
+  width: 1.4rem;
+  height: 1px;
+  background: currentColor;
+  transition: width var(--gv-dur) var(--gv-ease-out);
+}
+
+@media (hover: hover) {
+  .gv-link:hover { background-size: 35% 1px; }
+  .gv-link:hover::after { width: 2.8rem; }
+}
+
+.button:not([disabled]):active,
+.gv-link:active { opacity: 0.72; }
+
+.button[disabled],
+.button[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* One focus style everywhere: a 2px charcoal outline, offset from the element
+   (2px meets the WCAG 2.2 focus-appearance guidance; colour and offset are
+   unchanged). */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible,
+.button:focus-visible,
+.link:focus-visible,
+.header__icon:focus-visible,
+.header__menu-item:focus-visible,
+.menu-drawer__menu-item:focus-visible {
+  outline: 2px solid rgb(var(--color-foreground));
+  outline-offset: 0.4rem;
+  box-shadow: none;
+}
+
+/* Account is Shopify's <shopify-account> element: focus lands on a button
+   inside its shadow root (exposed as part "signed-out-avatar"), which drew its
+   own thin ring. It gets the same 2px ring as every other header link. */
+shopify-account.header__icon::part(signed-out-avatar):focus-visible {
+  outline: 2px solid rgb(var(--color-foreground));
+  outline-offset: 0.4rem;
+  box-shadow: none;
+}
+
+.field__input:focus-visible,
+.search__input:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid rgb(var(--color-foreground));
+  outline-offset: 0.2rem;
+  box-shadow: none;
+}
+
+/* Links inside rich text (introductions, answers, notes entered in the
+   editor) follow the text colour with a quiet 1px underline instead of the
+   browser's default blue. Designed links (.gv-link, buttons) are untouched. */
+:where(.gv-lede, .gv-body, .gv-rte, .gv-faq__answer, .gv-page-head__intro) a:not(.gv-link):not(.button):not(.link) {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  text-decoration-color: rgba(var(--color-foreground), 0.45);
+  transition: text-decoration-color var(--gv-dur-fast) var(--gv-ease), opacity var(--gv-dur-fast) var(--gv-ease);
+}
+
+@media (hover: hover) {
+  :where(.gv-lede, .gv-body, .gv-rte, .gv-faq__answer, .gv-page-head__intro) a:not(.gv-link):not(.button):not(.link):hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+:where(.gv-lede, .gv-body, .gv-rte, .gv-faq__answer, .gv-page-head__intro) a:not(.gv-link):not(.button):not(.link):active { opacity: 0.72; }
+
+/* --- Media ------------------------------------------------------------- */
+
+.gv-media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: var(--gv-ratio, 4 / 5);
+  background: rgba(var(--color-foreground), 0.05);
+}
+
+.gv-media img,
+.gv-media svg.placeholder-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--gv-focal, 50% 50%);
+}
+
+.gv-media__layer {
+  position: absolute;
+  inset: 0;
+}
+
+/* Placeholder: shown where a photograph is still needed. Honest and calm. */
+.gv-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  padding: 3.2rem;
+  text-align: center;
+  background: rgb(var(--color-background));
+  background-image: linear-gradient(rgba(var(--color-foreground), 0.045), rgba(var(--color-foreground), 0.045));
+}
+
+.gv-placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 1.6rem;
+  border: 1px solid rgba(var(--color-foreground), 0.14);
+  pointer-events: none;
+}
+
+.gv-placeholder__label {
+  font-family: var(--font-body-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(var(--color-foreground), 0.66);
+}
+
+.gv-placeholder__note {
+  max-width: 30rem;
+  font-family: var(--font-heading-family);
+  font-size: 1.7rem;
+  font-style: italic;
+  line-height: 1.4;
+  color: rgba(var(--color-foreground), 0.62);
+}
+
+/* --- Motion ------------------------------------------------------------
+   html.gv-motion is set before content renders, only when the visitor has
+   not asked for reduced motion and IntersectionObserver exists. Without it
+   everything is simply visible. */
+
+/* Reveal — one gesture everywhere: a short rise + fade (text), a fade
+   (labels, links), or an unveil from below with the photograph settling
+   from a barely perceptible scale (media). Each element plays once. */
+html.gv-motion [data-gv-reveal] {
+  opacity: 0;
+  transform: translate3d(0, var(--gv-rise), 0);
+  transition:
+    opacity var(--gv-dur-reveal) var(--gv-ease-out) var(--gv-delay, 0s),
+    transform var(--gv-dur-reveal) var(--gv-ease-out) var(--gv-delay, 0s);
+}
+
+html.gv-motion [data-gv-reveal='fade'] { transform: none; }
+
+html.gv-motion [data-gv-reveal='media'] {
+  transform: none;
+  clip-path: inset(0 0 10% 0);
+  transition:
+    opacity 1s var(--gv-ease-out) var(--gv-delay, 0s),
+    clip-path var(--gv-dur-slow) var(--gv-ease-out) var(--gv-delay, 0s);
+}
+
+/* :where() keeps this at low specificity so hover states still win. */
+html.gv-motion [data-gv-reveal='media'] :where(img, .gv-placeholder) {
+  transform: scale(var(--gv-settle));
+  transition: transform 2.4s var(--gv-ease-out) var(--gv-delay, 0s);
+}
+
+html.gv-motion [data-gv-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Only photographs are unveiled with clip-path. Other revealed elements never
+   carry a clip-path, so nothing drawn outside their box (focus rings, the
+   A Day time marks) is cut off. */
+html.gv-motion [data-gv-reveal='media'].is-in { clip-path: inset(0 0 0 0); }
+
+html.gv-motion [data-gv-reveal].is-in :where(img, .gv-placeholder) { transform: none; }
+
+/* On-load entrance for above-the-fold headings (page headers). CSS only, so
+   it never waits for JavaScript and never holds back the LCP text. */
+@media (prefers-reduced-motion: no-preference) {
+  .gv-enter > * { animation: gvEnter 1.1s var(--gv-ease-out) both; }
+  .gv-enter > :nth-child(2) { animation-delay: 0.08s; }
+  .gv-enter > :nth-child(3) { animation-delay: 0.16s; }
+  .gv-enter > :nth-child(4) { animation-delay: 0.24s; }
+}
+
+@keyframes gvEnter {
+  from { opacity: 0; transform: translate3d(0, 1.2rem, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Anchor links (#editorial, #purchase, #newsletter…) glide instead of
+   jumping, and land below the sticky header. */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+:target,
+[id='purchase'],
+[id='newsletter'] { scroll-margin-top: 10rem; }
+
+/* Page-to-page: a soft native crossfade between pages of the shop (CSS View
+   Transitions, same-origin only; browsers without support simply navigate
+   as before). Off for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.45s;
+    animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+}
+
+/* Scroll-linked parallax and scale: CSS only (scroll-driven animations),
+   progressive enhancement. Browsers without support show still images. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .gv-parallax .gv-media__layer {
+      inset: calc(var(--gv-parallax) * -1.4) 0;
+      animation: gvParallax linear both;
+      animation-timeline: view(block);
+      animation-range: cover 0% cover 100%;
+    }
+
+    .gv-scroll-scale img {
+      animation: gvScrollScale linear both;
+      animation-timeline: view(block);
+      animation-range: entry 0% cover 50%;
+    }
+  }
+}
+
+@keyframes gvParallax {
+  from { transform: translate3d(0, calc(var(--gv-parallax) * -1), 0); }
+  to { transform: translate3d(0, var(--gv-parallax), 0); }
+}
+
+@keyframes gvScrollScale {
+  from { transform: scale(1.04); }
+  to { transform: scale(1); }
+}
+
+/* Reduced motion: no parallax, no scale, no reveals — content is simply
+   there. (html.gv-motion is never set for these visitors either.) */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+  .gv-card .gv-media img,
+  .gv-cats__item .gv-media img,
+  .gv-day__frame-item,
+  .card-wrapper .card__media .media img {
+    transform: none !important;
+  }
+}
+
+/* --- Header: sticky, refined, gently compacts after scrolling ----------- */
+
+/* The header compacts without moving the page: whatever height the header
+   loses in padding is given back as margin below the (sticky) section, on the
+   same curve and duration, so the content underneath never shifts (no CLS).
+   The logo shrinks with a transform, which does not affect layout. */
+.section-header {
+  transition: margin-bottom var(--gv-dur) var(--gv-ease);
+}
+
+.section-header .header {
+  transition: padding var(--gv-dur) var(--gv-ease);
+}
+
+.section-header .header-wrapper {
+  transition: background-color var(--gv-dur) var(--gv-ease), border-color var(--gv-dur) var(--gv-ease);
+}
+
+.section-header .gv-logo svg {
+  transform-origin: 50% 50%;
+  transition: transform var(--gv-dur) var(--gv-ease);
+}
+
+.gv-scrolled .section-header .header-wrapper {
+  border-bottom-color: rgba(var(--color-foreground), 0.1);
+}
+
+/* A touch of translucency once the page moves underneath (supported
+   browsers only; otherwise the solid cream background stays). */
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .gv-scrolled .section-header .header-wrapper {
+    background-color: rgba(var(--color-background), 0.9);
+    -webkit-backdrop-filter: saturate(1.1) blur(14px);
+    backdrop-filter: saturate(1.1) blur(14px);
+  }
+}
+
+@media screen and (min-width: 990px) {
+  /* Dawn pulls the inline menu 1.2rem left; align it with the page grid. */
+  .header__inline-menu { margin-left: 0; }
+
+  .gv-scrolled .section-header .header {
+    padding-top: 1.2rem;
+    padding-bottom: 1.2rem;
+  }
+
+  /* 2 x (2.4rem - 1.2rem) of padding removed = 2.4rem returned as margin. */
+  .gv-scrolled .section-header { margin-bottom: 2.4rem; }
+
+  .gv-scrolled .section-header .gv-logo svg { transform: scale(0.84); }
+}
+
+@media screen and (max-width: 989px) {
+  .gv-scrolled .section-header .header {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+  }
+
+  /* 2 x (1.2rem - 0.6rem) removed = 1.2rem returned. */
+  .gv-scrolled .section-header { margin-bottom: 1.2rem; }
+
+  .gv-scrolled .section-header .gv-logo svg { transform: scale(0.9); }
+
+  /* Search is offered in the bar itself on mobile (icon only, 44px target);
+     Account stays in the menu drawer so the centred logo keeps its space. */
+  /* !important: Dawn hides it here with a long :not() chain selector. */
+  .header__icons .header__search { display: block !important; }
+  .header__icons .header__icon--search { width: 4.4rem; height: 4.4rem; }
+
+  /* Three equal-weight columns so the logo sits at the true centre of the
+     screen whatever the icons on either side measure. (:not(#gv) lifts the
+     specificity above Dawn's :not()-chained account/menu grid rule.) */
+  .section-header .header.header--mobile-center:not(#gv) {
+    grid-template-areas: 'left-icons heading icons';
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    column-gap: 0.8rem;
+  }
+}
+
+@media screen and (max-width: 359px) {
+  .section-header .gv-logo svg { width: 11.2rem; }
+  .header__icons .header__icon--search { width: 4rem; }
+}
+
+.header__menu-item,
+.gv-header-label {
+  transition: color var(--gv-dur-fast) var(--gv-ease), opacity var(--gv-dur-fast) var(--gv-ease);
+}
+
+/* Basket / account / search labels get the same underline as the menu. */
+.header__icon .gv-header-label { position: relative; }
+
+.header__icon .gv-header-label::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.5rem;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--gv-ease);
+}
+
+@media (hover: hover) {
+  .header__icon:hover .gv-header-label::after { transform: scaleX(1); }
+}
+
+/* --- Mobile menu drawer ----------------------------------------------- */
+
+.menu-drawer {
+  width: min(100vw, 44rem);
+  background-color: rgb(var(--color-background));
+  border-right: 1px solid rgba(var(--color-foreground), 0.1);
+  transition: transform 0.45s var(--gv-ease-out), visibility 0.45s;
+}
+
+.menu-drawer__navigation { padding: 2.4rem 0; }
+
+.menu-drawer__menu > li { border-bottom: 1px solid rgba(var(--color-foreground), 0.08); }
+
+.menu-drawer__menu-item {
+  min-height: 6rem;
+  display: flex;
+  align-items: center;
+}
+
+.menu-drawer__menu-item--active {
+  text-decoration: underline;
+  text-underline-offset: 0.6rem;
+  text-decoration-thickness: 1px;
+}
+
+.menu-drawer__utility-links { padding: 2.4rem 3.2rem 3.2rem; }
+
+.menu-drawer__account {
+  min-height: 4.8rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Search + Account inside the mobile drawer (below 990px the bar itself
+   shows only menu, search icon, logo and basket). */
+.gv-drawer-utility {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 3.2rem;
+  margin: 0 0 1.6rem;
+  padding: 0;
+  list-style: none;
+}
+
+.gv-drawer-utility__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 4.8rem;
+  font-size: 1.2rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(var(--color-foreground), 0.84);
+  transition: color var(--gv-dur-fast) var(--gv-ease);
+}
+
+.gv-drawer-utility__link:hover { color: rgb(var(--color-foreground)); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .menu-opening .menu-drawer__menu > li {
+    animation: gvDrawerItem 0.6s var(--gv-ease-out) both;
+  }
+  .menu-opening .menu-drawer__menu > li:nth-child(2) { animation-delay: 0.05s; }
+  .menu-opening .menu-drawer__menu > li:nth-child(3) { animation-delay: 0.1s; }
+  .menu-opening .menu-drawer__menu > li:nth-child(4) { animation-delay: 0.15s; }
+  .menu-opening .menu-drawer__menu > li:nth-child(5) { animation-delay: 0.2s; }
+}
+
+@keyframes gvDrawerItem {
+  from { opacity: 0; transform: translate3d(-1.2rem, 0, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+/* --- Search ------------------------------------------------------------ */
+
+.search-modal__content { padding-top: 1.2rem; padding-bottom: 1.2rem; }
+
+.search-modal .field__input,
+.template-search .field__input,
+.search .field__input {
+  font-family: var(--font-heading-family);
+  font-size: 2rem;
+  letter-spacing: 0;
+}
+
+.search-modal .field::after,
+.search-modal .field::before,
+.template-search .field::after,
+.template-search .field::before {
+  box-shadow: 0 1px 0 0 rgba(var(--color-foreground), 0.35);
+  border-radius: 0;
+}
+
+.search-modal .field__label,
+.template-search .field__label {
+  font-size: 1.4rem;
+  letter-spacing: 0.04em;
+}
+
+.predictive-search { border-radius: 0; box-shadow: none; border-color: rgba(var(--color-foreground), 0.12); }
+
+.predictive-search__heading {
+  font-family: var(--font-body-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(var(--color-foreground), 0.7);
+  border-bottom-color: rgba(var(--color-foreground), 0.1);
+}
+
+.predictive-search__item-heading {
+  font-family: var(--font-heading-family);
+  font-size: 1.8rem;
+}
+
+.template-search__header { margin-bottom: var(--gv-space-xs); }
+
+.template-search__header h1,
+.template-search__header .h2 {
+  font-size: var(--gv-t-h2);
+  font-weight: var(--font-heading-weight);
+}
+
+.template-search__search { max-width: 64rem; margin-left: auto; margin-right: auto; }
+
+.template-search__results .title-wrapper-with-link,
+.search__results-count,
+.template-search__results .product-count {
+  font-size: 1.2rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.template-search .title-wrapper--no-top-margin > .title,
+.template-search__results h2 {
+  font-weight: var(--font-heading-weight);
+}
+
+/* --- Collapsible content (Dawn) & native details ------------------------ */
+
+.accordion summary { transition: opacity var(--gv-dur-fast) var(--gv-ease); }
+
+@media (hover: hover) {
+  .accordion summary:hover { opacity: 0.7; }
+}
+
+/* --- Footer: shared focus and hover language --------------------------- */
+
+.gv-footer a { transition: opacity var(--gv-dur-fast) var(--gv-ease); }
+
+.gv-footer .gv-footer__list a {
+  background: linear-gradient(currentColor, currentColor) left bottom / 0 1px no-repeat;
+  padding-bottom: 0.2rem;
+  transition: background-size var(--gv-dur) var(--gv-ease-out), opacity var(--gv-dur-fast) var(--gv-ease);
+}
+
+@media screen and (max-width: 749px) {
+  /* Larger touch targets without moving the underline away from the text. */
+  .gv-footer .gv-footer__list a {
+    display: inline-block;
+    padding: 0.5rem 0;
+    background-position: left calc(100% - 0.5rem);
+  }
+}
+
+@media (hover: hover) {
+  .gv-footer .gv-footer__list a:hover { opacity: 1; background-size: 100% 1px; }
+}
+
+/* --- Product cards (shared by essentials, collections, search) -------- */
+
+.gv-card { display: block; text-decoration: none; color: inherit; }
+
+.gv-card .gv-media img {
+  transition: transform 1.4s var(--gv-ease-out), opacity var(--gv-dur) var(--gv-ease);
+}
+
+.gv-card .gv-media img + img { opacity: 0; }
+
+@media (hover: hover) {
+  .gv-card:hover .gv-media img { transform: scale(1.03); }
+  .gv-card:hover .gv-media img + img { opacity: 1; }
+}
+
+.gv-card__title {
+  margin: 1.8rem 0 0;
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: 2.2rem;
+  line-height: 1.2;
+  color: rgb(var(--color-foreground));
+}
+
+.gv-card__meta {
+  margin: 0.8rem 0 0;
+  font-size: 1.35rem;
+  letter-spacing: 0.04em;
+  color: rgba(var(--color-foreground), 0.75);
+}
+
+/* The system loader section renders nothing visible. */
+.gv-system-section { display: none; }
+
+/* --- Hero: mobile height ------------------------------------------------
+   Below 750px the vertical photograph is shown no taller than 4:5, so the
+   heading reaches the first screen. From the 3:4 mobile photograph this trims
+   about 3% from the top and bottom only (centre kept). Tablet and desktop use
+   the horizontal photograph and are unchanged. */
+@media screen and (max-width: 749px) {
+  .gv-hero.gv-hero--split .gv-hero__media { aspect-ratio: max(var(--gv-hero-ratio), 0.8); }
+}
+
+/* --- Hero: 990–1299px refinement ---------------------------------------
+   With the default 5/7 split the text column gets too narrow below ~1300px:
+   the CTAs stacked (1200–1289px) and the wide photograph ended up shorter
+   than the text (990–1199px). In this range only:
+   - a fixed, comfortable text column, so both CTAs always sit side by side;
+   - 990–1199px: the photograph is gently cropped (to 1.4 or 1.5:1, focused
+     right of centre where the walker and dog are) so it keeps the height of
+     the text block. >=1200px keeps the photograph's own proportions.
+   >=1300px and <990px are unchanged. */
+@media screen and (min-width: 990px) and (max-width: 1299.98px) {
+  .gv-hero.gv-hero--split .gv-hero__inner {
+    grid-template-columns: minmax(0, 42rem) minmax(0, 1fr);
+    gap: 4.8rem;
+  }
+
+  .gv-hero.gv-hero--split .gv-hero__actions { flex-wrap: nowrap; }
+
+  .gv-hero.gv-hero--split .gv-hero__actions .button { padding: 0 2.6rem; }
+}
+
+@media screen and (min-width: 990px) and (max-width: 1099.98px) {
+  .gv-hero.gv-hero--split .gv-hero__media { aspect-ratio: min(var(--gv-hero-ratio), 1.4); }
+  .gv-hero.gv-hero--split .gv-hero__media img { object-position: 60% 50%; }
+}
+
+@media screen and (min-width: 1100px) and (max-width: 1199.98px) {
+  .gv-hero.gv-hero--split .gv-hero__media { aspect-ratio: min(var(--gv-hero-ratio), 1.5); }
+  .gv-hero.gv-hero--split .gv-hero__media img { object-position: 58% 50%; }
+}
+
+/* --- Sections that bleed a photograph to the viewport edge --------------
+   100vw includes the scrollbar, so a bleed can overshoot by a few pixels;
+   clip it so the page never scrolls sideways. */
+.gv-editorial,
+.gv-mediasec,
+.gv-cats { overflow-x: clip; }
+
+/* --- Editorial: text-only layout ---------------------------------------
+   Without a photograph the heading sits in the left column and the text in
+   the right, instead of one narrow column with an empty half beside it. */
+@media screen and (min-width: 990px) {
+  .gv-editorial--text-only .gv-editorial__content {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    column-gap: var(--gv-gap-lg);
+    align-items: start;
+    max-width: none;
+  }
+
+  .gv-editorial--text-only .gv-editorial__content > .gv-label,
+  .gv-editorial--text-only .gv-editorial__content > .gv-h2 { grid-column: 1; }
+
+  .gv-editorial--text-only .gv-editorial__content > .gv-body {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    margin-top: 0;
+    max-width: var(--gv-measure);
+    padding-top: 0.4rem;
+  }
+
+  .gv-editorial--text-only .gv-editorial__content > .gv-link {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
+/* --- Footer details ---------------------------------------------------- */
+.gv-footer__newsletter-title { text-wrap: balance; }
+
+/* Keyboard focus on the sign-up field: the underline doubles in weight. */
+.gv-footer__form:focus-within { box-shadow: 0 1px 0 0 rgb(var(--color-foreground)); }

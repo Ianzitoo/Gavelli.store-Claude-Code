@@ -1,0 +1,291 @@
+{%- comment -%}
+  GAVELLI — "A shorter list" (homepage product showcase).
+  One section, three states, chosen automatically from the number of products
+  the chosen collection has available to customers:
+    A  1 product   → editorial feature (large photograph, name, job line, price, link)
+    B  2–4 products → a small selection of cards
+    C  5+ products  → the first four + a link to the whole collection
+  Real data only: title, image, price, availability. No ratings, badges, stock
+  counts or claims. The one-line "job to do" comes from the product metafield
+  gavelli.job_to_do (single line text); when it is empty nothing is shown.
+  No reveal-on-scroll here: product, price and link are never hidden behind an animation.
+  Touch targets: links get an invisible hit area of at least 44px (see ::before below).
+{%- endcomment -%}
+
+{%- liquid
+  assign collection = section.settings.collection
+  assign visible = 0
+  if collection != blank
+    for p in collection.products limit: 5
+      assign visible = visible | plus: 1
+    endfor
+  endif
+  assign shown = visible
+  if shown > 4
+    assign shown = 4
+  endif
+  assign view_link = section.settings.link
+  if view_link == blank and collection != blank
+    assign view_link = collection.url
+  endif
+  if section.settings.image_ratio == 'square'
+    assign feature_ratio = '1 / 1'
+  else
+    assign feature_ratio = '4 / 5'
+  endif
+-%}
+
+<style>
+  .gv-coll__head { margin-bottom: var(--gv-space-xs); }
+  .gv-coll__head .gv-h2 { margin-top: 1.4rem; max-width: 18ch; }
+  .gv-coll__head .gv-body { margin-top: 1.6rem; max-width: var(--gv-measure-sm); }
+
+  /* Invisible hit area: at least 44px tall around each link, no visual change. */
+  .gv-coll .gv-link::before {
+    content: '';
+    position: absolute;
+    top: -1.1rem;
+    bottom: -1.1rem;
+    left: -0.8rem;
+    right: -0.8rem;
+  }
+
+  /* State A — featured product */
+  .gv-coll__feature {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.4rem;
+  }
+
+  .gv-coll__media { display: block; }
+  .gv-coll__media img { transition: transform 1.4s var(--gv-ease-out); }
+
+  @media (hover: hover) {
+    .gv-coll__media:hover img { transform: scale(1.025); }
+  }
+
+  .gv-coll__body { max-width: 44rem; }
+
+  .gv-coll__name {
+    margin: 0;
+    font-family: var(--font-heading-family);
+    font-weight: var(--font-heading-weight);
+    font-size: var(--gv-t-h3);
+    line-height: 1.12;
+    color: rgb(var(--color-foreground));
+  }
+
+  .gv-coll__name a { color: inherit; text-decoration: none; }
+
+  .gv-coll__job {
+    margin: 1.2rem 0 0;
+    font-size: 1.6rem;
+    line-height: 1.6;
+    color: rgba(var(--color-foreground), 0.8);
+    text-wrap: pretty;
+  }
+
+  .gv-coll__price {
+    margin: 1.6rem 0 0;
+    font-size: 1.6rem;
+    letter-spacing: 0.04em;
+    color: rgba(var(--color-foreground), 0.9);
+  }
+
+  .gv-coll__cta { margin-top: 1.2rem; }
+  .gv-coll__cta .gv-link { padding-top: 1.2rem; padding-bottom: 0.8rem; }
+
+  /* State B / C — cards */
+  .gv-coll__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3.2rem 1.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .gv-card__job {
+    margin: 0.6rem 0 0;
+    font-size: 1.35rem;
+    line-height: 1.5;
+    color: rgba(var(--color-foreground), 0.78);
+  }
+
+  .gv-coll__foot { margin-top: var(--gv-space-xs); }
+
+  /* Empty state: one calm panel, never blank product cards. */
+  .gv-coll__empty {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: var(--gv-space-sm) 2.4rem;
+    text-align: center;
+    background: rgba(var(--color-foreground), 0.035);
+  }
+
+  .gv-coll__empty::before {
+    content: '';
+    position: absolute;
+    inset: 1.2rem;
+    border: 1px solid rgba(var(--color-foreground), 0.12);
+    pointer-events: none;
+  }
+
+  .gv-coll__empty-inner { position: relative; display: grid; justify-items: center; gap: 1.2rem; max-width: 46rem; }
+
+  .gv-coll__empty-note {
+    margin: 0;
+    font-family: var(--font-heading-family);
+    font-weight: var(--font-heading-weight);
+    font-style: italic;
+    font-size: clamp(2.2rem, 1.8rem + 1.2vw, 3rem);
+    line-height: 1.3;
+    color: rgba(var(--color-foreground), 0.82);
+    text-wrap: balance;
+  }
+
+  @media screen and (min-width: 750px) {
+    .gv-coll__grid { gap: 5.6rem var(--gv-gap-sm); }
+    .gv-coll__grid--n3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .gv-coll__grid--n2 { max-width: 84rem; }
+  }
+
+  @media screen and (min-width: 990px) {
+    .gv-coll__feature {
+      grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+      gap: var(--gv-gap-lg);
+      align-items: center;
+    }
+
+    .gv-coll__grid--n4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+</style>
+
+<section
+  id="{{ section.settings.anchor | default: 'collection' | handleize }}"
+  class="gv-coll color-{{ section.settings.color_scheme }} gradient gv-pt-{{ section.settings.spacing_top }} gv-pb-{{ section.settings.spacing_bottom }}"
+  aria-labelledby="GvColl-{{ section.id }}"
+>
+  <div class="page-width">
+    <header class="gv-coll__head">
+      {%- if section.settings.label != blank -%}
+        <p class="gv-label">{{ section.settings.label | escape }}</p>
+      {%- endif -%}
+      <h2 id="GvColl-{{ section.id }}" class="gv-h2">{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.text != blank -%}
+        <div class="gv-body">{{ section.settings.text }}</div>
+      {%- endif -%}
+    </header>
+
+    {%- if visible == 1 -%}
+      {%- for product in collection.products limit: 1 -%}
+        {%- liquid
+          assign job = product.metafields.gavelli.job_to_do.value
+          assign img = product.featured_media.preview_image
+          assign img_alt = img.alt | default: product.title
+        -%}
+        <article class="gv-coll__feature">
+          <a class="gv-coll__media gv-media" href="{{ product.url }}" style="--gv-ratio: {{ feature_ratio }};" tabindex="-1" aria-hidden="true">
+            {%- if img != blank -%}
+              {{
+                img
+                | image_url: width: 1400
+                | image_tag:
+                  loading: 'lazy',
+                  widths: '480, 720, 960, 1200, 1400',
+                  sizes: '(min-width: 990px) 50vw, calc(100vw - 3rem)',
+                  alt: img_alt
+              }}
+            {%- else -%}
+              <div class="gv-placeholder" aria-hidden="true"><span class="gv-placeholder__label">Image to come</span></div>
+            {%- endif -%}
+          </a>
+          <div class="gv-coll__body">
+            <h3 class="gv-coll__name"><a href="{{ product.url }}">{{ product.title | escape }}</a></h3>
+            {%- if job != blank -%}
+              <p class="gv-coll__job">{{ job | escape }}</p>
+            {%- endif -%}
+            <p class="gv-coll__price">
+              {%- if product.available -%}
+                {%- if product.price_varies -%}
+                  {{ 'products.product.price.from_price_html' | t: price: product.price_min | money }}
+                {%- else -%}
+                  {{ product.price | money }}
+                {%- endif -%}
+              {%- else -%}
+                {{ 'products.product.sold_out' | t }}
+              {%- endif -%}
+            </p>
+            <div class="gv-coll__cta">
+              <a href="{{ product.url }}" class="gv-link">{{ section.settings.feature_link_label | default: 'View product' | escape }}</a>
+            </div>
+          </div>
+        </article>
+      {%- endfor -%}
+
+    {%- elsif visible > 1 -%}
+      <ul class="gv-coll__grid gv-coll__grid--n{{ shown }}" role="list">
+        {%- for product in collection.products limit: shown -%}
+          <li>
+            {%- render 'gavelli-product-card', product: product, ratio: section.settings.image_ratio, show_job: true -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      {%- if visible > 4 and view_link != blank -%}
+        <div class="gv-coll__foot">
+          <a class="gv-link" href="{{ view_link }}">{{ section.settings.link_label | default: 'View the collection' | escape }}</a>
+        </div>
+      {%- endif -%}
+
+    {%- else -%}
+      <div class="gv-coll__empty">
+        <div class="gv-coll__empty-inner">
+          <p class="gv-coll__empty-note">{{ section.settings.empty_note | escape }}</p>
+          {%- if section.settings.empty_link_label != blank and section.settings.empty_link != blank -%}
+            <a class="gv-link" href="{{ section.settings.empty_link }}">{{ section.settings.empty_link_label | escape }}</a>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "GAVELLI a shorter list",
+  "class": "section-gavelli-collection",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label", "default": "A shorter list" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "We do the choosing first." },
+    { "type": "richtext", "id": "text", "label": "Text (optional)" },
+    { "type": "collection", "id": "collection", "label": "Collection", "info": "1 product: featured layout. 2–4: cards. 5 or more: four cards and a link to the collection. Only products available to customers are counted." },
+    {
+      "type": "select", "id": "image_ratio", "label": "Product image proportions",
+      "options": [{ "value": "portrait", "label": "Portrait 4:5" }, { "value": "square", "label": "Square" }],
+      "default": "portrait"
+    },
+    { "type": "text", "id": "feature_link_label", "label": "Featured product link label", "default": "View product" },
+    { "type": "text", "id": "link_label", "label": "Collection link label (5+ products)", "default": "View the collection" },
+    { "type": "url", "id": "link", "label": "Collection link (5+ products)", "info": "Leave blank to use the chosen collection." },
+    { "type": "header", "content": "While there is no product to show" },
+    { "type": "text", "id": "empty_note", "label": "Message", "default": "The collection is still being chosen." },
+    { "type": "text", "id": "empty_link_label", "label": "Link label", "info": "E.g. a link to the newsletter sign-up (#newsletter)." },
+    { "type": "url", "id": "empty_link", "label": "Link" },
+    { "type": "text", "id": "anchor", "label": "Anchor (for links)", "default": "collection" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-1" },
+    {
+      "type": "select", "id": "spacing_top", "label": "Space above",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "sm"
+    },
+    {
+      "type": "select", "id": "spacing_bottom", "label": "Space below",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "md"
+    }
+  ],
+  "presets": [{ "name": "GAVELLI a shorter list" }]
+}
+{% endschema %}

@@ -1,0 +1,404 @@
+{%- comment -%}
+  GAVELLI — footer.
+  Minimal editorial footer: wordmark, navigation, legal links and newsletter.
+  Uses Shopify's native customer form for newsletter sign-up and native
+  policy objects for legal links (only policies that exist are linked).
+{%- endcomment -%}
+
+{%- style -%}
+  .gv-footer-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .gv-footer-{{ section.id }} {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<style>
+  .gv-footer__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4.8rem;
+  }
+
+  @media screen and (min-width: 990px) {
+    .gv-footer__grid {
+      grid-template-columns: 1.3fr 0.7fr 0.7fr 1.5fr;
+      gap: 6.4rem;
+    }
+  }
+
+  .gv-footer__brand .gv-logo svg {
+    width: 15rem;
+  }
+
+  .gv-footer__tagline {
+    margin: 2rem 0 0;
+    max-width: 30rem;
+    font-size: 1.4rem;
+    line-height: 1.7;
+    color: rgba(var(--color-foreground), 0.7);
+  }
+
+  .gv-footer__heading {
+    margin: 0 0 2rem;
+    font-family: var(--font-body-family);
+    font-size: 1.1rem;
+    font-weight: var(--font-body-weight);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(var(--color-foreground), 0.6);
+  }
+
+  .gv-footer__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.2rem;
+  }
+
+  .gv-footer__list a {
+    font-size: 1.4rem;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    color: rgba(var(--color-foreground), 0.88);
+    transition: opacity 0.3s ease;
+  }
+
+  .gv-footer__list a:hover {
+    opacity: 0.65;
+  }
+
+  .gv-footer__newsletter { scroll-margin-top: 12rem; }
+
+  .gv-footer__newsletter-title {
+    margin: 0 0 1.2rem;
+    font-size: calc(var(--font-heading-scale) * 2.4rem);
+    line-height: 1.2;
+  }
+
+  .gv-footer__newsletter-text {
+    margin: 0 0 2.4rem;
+    font-size: 1.4rem;
+    color: rgba(var(--color-foreground), 0.7);
+  }
+
+  .gv-footer__form {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid rgba(var(--color-foreground), 0.45);
+    max-width: 44rem;
+  }
+
+  .gv-footer__form input[type='email'] {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 4.8rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: rgb(var(--color-foreground));
+    font-family: var(--font-body-family);
+    font-size: 1.5rem;
+    letter-spacing: 0.02em;
+    outline: none;
+  }
+
+  .gv-footer__form input[type='email']::placeholder {
+    color: rgba(var(--color-foreground), 0.55);
+  }
+
+  .gv-footer__form input[type='email']:focus-visible {
+    outline: none;
+  }
+
+  .gv-footer__form:focus-within {
+    border-bottom-color: rgb(var(--color-foreground));
+  }
+
+  .gv-footer__submit {
+    flex: 0 0 auto;
+    min-height: 4.8rem;
+    padding: 0 0 0 1.6rem;
+    border: 0;
+    background: transparent;
+    color: rgb(var(--color-foreground));
+    font-family: var(--font-body-family);
+    font-size: 1.15rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .gv-footer__submit:hover {
+    opacity: 0.7;
+  }
+
+  .gv-footer__message {
+    margin: 1.4rem 0 0;
+    font-size: 1.3rem;
+  }
+
+  .gv-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1.6rem;
+    margin-top: 6.4rem;
+    padding-top: 2.4rem;
+    border-top: 1px solid rgba(var(--color-foreground), 0.14);
+    font-size: 1.2rem;
+    letter-spacing: 0.04em;
+    color: rgba(var(--color-foreground), 0.6);
+  }
+
+  .gv-footer__bottom p {
+    margin: 0;
+  }
+</style>
+
+<footer class="gv-footer gv-footer-{{ section.id }} color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width">
+    <div class="gv-footer__grid">
+      <div class="gv-footer__brand">
+        <a href="{{ routes.root_url }}" class="gv-logo link--text" aria-label="{{ shop.name | escape }}">
+          {{- 'gavelli-logo-full.svg' | inline_asset_content -}}
+        </a>
+        {%- if section.settings.tagline != blank -%}
+          <p class="gv-footer__tagline">{{ section.settings.tagline | escape }}</p>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.menu != blank and section.settings.menu.links.size > 0 -%}
+        <nav class="gv-footer__nav" aria-label="{{ section.settings.menu_heading | default: section.settings.menu.title | escape }}">
+          {%- if section.settings.menu_heading != blank -%}
+            <h2 class="gv-footer__heading">{{ section.settings.menu_heading | escape }}</h2>
+          {%- endif -%}
+          <ul class="gv-footer__list" role="list">
+            {%- for link in section.settings.menu.links -%}
+              <li>
+                <a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+      {%- endif -%}
+
+      {%- liquid
+        comment
+          Legal links: a policy is linked only when it has been written in
+          Settings > Policies. Until then, Delivery and Returns fall back to
+          the FAQ page (if set) so that no link is ever broken.
+        endcomment
+        assign shipping_url = shop.shipping_policy.url
+        if shop.shipping_policy.body == blank
+          assign shipping_url = section.settings.delivery_fallback_url
+        endif
+        assign returns_url = shop.refund_policy.url
+        if shop.refund_policy.body == blank
+          assign returns_url = section.settings.returns_fallback_url
+        endif
+      -%}
+      <nav class="gv-footer__legal" aria-label="{{ section.settings.legal_heading | default: 'Information' | escape }}">
+        {%- if section.settings.legal_heading != blank -%}
+          <h2 class="gv-footer__heading">{{ section.settings.legal_heading | escape }}</h2>
+        {%- endif -%}
+        <ul class="gv-footer__list" role="list">
+          {%- if shipping_url != blank -%}
+            <li><a href="{{ shipping_url }}">Delivery</a></li>
+          {%- endif -%}
+          {%- if returns_url != blank -%}
+            <li><a href="{{ returns_url }}">Returns</a></li>
+          {%- endif -%}
+          {%- if shop.privacy_policy.body != blank -%}
+            <li><a href="{{ shop.privacy_policy.url }}">Privacy</a></li>
+          {%- endif -%}
+          {%- if shop.terms_of_service.body != blank -%}
+            <li><a href="{{ shop.terms_of_service.url }}">Terms</a></li>
+          {%- endif -%}
+        </ul>
+      </nav>
+
+      {%- if section.settings.newsletter_enable -%}
+        <div class="gv-footer__newsletter" id="newsletter">
+          {%- if section.settings.newsletter_heading != blank -%}
+            <h2 class="gv-footer__newsletter-title">{{ section.settings.newsletter_heading | escape }}</h2>
+          {%- endif -%}
+          {%- if section.settings.newsletter_text != blank -%}
+            <p class="gv-footer__newsletter-text">{{ section.settings.newsletter_text | escape }}</p>
+          {%- endif -%}
+          {%- form 'customer', id: 'GavelliFooterNewsletter', class: 'gv-footer__newsletter-form' -%}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <div class="gv-footer__form">
+              <label class="visually-hidden" for="GavelliFooterEmail-{{ section.id }}">{{ 'newsletter.label' | t }}</label>
+              <input
+                id="GavelliFooterEmail-{{ section.id }}"
+                type="email"
+                name="contact[email]"
+                value="{{ form.email }}"
+                autocomplete="email"
+                autocorrect="off"
+                autocapitalize="off"
+                placeholder="{{ 'newsletter.label' | t }}"
+                required
+                {% if form.errors %}
+                  aria-invalid="true" aria-describedby="GavelliFooterNewsletter-error"
+                {% elsif form.posted_successfully? %}
+                  aria-describedby="GavelliFooterNewsletter-success"
+                {% endif %}
+              >
+              <button type="submit" class="gv-footer__submit" name="commit">{{ 'newsletter.button_label' | t }}</button>
+            </div>
+            {%- if form.errors -%}
+              <p class="gv-footer__message" id="GavelliFooterNewsletter-error" role="alert">
+                {{ form.errors.translated_fields.email | capitalize }}
+                {{ form.errors.messages.email }}
+              </p>
+            {%- endif -%}
+            {%- if form.posted_successfully? -%}
+              <p class="gv-footer__message" id="GavelliFooterNewsletter-success" role="status" tabindex="-1" autofocus>
+                {{ 'newsletter.success' | t }}
+              </p>
+            {%- endif -%}
+          {%- endform -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="gv-footer__bottom">
+      <p>&copy; {{ 'now' | date: '%Y' }} {{ section.settings.copyright_name | default: shop.name | escape }}</p>
+      {%- if section.settings.bottom_note != blank -%}
+        <p>{{ section.settings.bottom_note | escape }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "GAVELLI footer",
+  "class": "section-gavelli-footer",
+  "enabled_on": {
+    "groups": ["footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "Considered essentials for everyday life with pets."
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "text",
+      "id": "menu_heading",
+      "label": "Menu heading",
+      "default": "Explore"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu"
+    },
+    {
+      "type": "header",
+      "content": "Legal"
+    },
+    {
+      "type": "text",
+      "id": "legal_heading",
+      "label": "Legal heading",
+      "default": "Information"
+    },
+    {
+      "type": "paragraph",
+      "content": "Delivery, Returns, Privacy and Terms link to the store policies in Settings > Policies. A link is only shown once its policy has been written."
+    },
+    {
+      "type": "url",
+      "id": "delivery_fallback_url",
+      "label": "Delivery link until a delivery policy exists"
+    },
+    {
+      "type": "url",
+      "id": "returns_fallback_url",
+      "label": "Returns link until a refund policy exists"
+    },
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "checkbox",
+      "id": "newsletter_enable",
+      "label": "Show newsletter sign-up",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Heading",
+      "default": "Thoughtful things for life with pets."
+    },
+    {
+      "type": "text",
+      "id": "newsletter_text",
+      "label": "Text"
+    },
+    {
+      "type": "header",
+      "content": "Bottom bar"
+    },
+    {
+      "type": "text",
+      "id": "copyright_name",
+      "label": "Copyright name",
+      "default": "GAVELLI"
+    },
+    {
+      "type": "text",
+      "id": "bottom_note",
+      "label": "Note"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Colour scheme",
+      "default": "scheme-4"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 40
+    }
+  ]
+}
+{% endschema %}

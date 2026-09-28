@@ -1,0 +1,307 @@
+{
+  "sections": {
+    "hero": {
+      "type": "gavelli-editorial",
+      "settings": {
+        "image_alt": "The Smart Feeder at home, in the Black colourway",
+        "placeholder_note": "Product photograph on a neutral background, Black colourway (a second version for White is needed once the variant picker is used). Landscape 3:2.",
+        "text_only": false,
+        "image_ratio": "landscape",
+        "image_position": "right",
+        "parallax": true,
+        "label": "WiFi Smart Feeder — £99.99",
+        "heading": "Scheduled feeding, managed from your phone.",
+        "heading_tag": "h1",
+        "text": "<p>Set mealtimes in the Dingdong app, and the feeder keeps to them — whether you're in the next room or out for the day.</p>",
+        "link_label": "Buy",
+        "link": "#purchase",
+        "use_product": true,
+        "anchor": "overview",
+        "color_scheme": "scheme-1",
+        "spacing_top": "md",
+        "spacing_bottom": "md"
+      }
+    },
+    "problem": {
+      "type": "gavelli-editorial",
+      "settings": {
+        "image_alt": "",
+        "placeholder_note": "",
+        "text_only": true,
+        "image_ratio": "landscape",
+        "image_position": "left",
+        "parallax": true,
+        "label": "The everyday need",
+        "heading": "Some days start before they're fed.",
+        "heading_tag": "h2",
+        "text": "<p>Some evenings run late. The routine still needs to hold.</p>",
+        "link_label": "",
+        "link": "",
+        "use_product": false,
+        "anchor": "need",
+        "color_scheme": "scheme-2",
+        "spacing_top": "md",
+        "spacing_bottom": "md"
+      }
+    },
+    "solution": {
+      "type": "gavelli-editorial",
+      "settings": {
+        "image_alt": "The Dingdong app alongside the feeder",
+        "placeholder_note": "The feeder connected and in use. A phone showing the Dingdong app next to the feeder works well, once available.",
+        "text_only": false,
+        "image_ratio": "landscape",
+        "image_position": "right",
+        "parallax": true,
+        "label": "How it helps",
+        "heading": "The feeder keeps the schedule for you.",
+        "heading_tag": "h2",
+        "text": "<p>It connects to your home WiFi and takes instructions from the Dingdong app, on Android or iOS. Set the times, and it dispenses on schedule — whether you're in the next room or out for the day.</p><ol><li>Connect the feeder to a 2.4GHz WiFi network.</li><li>Set mealtimes in the Dingdong app.</li><li>The feeder dispenses automatically, on schedule.</li></ol>",
+        "link_label": "",
+        "link": "",
+        "use_product": false,
+        "anchor": "solution",
+        "color_scheme": "scheme-1",
+        "spacing_top": "md",
+        "spacing_bottom": "md"
+      }
+    },
+    "demonstration": {
+      "type": "gavelli-media",
+      "settings": {
+        "alt": "The feeder dispensing a scheduled meal",
+        "ratio": "wide",
+        "full_bleed": true,
+        "label": "See it in use",
+        "heading": "Connect. Schedule. Done.",
+        "text": "<p>Connect to WiFi, set mealtimes in the Dingdong app, and the feeder takes it from there.</p>",
+        "color_scheme": "scheme-1",
+        "spacing_top": "md",
+        "spacing_bottom": "md"
+      }
+    },
+    "benefits": {
+      "type": "gavelli-benefits",
+      "blocks": {
+        "b1": {
+          "type": "point",
+          "settings": {
+            "title": "On schedule",
+            "text": "Set mealtimes in the Dingdong app, and the feeder keeps to them, automatically."
+          }
+        },
+        "b2": {
+          "type": "point",
+          "settings": {
+            "title": "From wherever you are",
+            "text": "Once it's connected to your WiFi, check and change the schedule from your phone — in the next room or out for the day."
+          }
+        }
+      },
+      "block_order": ["b1", "b2"],
+      "settings": {
+        "label": "What it does",
+        "heading": "",
+        "text": "",
+        "color_scheme": "scheme-1",
+        "spacing_top": "md",
+        "spacing_bottom": "md"
+      }
+    },
+    "lifestyle": {
+      "type": "gavelli-editorial",
+      "settings": {
+        "image_alt": "The feeder at home, near the pet's usual feeding spot",
+        "placeholder_note": "A lifestyle photograph of the feeder in a real feeding spot at home, natural light. Not a staged close-up.",
+        "text_only": false,
+        "image_ratio": "landscape",
+        "image_position": "left",
+        "parallax": true,
+        "label": "At home",
+        "heading": "Sized for one.",
+        "heading_tag": "h2",
+        "text": "<p>This is a compact feeder: two litres, meant for one cat, or a small dog on a fairly steady routine. It isn't intended for multiple pets sharing a bowl, or for dogs that need a larger daily volume.</p>",
+        "link_label": "",
+        "link": "",
+        "use_product": false,
+        "anchor": "lifestyle",
+        "color_scheme": "scheme-1",
+        "spacing_top": "md",
+        "spacing_bottom": "md"
+      }
+    },
+    "details": {
+      "type": "gavelli-benefits",
+      "blocks": {
+        "d1": { "type": "detail", "settings": { "label": "Capacity", "value": "2 litres" } },
+        "d2": { "type": "detail", "settings": { "label": "Connectivity", "value": "WiFi, 2.4GHz" } },
+        "d3": { "type": "detail", "settings": { "label": "App", "value": "Dingdong (Android and iOS)" } },
+        "d4": { "type": "detail", "settings": { "label": "Colour", "value": "Black or white" } },
+        "d5": { "type": "detail", "settings": { "label": "Power", "value": "UK plug" } },
+        "d6": { "type": "detail", "settings": { "label": "Material", "value": "To be confirmed" } },
+        "d7": { "type": "detail", "settings": { "label": "Dimensions", "value": "To be confirmed" } }
+      },
+      "block_order": ["d1", "d2", "d3", "d4", "d5", "d6", "d7"],
+      "settings": {
+        "label": "Details",
+        "heading": "",
+        "text": "",
+        "color_scheme": "scheme-2",
+        "spacing_top": "md",
+        "spacing_bottom": "md"
+      }
+    },
+    "faq": {
+      "type": "gavelli-faq",
+      "blocks": {
+        "q1": { "type": "question", "settings": { "question": "Which app do I need?", "answer": "<p>Dingdong, available for Android and iOS.</p>", "to_confirm": false, "todo_note": "" } },
+        "q2": { "type": "question", "settings": { "question": "Does it need WiFi?", "answer": "<p>Yes — a 2.4GHz network. Networks that are 5GHz-only aren't supported.</p>", "to_confirm": false, "todo_note": "" } },
+        "q3": { "type": "question", "settings": { "question": "How much food does it hold?", "answer": "<p>2 litres.</p>", "to_confirm": false, "todo_note": "" } },
+        "q4": { "type": "question", "settings": { "question": "Does it come with a UK plug?", "answer": "<p>Yes.</p>", "to_confirm": false, "todo_note": "" } },
+        "q5": { "type": "question", "settings": { "question": "What's in the box?", "answer": "", "to_confirm": true, "todo_note": "Full packing list to confirm with the supplier" } },
+        "q6": { "type": "question", "settings": { "question": "What type of food can I use?", "answer": "", "to_confirm": true, "todo_note": "Suitable kibble size not yet confirmed" } },
+        "q7": { "type": "question", "settings": { "question": "What if something arrives faulty?", "answer": "", "to_confirm": true, "todo_note": "Depends on the store's returns policy, not yet finalised" } }
+      },
+      "block_order": ["q1", "q2", "q3", "q4", "q5", "q6", "q7"],
+      "settings": {
+        "label": "",
+        "heading": "Questions",
+        "intro": "",
+        "anchor": "questions",
+        "color_scheme": "scheme-1",
+        "spacing_top": "md",
+        "spacing_bottom": "md"
+      }
+    },
+    "final_cta": {
+      "type": "gavelli-cta",
+      "settings": {
+        "label": "",
+        "heading": "",
+        "text": "<p>Set the schedule once. It keeps to it.</p>",
+        "button_label": "Buy",
+        "button_link": "",
+        "button_2_label": "",
+        "button_2_link": "",
+        "use_product": true,
+        "show_price": true,
+        "color_scheme": "scheme-3",
+        "spacing_top": "lg",
+        "spacing_bottom": "lg"
+      }
+    },
+    "purchase_anchor": {
+      "type": "gavelli-anchor",
+      "settings": {
+        "anchor": "purchase"
+      }
+    },
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "positioning": {
+          "type": "text",
+          "settings": {
+            "text": "Scheduled feeding, managed from your phone.",
+            "text_style": "subtitle"
+          }
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button",
+            "swatch_shape": "circle"
+          }
+        },
+        "quantity_selector": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": false,
+            "show_gift_card_recipient": false
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {}
+        },
+        "delivery": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Delivery and returns",
+            "icon": "none",
+            "content": "<p>UK delivery options and costs are shown at checkout, before you pay.</p><p><strong>[TO CONFIRM — dispatch and delivery timeframe]</strong></p><p>For more on delivery and returns, please see our <a href=\"/pages/faq\" title=\"FAQ\">FAQ</a>.</p>"
+          }
+        },
+        "important": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Important product information",
+            "icon": "none",
+            "content": "<ul><li>Supplied with a UK power supply.</li><li>App control requires a compatible smartphone and a 2.4GHz WiFi network (5GHz-only networks aren't supported).</li><li>When introducing an automatic feeder, keep an eye on your pet's meals for the first few days to make sure they're eating as expected.</li><li><strong>[TO CONFIRM — dimensions, suitable food type and kibble size]</strong></li><li><strong>[TO CONFIRM — warranty and product support terms]</strong></li></ul>"
+          }
+        }
+      },
+      "block_order": [
+        "title",
+        "positioning",
+        "price",
+        "variant_picker",
+        "quantity_selector",
+        "buy_buttons",
+        "description",
+        "delivery",
+        "important"
+      ],
+      "settings": {
+        "enable_sticky_info": true,
+        "color_scheme": "scheme-1",
+        "media_size": "large",
+        "constrain_to_viewport": true,
+        "media_fit": "contain",
+        "gallery_layout": "stacked",
+        "mobile_thumbnails": "hide",
+        "media_position": "left",
+        "image_zoom": "lightbox",
+        "hide_variants": true,
+        "enable_video_looping": false,
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    },
+    "buy_bar": {
+      "type": "gavelli-buy-bar",
+      "settings": {
+        "button_label": "Buy",
+        "anchor": "purchase",
+        "show_desktop": true,
+        "color_scheme": "scheme-2"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "problem",
+    "solution",
+    "demonstration",
+    "benefits",
+    "lifestyle",
+    "details",
+    "faq",
+    "final_cta",
+    "purchase_anchor",
+    "main",
+    "buy_bar"
+  ]
+}

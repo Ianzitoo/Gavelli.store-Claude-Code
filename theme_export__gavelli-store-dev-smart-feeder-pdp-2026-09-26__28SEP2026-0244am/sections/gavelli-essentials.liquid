@@ -1,0 +1,184 @@
+{%- comment -%}
+  GAVELLI — "The essentials" (product showcase).
+  Shows real products from a chosen collection, using only real product data
+  (title, image, price as set in Shopify). No ratings, badges or claims.
+  If the collection has no products available to customers, a calm empty
+  state is shown instead of fictional products.
+{%- endcomment -%}
+
+{%- liquid
+  assign collection = section.settings.collection
+  assign limit = section.settings.limit
+  assign visible = 0
+  if collection != blank
+    for p in collection.products limit: limit
+      assign visible = visible | plus: 1
+    endfor
+  endif
+-%}
+
+<style>
+  .gv-ess__head {
+    display: grid;
+    gap: 2rem;
+    margin-bottom: var(--gv-space-sm);
+  }
+
+  .gv-ess__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4rem 1.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .gv-ess__grid > li:first-child:last-child { grid-column: 1 / -1; max-width: 48rem; }
+
+  /* Empty state: one calm, deliberate panel (not a grid of blank product
+     cards), so an empty collection reads as "being prepared", not broken. */
+  .gv-ess__empty {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: var(--gv-space-md) 2.4rem;
+    text-align: center;
+    background: rgba(var(--color-foreground), 0.035);
+  }
+
+  .gv-ess__empty::before {
+    content: '';
+    position: absolute;
+    inset: 1.6rem;
+    border: 1px solid rgba(var(--color-foreground), 0.12);
+    pointer-events: none;
+  }
+
+  .gv-ess__empty-inner { position: relative; display: grid; justify-items: center; gap: 2rem; max-width: 52rem; }
+
+  .gv-ess__empty-note {
+    margin: 0;
+    font-family: var(--font-heading-family);
+    font-weight: var(--font-heading-weight);
+    font-style: italic;
+    font-size: clamp(2.2rem, 1.8rem + 1.2vw, 3.2rem);
+    line-height: 1.3;
+    color: rgba(var(--color-foreground), 0.82);
+    text-wrap: balance;
+  }
+
+  .gv-ess__empty .gv-link { margin-top: 0.8rem; }
+
+  .gv-ess__foot { margin-top: var(--gv-space-sm); }
+
+  @media screen and (min-width: 750px) {
+    .gv-ess__head {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      gap: var(--gv-gap-lg);
+      align-items: end;
+    }
+
+    .gv-ess__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6.4rem var(--gv-gap);
+    }
+
+    /* A quiet rhythm instead of a uniform grid: the middle column sits lower. */
+    .gv-ess__grid > li:nth-child(3n + 2) { margin-top: var(--gv-space-sm); }
+  }
+
+  @media screen and (min-width: 1200px) {
+    .gv-ess__grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .gv-ess__grid--4 > li:nth-child(3n + 2) { margin-top: 0; }
+    .gv-ess__grid--4 > li:nth-child(2n) { margin-top: var(--gv-space-sm); }
+  }
+</style>
+
+<section
+  class="gv-ess color-{{ section.settings.color_scheme }} gradient gv-pt-{{ section.settings.spacing_top }} gv-pb-{{ section.settings.spacing_bottom }}"
+  aria-labelledby="GvEss-{{ section.id }}"
+>
+  <div class="page-width">
+    <header class="gv-ess__head">
+      <div>
+        {%- if section.settings.label != blank -%}
+          <p class="gv-label" data-gv-reveal="fade">{{ section.settings.label | escape }}</p>
+        {%- endif -%}
+        <h2 id="GvEss-{{ section.id }}" class="gv-h2" style="margin-top: 1.6rem;" data-gv-reveal>{{ section.settings.heading | escape }}</h2>
+      </div>
+      {%- if section.settings.text != blank -%}
+        <div class="gv-body" data-gv-reveal style="--gv-delay: 0.1s;">{{ section.settings.text }}</div>
+      {%- endif -%}
+    </header>
+
+    {%- if visible > 0 -%}
+      <ul class="gv-ess__grid{% if limit >= 4 %} gv-ess__grid--4{% endif %}" role="list">
+        {%- for product in collection.products limit: limit -%}
+          <li data-gv-reveal style="--gv-delay: {{ forloop.index0 | modulo: 4 | times: 0.1 }}s;">
+            {%- render 'gavelli-product-card', product: product, ratio: section.settings.image_ratio -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <div class="gv-ess__empty" data-gv-reveal>
+        <div class="gv-ess__empty-inner">
+          {%- if section.settings.empty_label != blank -%}
+            <p class="gv-label">{{ section.settings.empty_label | escape }}</p>
+          {%- endif -%}
+          <p class="gv-ess__empty-note">{{ section.settings.empty_note | escape }}</p>
+          {%- if section.settings.empty_link_label != blank and section.settings.empty_link != blank -%}
+            <a class="gv-link" href="{{ section.settings.empty_link }}">{{ section.settings.empty_link_label | escape }}</a>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.link_label != blank and section.settings.link != blank and visible > 0 -%}
+      <div class="gv-ess__foot" data-gv-reveal="fade">
+        <a class="gv-link" href="{{ section.settings.link }}">{{ section.settings.link_label | escape }}</a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "GAVELLI essentials",
+  "class": "section-gavelli-essentials",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label", "default": "The essentials" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Chosen for everyday life." },
+    { "type": "richtext", "id": "text", "label": "Text" },
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "range", "id": "limit", "label": "Products to show", "min": 1, "max": 8, "step": 1, "default": 3 },
+    {
+      "type": "select", "id": "image_ratio", "label": "Image proportions",
+      "options": [{ "value": "portrait", "label": "Portrait 4:5" }, { "value": "square", "label": "Square" }],
+      "default": "portrait"
+    },
+    { "type": "header", "content": "While the collection is empty" },
+    { "type": "text", "id": "empty_label", "label": "Label", "default": "The collection" },
+    {
+      "type": "text", "id": "empty_note", "label": "Message",
+      "default": "The collection is being carefully selected."
+    },
+    { "type": "text", "id": "empty_link_label", "label": "Link label", "info": "E.g. a link to the newsletter sign-up (#newsletter)." },
+    { "type": "url", "id": "empty_link", "label": "Link" },
+    { "type": "header", "content": "Link below the products" },
+    { "type": "text", "id": "link_label", "label": "Link label", "default": "View all" },
+    { "type": "url", "id": "link", "label": "Link" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-1" },
+    {
+      "type": "select", "id": "spacing_top", "label": "Space above",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "lg"
+    },
+    {
+      "type": "select", "id": "spacing_bottom", "label": "Space below",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "lg"
+    }
+  ],
+  "presets": [{ "name": "GAVELLI essentials" }]
+}
+{% endschema %}

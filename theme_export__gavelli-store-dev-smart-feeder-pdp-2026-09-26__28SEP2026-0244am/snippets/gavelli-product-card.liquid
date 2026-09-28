@@ -1,0 +1,56 @@
+{%- comment -%}
+  GAVELLI — product card (reusable).
+  Real data only: first two images, title, price (with "From" when variants
+  differ) and a factual "Sold out" note. No badges, ratings or claims.
+  Optional: show_job: true adds the one-line "job to do" from the product
+  metafield gavelli.job_to_do (nothing is shown when it is empty).
+  Usage: {% render 'gavelli-product-card', product: product, ratio: 'portrait' %}
+{%- endcomment -%}
+{%- liquid
+  assign card_ratio = '4 / 5'
+  if ratio == 'square'
+    assign card_ratio = '1 / 1'
+  endif
+  assign img1 = product.media[0].preview_image
+  assign img2 = product.media[1].preview_image
+  assign img1_alt = img1.alt | default: product.title
+  assign job_line = ''
+  if show_job
+    assign job_line = product.metafields.gavelli.job_to_do.value
+  endif
+-%}
+<a class="gv-card" href="{{ product.url }}">
+  <div class="gv-media" style="--gv-ratio: {{ card_ratio }};">
+    {%- if img1 != blank -%}
+      {{
+        img1
+        | image_url: width: 1000
+        | image_tag: loading: 'lazy', widths: '360, 540, 720, 1000', sizes: '(min-width: 1200px) 25vw, (min-width: 750px) 33vw, 50vw', alt: img1_alt
+      }}
+      {%- if img2 != blank -%}
+        {{
+          img2
+          | image_url: width: 1000
+          | image_tag: loading: 'lazy', widths: '360, 540, 720, 1000', sizes: '(min-width: 1200px) 25vw, (min-width: 750px) 33vw, 50vw', alt: '', class: 'gv-card__alt'
+        }}
+      {%- endif -%}
+    {%- else -%}
+      <div class="gv-placeholder" aria-hidden="true"><span class="gv-placeholder__label">Image to come</span></div>
+    {%- endif -%}
+  </div>
+  <h3 class="gv-card__title">{{ product.title | escape }}</h3>
+  {%- if job_line != blank -%}
+    <p class="gv-card__job">{{ job_line | escape }}</p>
+  {%- endif -%}
+  <p class="gv-card__meta">
+    {%- if product.available -%}
+      {%- if product.price_varies -%}
+        {{ 'products.product.price.from_price_html' | t: price: product.price_min | money }}
+      {%- else -%}
+        {{ product.price | money }}
+      {%- endif -%}
+    {%- else -%}
+      {{ 'products.product.sold_out' | t }}
+    {%- endif -%}
+  </p>
+</a>

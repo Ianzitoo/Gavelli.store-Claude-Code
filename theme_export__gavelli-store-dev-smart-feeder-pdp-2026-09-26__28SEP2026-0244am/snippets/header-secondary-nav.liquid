@@ -1,0 +1,28 @@
+{%- comment -%}
+  Navegação secundária do Header (desktop apenas).
+  Usa o menu "Gavelli — Company" (handle: gavelli-company) diretamente.
+{%- endcomment -%}
+
+{%- liquid
+  assign secondary_menu = linklists['gavelli-company']
+-%}
+
+{%- if secondary_menu != blank and secondary_menu.links.size > 0 -%}
+  <nav class="header__secondary-nav small-hide" aria-label="{{ secondary_menu.title | default: 'Company' }}">
+    <ul class="list-menu list-menu--inline header__secondary-menu">
+      {%- for link in secondary_menu.links -%}
+        <li class="header__secondary-menu-item-wrapper">
+          <a
+            href="{{ link.url }}"
+            class="header__secondary-menu-item link link--text focus-inset"
+            {%- if link.current %}
+              aria-current="page"
+            {%- endif %}
+          >
+            {{ link.title | escape }}
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </nav>
+{%- endif -%}

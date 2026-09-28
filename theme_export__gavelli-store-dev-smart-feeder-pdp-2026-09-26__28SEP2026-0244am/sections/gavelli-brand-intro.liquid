@@ -1,0 +1,152 @@
+{%- comment -%}
+  GAVELLI — brand intro / positioning statement.
+  A single editorial statement with generous negative space. Asymmetric on
+  desktop (label in a narrow column, statement offset to the right).
+{%- endcomment -%}
+
+<style>
+  .gv-intro__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.4rem;
+  }
+
+  .gv-intro__statement { max-width: 18em; }
+
+  .gv-intro__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2.4rem;
+    margin-top: var(--gv-space-sm);
+  }
+
+  .gv-intro__text { max-width: 40rem; }
+
+  .gv-intro__cue {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.6rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: rgba(var(--color-foreground), 0.72);
+  }
+
+  .gv-intro__cue-line {
+    position: relative;
+    width: 1px;
+    height: 4.8rem;
+    overflow: hidden;
+    background: rgba(var(--color-foreground), 0.18);
+  }
+
+  .gv-intro__cue-line::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 40%;
+    background: rgb(var(--color-foreground));
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .gv-intro__cue-line::after { animation: gvCue 2.8s var(--gv-ease) 3; }
+  }
+
+  @keyframes gvCue {
+    0% { transform: translateY(-100%); }
+    60%, 100% { transform: translateY(260%); }
+  }
+
+  @media screen and (min-width: 990px) {
+    .gv-intro__grid {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+      gap: var(--gv-gap-lg);
+      align-items: start;
+    }
+
+    .gv-intro__label { padding-top: 1.4rem; }
+
+    .gv-intro__foot { justify-content: flex-start; gap: var(--gv-gap-lg); }
+  }
+</style>
+
+<section
+  class="gv-intro color-{{ section.settings.color_scheme }} gradient gv-pt-{{ section.settings.spacing_top }} gv-pb-{{ section.settings.spacing_bottom }}"
+  {% if section.settings.heading != blank %}aria-labelledby="GvIntro-{{ section.id }}"{% endif %}
+>
+  <div class="page-width">
+    <div class="gv-intro__grid">
+      {%- if section.settings.label != blank -%}
+        <p class="gv-label gv-intro__label" data-gv-reveal="fade">{{ section.settings.label | escape }}</p>
+      {%- endif -%}
+      <div>
+        {%- if section.settings.heading != blank -%}
+          <h2 id="GvIntro-{{ section.id }}" class="gv-statement gv-intro__statement" data-gv-reveal>
+            {{- section.settings.heading | escape -}}
+          </h2>
+        {%- endif -%}
+
+        {%- if section.settings.text != blank or section.settings.cue_label != blank -%}
+          <div class="gv-intro__foot">
+            {%- if section.settings.text != blank -%}
+              <div class="gv-body gv-intro__text" data-gv-reveal style="--gv-delay: 0.12s;">{{ section.settings.text }}</div>
+            {%- endif -%}
+            {%- if section.settings.cue_label != blank -%}
+              <a
+                class="gv-intro__cue"
+                href="{{ section.settings.cue_link | default: '#MainContent' }}"
+                data-gv-reveal="fade"
+                style="--gv-delay: 0.24s;"
+              >
+                <span class="gv-intro__cue-line" aria-hidden="true"></span>
+                <span>{{ section.settings.cue_label | escape }}</span>
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "GAVELLI brand intro",
+  "class": "section-gavelli-brand-intro",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label", "default": "Considered essentials" },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Statement",
+      "default": "Thoughtfully selected essentials for dogs and cats, chosen to make everyday moments simpler, calmer and more beautiful."
+    },
+    { "type": "richtext", "id": "text", "label": "Supporting text" },
+    { "type": "text", "id": "cue_label", "label": "Scroll cue label", "default": "Explore", "info": "Leave blank to hide." },
+    { "type": "url", "id": "cue_link", "label": "Scroll cue link", "info": "Usually the next section, e.g. #day." },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-1" },
+    {
+      "type": "select", "id": "spacing_top", "label": "Space above",
+      "options": [
+        { "value": "none", "label": "None" }, { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }
+      ],
+      "default": "lg"
+    },
+    {
+      "type": "select", "id": "spacing_bottom", "label": "Space below",
+      "options": [
+        { "value": "none", "label": "None" }, { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }
+      ],
+      "default": "lg"
+    }
+  ],
+  "presets": [{ "name": "GAVELLI brand intro" }]
+}
+{% endschema %}

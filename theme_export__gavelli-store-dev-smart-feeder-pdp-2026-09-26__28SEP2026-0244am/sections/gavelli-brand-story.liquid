@@ -1,0 +1,135 @@
+{%- comment -%}
+  GAVELLI — brand story / principles.
+  Positioning language only: no founders, dates, places, numbers or claims.
+  A large statement on one side and a short list of principles on the other,
+  separated by hairlines. Reused on the About page.
+{%- endcomment -%}
+
+<style>
+  .gv-story__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--gv-space-sm);
+  }
+
+  .gv-story__statement { margin-top: 2rem; max-width: 20ch; }
+  .gv-story__text { margin-top: 2.8rem; }
+  .gv-story__link { margin-top: 3.6rem; }
+
+  .gv-story__list { margin: 0; padding: 0; list-style: none; border-top: 1px solid rgba(var(--color-foreground), 0.16); }
+
+  .gv-story__item {
+    display: grid;
+    grid-template-columns: 4.8rem minmax(0, 1fr);
+    gap: 1.6rem;
+    padding: 2.8rem 0;
+    border-bottom: 1px solid rgba(var(--color-foreground), 0.16);
+  }
+
+  .gv-story__num {
+    font-size: 1.15rem;
+    letter-spacing: 0.2em;
+    color: rgba(var(--color-foreground), 0.72);
+    font-variant-numeric: tabular-nums;
+    padding-top: 0.6rem;
+  }
+
+  .gv-story__item-title { margin: 0; }
+  .gv-story__item-text { margin-top: 0.8rem; }
+
+  @media screen and (min-width: 990px) {
+    .gv-story__grid {
+      grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+      gap: var(--gv-gap-lg);
+      align-items: start;
+    }
+
+    .gv-story__list { margin-top: 4.4rem; }
+  }
+</style>
+
+<section
+  class="gv-story color-{{ section.settings.color_scheme }} gradient gv-pt-{{ section.settings.spacing_top }} gv-pb-{{ section.settings.spacing_bottom }}"
+  aria-labelledby="GvStory-{{ section.id }}"
+>
+  <div class="page-width gv-story__grid">
+    <div>
+      {%- if section.settings.label != blank -%}
+        <p class="gv-label" data-gv-reveal="fade">{{ section.settings.label | escape }}</p>
+      {%- endif -%}
+      <h2 id="GvStory-{{ section.id }}" class="gv-h2 gv-story__statement" data-gv-reveal>
+        {{- section.settings.heading | escape | newline_to_br -}}
+      </h2>
+      {%- if section.settings.text != blank -%}
+        <div class="gv-lede gv-story__text" data-gv-reveal style="--gv-delay: 0.1s;">{{ section.settings.text }}</div>
+      {%- endif -%}
+      {%- if section.settings.link_label != blank and section.settings.link != blank -%}
+        <a class="gv-link gv-story__link" href="{{ section.settings.link }}" data-gv-reveal="fade" style="--gv-delay: 0.2s;">
+          {{- section.settings.link_label | escape -}}
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- if section.blocks.size > 0 -%}
+      <ol class="gv-story__list" role="list">
+        {%- for block in section.blocks -%}
+          <li class="gv-story__item" data-gv-reveal style="--gv-delay: {{ forloop.index0 | times: 0.1 }}s;" {{ block.shopify_attributes }}>
+            <span class="gv-story__num" aria-hidden="true">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+            <div>
+              <h3 class="gv-h3 gv-story__item-title">{{ block.settings.title | escape }}</h3>
+              {%- if block.settings.text != blank -%}
+                <p class="gv-body gv-story__item-text">{{ block.settings.text | escape }}</p>
+              {%- endif -%}
+            </div>
+          </li>
+        {%- endfor -%}
+      </ol>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "GAVELLI brand story",
+  "class": "section-gavelli-brand-story",
+  "max_blocks": 5,
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label", "default": "Why GAVELLI" },
+    { "type": "textarea", "id": "heading", "label": "Statement", "default": "Fewer, better things for everyday life with pets." },
+    { "type": "richtext", "id": "text", "label": "Text" },
+    { "type": "text", "id": "link_label", "label": "Link label", "default": "About GAVELLI" },
+    { "type": "url", "id": "link", "label": "Link" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-3" },
+    {
+      "type": "select", "id": "spacing_top", "label": "Space above",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "lg"
+    },
+    {
+      "type": "select", "id": "spacing_bottom", "label": "Space below",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "lg"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "principle",
+      "name": "Principle",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Considered" },
+        { "type": "textarea", "id": "text", "label": "Text" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "GAVELLI brand story",
+      "blocks": [
+        { "type": "principle", "settings": { "title": "Considered" } },
+        { "type": "principle", "settings": { "title": "Simple" } },
+        { "type": "principle", "settings": { "title": "Honest" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

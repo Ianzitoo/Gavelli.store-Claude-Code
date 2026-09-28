@@ -1,0 +1,149 @@
+{%- comment -%}
+  GAVELLI — contact details + form.
+  Shows only information that is set in the section (no invented address or
+  phone). The form uses Shopify's native contact form.
+{%- endcomment -%}
+
+<style>
+  .gv-contact__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gv-space-sm); }
+
+  .gv-contact__details { display: grid; gap: 3.2rem; align-content: start; }
+  .gv-contact__row { padding-top: 1.6rem; border-top: 1px solid rgba(var(--color-foreground), 0.16); }
+  .gv-contact__row .gv-label { margin-bottom: 1rem; }
+  .gv-contact__value { margin: 0; font-family: var(--font-heading-family); font-size: 2.2rem; line-height: 1.3; color: rgb(var(--color-foreground)); word-break: break-word; }
+  .gv-contact__value a { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.4rem; }
+  .gv-contact__links { display: flex; flex-direction: column; gap: 1.6rem; align-items: flex-start; }
+
+  .gv-contact__todo { display: inline-block; padding: 0.4rem 1rem; border: 1px dashed rgba(var(--color-foreground), 0.5); font-size: 1.2rem; letter-spacing: 0.06em; }
+
+  .gv-form { display: grid; gap: 2.4rem; }
+  .gv-form__row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.4rem; }
+  .gv-form__field { display: grid; gap: 0.8rem; }
+  .gv-form__field label {
+    font-size: 1.15rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(var(--color-foreground), 0.78);
+  }
+
+  .gv-form__field input,
+  .gv-form__field textarea {
+    width: 100%;
+    min-height: 5.2rem;
+    padding: 1.2rem 0;
+    border: 0;
+    border-bottom: 1px solid rgba(var(--color-foreground), 0.35);
+    border-radius: 0;
+    background: transparent;
+    color: rgb(var(--color-foreground));
+    font-family: var(--font-body-family);
+    font-size: 1.6rem;
+    transition: border-color var(--gv-dur-fast) var(--gv-ease);
+  }
+
+  .gv-form__field textarea { min-height: 16rem; resize: vertical; }
+
+  .gv-form__field input:focus,
+  .gv-form__field textarea:focus { border-bottom-color: rgb(var(--color-foreground)); }
+
+  .gv-form__note { margin: 0; font-size: 1.3rem; color: rgba(var(--color-foreground), 0.7); }
+
+  .gv-form__status { margin: 0; padding: 1.6rem 2rem; border: 1px solid rgba(var(--color-foreground), 0.2); font-size: 1.5rem; }
+
+  .gv-form .button { justify-self: start; }
+
+  @media screen and (min-width: 750px) {
+    .gv-form__row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  }
+
+  @media screen and (min-width: 990px) {
+    .gv-contact__grid { grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: var(--gv-gap-lg); }
+  }
+</style>
+
+<section class="gv-contact color-{{ section.settings.color_scheme }} gradient gv-pt-{{ section.settings.spacing_top }} gv-pb-{{ section.settings.spacing_bottom }}">
+  <div class="page-width gv-contact__grid">
+    <div class="gv-contact__details">
+      {%- if section.settings.email != blank -%}
+        <div class="gv-contact__row">
+          <p class="gv-label">Email</p>
+          <p class="gv-contact__value"><a href="mailto:{{ section.settings.email | escape }}">{{ section.settings.email | escape }}</a></p>
+        </div>
+      {%- endif -%}
+      <div class="gv-contact__row">
+        <p class="gv-label">Response time</p>
+        {%- if section.settings.response_time != blank -%}
+          <p class="gv-body">{{ section.settings.response_time | escape }}</p>
+        {%- else -%}
+          <p class="gv-contact__todo">To be confirmed: typical response time</p>
+        {%- endif -%}
+      </div>
+      <div class="gv-contact__row gv-contact__links">
+        <p class="gv-label">Also useful</p>
+        {%- if section.settings.faq_link != blank -%}
+          <a class="gv-link" href="{{ section.settings.faq_link }}">Read the FAQ</a>
+        {%- endif -%}
+        <a class="gv-link" href="{{ section.settings.shop_link | default: routes.all_products_collection_url }}">Shop the collection</a>
+      </div>
+    </div>
+
+    <div>
+      {%- form 'contact', id: 'GavelliContactForm', class: 'gv-form' -%}
+        {%- if form.posted_successfully? -%}
+          <p class="gv-form__status" role="status" tabindex="-1" autofocus>{{ 'templates.contact.form.post_success' | t }}</p>
+        {%- elsif form.errors -%}
+          <div class="gv-form__status" role="alert" tabindex="-1" autofocus>
+            <p style="margin:0;">{{ 'templates.contact.form.error_heading' | t }}</p>
+            {{ form.errors | default_errors }}
+          </div>
+        {%- endif -%}
+
+        <div class="gv-form__row">
+          <div class="gv-form__field">
+            <label for="GvContactName">{{ 'templates.contact.form.name' | t }}</label>
+            <input id="GvContactName" type="text" name="contact[{{ 'templates.contact.form.name' | t }}]" autocomplete="name" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}">
+          </div>
+          <div class="gv-form__field">
+            <label for="GvContactEmail">{{ 'templates.contact.form.email' | t }} <span aria-hidden="true">*</span></label>
+            <input id="GvContactEmail" type="email" name="contact[email]" autocomplete="email" autocapitalize="off" spellcheck="false" required aria-required="true" value="{% if form.email != blank %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"{% if form.errors contains 'email' %} aria-invalid="true"{% endif %}>
+          </div>
+        </div>
+        <div class="gv-form__field">
+          <label for="GvContactOrder">Order number (optional)</label>
+          <input id="GvContactOrder" type="text" name="contact[Order number]" autocomplete="off">
+        </div>
+        <div class="gv-form__field">
+          <label for="GvContactMessage">{{ 'templates.contact.form.comment' | t }} <span aria-hidden="true">*</span></label>
+          <textarea id="GvContactMessage" name="contact[{{ 'templates.contact.form.comment' | t }}]" rows="8" required aria-required="true">{{ form.body }}</textarea>
+        </div>
+        <p class="gv-form__note">Fields marked * are required.</p>
+        <button type="submit" class="button button--primary">{{ 'templates.contact.form.send' | t }}</button>
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "GAVELLI contact",
+  "class": "section-gavelli-contact",
+  "settings": [
+    { "type": "text", "id": "email", "label": "Contact email", "info": "Leave blank to hide." },
+    { "type": "text", "id": "response_time", "label": "Typical response time", "info": "Until set, a 'To be confirmed' note is shown." },
+    { "type": "url", "id": "faq_link", "label": "FAQ link" },
+    { "type": "url", "id": "shop_link", "label": "Shop link" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-1" },
+    {
+      "type": "select", "id": "spacing_top", "label": "Space above",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "sm"
+    },
+    {
+      "type": "select", "id": "spacing_bottom", "label": "Space below",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "lg"
+    }
+  ],
+  "presets": [{ "name": "GAVELLI contact" }]
+}
+{% endschema %}

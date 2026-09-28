@@ -1,0 +1,167 @@
+{%- comment -%}
+  GAVELLI — slim purchase bar for product landing pages.
+  Appears once the visitor has scrolled past the opening of the page and
+  disappears again while the real purchase area (Dawn's product section) is
+  on screen, so it never covers the buy buttons. It shows only real data:
+  the product title and its current price (or "Sold out"). The button scrolls
+  to the purchase area (#purchase) — it does not add to the basket itself,
+  so the visitor always sees the variant choice first.
+  Respects reduced motion (appears without sliding). Renders nothing outside
+  product pages.
+{%- endcomment -%}
+
+{%- if product -%}
+  <style>
+    .gv-buybar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 20;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      border-top: 1px solid rgba(var(--color-foreground), 0.12);
+      transform: translate3d(0, 100%, 0);
+      visibility: hidden;
+      transition: transform var(--gv-dur) var(--gv-ease-out), visibility 0s linear var(--gv-dur);
+    }
+
+    .gv-buybar.is-visible {
+      transform: none;
+      visibility: visible;
+      transition: transform var(--gv-dur) var(--gv-ease-out), visibility 0s;
+    }
+
+    .gv-buybar__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.6rem;
+      min-height: 7.2rem;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    .gv-buybar__info { min-width: 0; display: grid; gap: 0.2rem; }
+
+    .gv-buybar__title {
+      margin: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-family: var(--font-heading-family);
+      font-weight: var(--font-heading-weight);
+      font-size: 1.8rem;
+      line-height: 1.2;
+      color: rgb(var(--color-foreground));
+    }
+
+    .gv-buybar__price {
+      margin: 0;
+      font-size: 1.35rem;
+      letter-spacing: 0.04em;
+      color: rgba(var(--color-foreground), 0.8);
+    }
+
+    .gv-buybar .button { flex: 0 0 auto; min-height: 4.8rem; padding: 0 2.8rem; }
+
+    @media screen and (max-width: 749px) {
+      .gv-buybar__title { font-size: 1.6rem; }
+      .gv-buybar .button { padding: 0 2rem; }
+    }
+
+    {%- unless section.settings.show_desktop -%}
+      @media screen and (min-width: 990px) {
+        .gv-buybar { display: none; }
+      }
+    {%- endunless -%}
+  </style>
+
+  <div class="gv-buybar color-{{ section.settings.color_scheme }} gradient" data-gv-buybar inert>
+    <div class="page-width gv-buybar__inner">
+      <div class="gv-buybar__info">
+        <p class="gv-buybar__title">{{ product.title | escape }}</p>
+        <p class="gv-buybar__price">
+          {%- if product.available -%}
+            {%- if product.price_varies -%}
+              {{ 'products.product.price.from_price_html' | t: price: product.price_min | money }}
+            {%- else -%}
+              {{ product.price | money }}
+            {%- endif -%}
+          {%- else -%}
+            {{ 'products.product.sold_out' | t }}
+          {%- endif -%}
+        </p>
+      </div>
+      <a class="button button--primary" href="#{{ section.settings.anchor | default: 'purchase' | handleize }}">
+        {{- section.settings.button_label | default: 'Shop now' | escape -}}
+      </a>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var bar = document.querySelector('[data-gv-buybar]');
+      if (!bar || bar.dataset.gvReady) return;
+      bar.dataset.gvReady = 'true';
+
+      /* Hide while the real buy buttons are on screen (Dawn's product form),
+         falling back to the whole product section. */
+      var purchase =
+        document.querySelector('[id^="MainProduct-"] product-form') ||
+        document.querySelector('[id^="MainProduct-"] .product-form__buttons') ||
+        document.querySelector('[id^="MainProduct-"]');
+      var pastIntro = false;
+      var purchaseVisible = false;
+      var ticking = false;
+
+      function update() {
+        var show = pastIntro && !purchaseVisible;
+        bar.classList.toggle('is-visible', show);
+        if (show) { bar.removeAttribute('inert'); } else { bar.setAttribute('inert', ''); }
+      }
+
+      /* One cheap measurement per frame while scrolling (passive listener). */
+      function check() {
+        ticking = false;
+        var vh = window.innerHeight;
+        var nextIntro = window.scrollY > vh * 0.75;
+        var nextPurchase = false;
+        if (purchase) {
+          var r = purchase.getBoundingClientRect();
+          nextPurchase = r.top < vh * 0.9 && r.bottom > 0;
+        }
+        if (nextIntro !== pastIntro || nextPurchase !== purchaseVisible) {
+          pastIntro = nextIntro;
+          purchaseVisible = nextPurchase;
+          update();
+        }
+      }
+
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(check);
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      check();
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "GAVELLI purchase bar",
+  "class": "section-gavelli-buy-bar",
+  "settings": [
+    { "type": "paragraph", "content": "A slim bar with the product title, real price and a button to the purchase area. Hidden while the purchase area is on screen." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop now" },
+    { "type": "text", "id": "anchor", "label": "Scroll to anchor", "default": "purchase", "info": "Must match the GAVELLI anchor section above the product area." },
+    { "type": "checkbox", "id": "show_desktop", "label": "Also show on desktop", "default": true },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-2" }
+  ],
+  "enabled_on": { "templates": ["product"] },
+  "presets": [{ "name": "GAVELLI purchase bar" }]
+}
+{% endschema %}

@@ -1,0 +1,92 @@
+{%- comment -%}
+  GAVELLI — closing call to action (reusable).
+  A calm, centred statement with up to two buttons. On product pages it can
+  use the product's title and real price, and link to the purchase area
+  (#purchase, provided by the "GAVELLI anchor" section).
+{%- endcomment -%}
+
+{%- liquid
+  assign heading = section.settings.heading
+  assign show_product = false
+  if section.settings.use_product and product
+    assign show_product = true
+    if heading == blank
+      assign heading = product.title
+    endif
+  endif
+-%}
+
+{%- if heading != blank or section.settings.button_label != blank -%}
+  <style>
+    .gv-cta__inner { max-width: var(--gv-measure-lg); margin: 0 auto; text-align: center; }
+    .gv-cta .gv-h2 { margin-top: 1.6rem; }
+    .gv-cta__text { margin: 2.4rem auto 0; }
+    .gv-cta__price { margin: 2rem 0 0; font-size: 1.6rem; letter-spacing: 0.04em; color: rgba(var(--color-foreground), 0.85); }
+    .gv-cta__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.2rem; margin-top: 3.6rem; }
+  </style>
+
+  <section class="gv-cta color-{{ section.settings.color_scheme }} gradient gv-pt-{{ section.settings.spacing_top }} gv-pb-{{ section.settings.spacing_bottom }}">
+    <div class="page-width">
+      <div class="gv-cta__inner">
+        {%- if section.settings.label != blank -%}
+          <p class="gv-label" data-gv-reveal="fade">{{ section.settings.label | escape }}</p>
+        {%- endif -%}
+        {%- if heading != blank -%}
+          <h2 class="gv-h2" data-gv-reveal>{{ heading | escape | newline_to_br }}</h2>
+        {%- endif -%}
+        {%- if section.settings.text != blank -%}
+          <div class="gv-lede gv-cta__text" data-gv-reveal style="--gv-delay: 0.1s;">{{ section.settings.text }}</div>
+        {%- endif -%}
+        {%- if show_product and section.settings.show_price -%}
+          <p class="gv-cta__price" data-gv-reveal="fade">
+            {%- if product.price_varies -%}
+              {{ 'products.product.price.from_price_html' | t: price: product.price_min | money }}
+            {%- else -%}
+              {{ product.price | money }}
+            {%- endif -%}
+          </p>
+        {%- endif -%}
+        {%- if section.settings.button_label != blank or section.settings.button_2_label != blank -%}
+          <div class="gv-cta__actions" data-gv-reveal="fade" style="--gv-delay: 0.15s;">
+            {%- if section.settings.button_label != blank -%}
+              <a class="button button--primary" href="{{ section.settings.button_link | default: '#purchase' }}">{{ section.settings.button_label | escape }}</a>
+            {%- endif -%}
+            {%- if section.settings.button_2_label != blank and section.settings.button_2_link != blank -%}
+              <a class="button button--secondary" href="{{ section.settings.button_2_link }}">{{ section.settings.button_2_label | escape }}</a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "GAVELLI call to action",
+  "class": "section-gavelli-cta",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label" },
+    { "type": "textarea", "id": "heading", "label": "Heading" },
+    { "type": "richtext", "id": "text", "label": "Text" },
+    { "type": "text", "id": "button_label", "label": "Primary button label" },
+    { "type": "url", "id": "button_link", "label": "Primary button link", "info": "On product pages, leave blank to scroll to the purchase area." },
+    { "type": "text", "id": "button_2_label", "label": "Secondary button label" },
+    { "type": "url", "id": "button_2_link", "label": "Secondary button link" },
+    { "type": "checkbox", "id": "use_product", "label": "On product pages: use the product title", "default": false },
+    { "type": "checkbox", "id": "show_price", "label": "On product pages: show the product price", "default": true },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-1" },
+    {
+      "type": "select", "id": "spacing_top", "label": "Space above",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "lg"
+    },
+    {
+      "type": "select", "id": "spacing_bottom", "label": "Space below",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "lg"
+    }
+  ],
+  "presets": [{ "name": "GAVELLI call to action" }]
+}
+{% endschema %}

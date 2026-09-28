@@ -1,0 +1,129 @@
+{%- comment -%}
+  GAVELLI — benefits / product details (reusable, e.g. product landing pages).
+  Two block types:
+  - "Point": a short, substantiated benefit (title + text).
+  - "Detail": a specification row (label + value), rendered as a <dl>.
+  Only add what can be substantiated. Renders nothing without blocks.
+{%- endcomment -%}
+
+{%- if section.blocks.size > 0 -%}
+  <style>
+    .gv-benefits__head { display: grid; gap: 1.6rem; margin-bottom: var(--gv-space-sm); max-width: var(--gv-measure-lg); }
+
+    .gv-benefits__points {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border-top: 1px solid rgba(var(--color-foreground), 0.16);
+    }
+
+    .gv-benefits__point { padding: 2.8rem 0; border-bottom: 1px solid rgba(var(--color-foreground), 0.16); }
+    .gv-benefits__point .gv-body { margin-top: 1rem; }
+
+    .gv-benefits__details { margin: var(--gv-space-sm) 0 0; border-top: 1px solid rgba(var(--color-foreground), 0.16); }
+    .gv-benefits__row {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+      gap: 2.4rem;
+      padding: 1.6rem 0;
+      border-bottom: 1px solid rgba(var(--color-foreground), 0.16);
+    }
+    .gv-benefits__row dt { font-size: 1.15rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(var(--color-foreground), 0.72); padding-top: 0.3rem; }
+    .gv-benefits__row dd { margin: 0; font-size: 1.5rem; color: rgb(var(--color-foreground)); }
+
+    @media screen and (min-width: 750px) {
+      .gv-benefits__points { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--gv-gap); }
+    }
+
+    @media screen and (min-width: 990px) {
+      .gv-benefits__points--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+  </style>
+
+  {%- liquid
+    assign points = section.blocks | where: 'type', 'point'
+    assign details = section.blocks | where: 'type', 'detail'
+  -%}
+
+  <section class="gv-benefits color-{{ section.settings.color_scheme }} gradient gv-pt-{{ section.settings.spacing_top }} gv-pb-{{ section.settings.spacing_bottom }}">
+    <div class="page-width">
+      {%- if section.settings.label != blank or section.settings.heading != blank -%}
+        <header class="gv-benefits__head">
+          {%- if section.settings.label != blank -%}<p class="gv-label" data-gv-reveal="fade">{{ section.settings.label | escape }}</p>{%- endif -%}
+          {%- if section.settings.heading != blank -%}<h2 class="gv-h2" data-gv-reveal>{{ section.settings.heading | escape }}</h2>{%- endif -%}
+          {%- if section.settings.text != blank -%}<div class="gv-lede" data-gv-reveal>{{ section.settings.text }}</div>{%- endif -%}
+        </header>
+      {%- endif -%}
+
+      {%- if points.size > 0 -%}
+        <ul class="gv-benefits__points{% if points.size == 3 or points.size > 4 %} gv-benefits__points--3{% endif %}" role="list">
+          {%- for block in points -%}
+            <li class="gv-benefits__point" data-gv-reveal style="--gv-delay: {{ forloop.index0 | modulo: 3 | times: 0.1 }}s;" {{ block.shopify_attributes }}>
+              <h3 class="gv-h3">{{ block.settings.title | escape }}</h3>
+              {%- if block.settings.text != blank -%}<p class="gv-body">{{ block.settings.text | escape }}</p>{%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      {%- if details.size > 0 -%}
+        <dl class="gv-benefits__details" data-gv-reveal>
+          {%- for block in details -%}
+            <div class="gv-benefits__row" {{ block.shopify_attributes }}>
+              <dt>{{ block.settings.label | escape }}</dt>
+              <dd>{{ block.settings.value | escape }}</dd>
+            </div>
+          {%- endfor -%}
+        </dl>
+      {%- endif -%}
+    </div>
+  </section>
+{%- elsif request.design_mode -%}
+  <div class="page-width gv-pt-sm gv-pb-sm"><p class="gv-todo">GAVELLI benefits / details: add blocks to show this section.</p></div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "GAVELLI benefits",
+  "class": "section-gavelli-benefits",
+  "settings": [
+    { "type": "paragraph", "content": "Only include benefits and specifications that are confirmed for this product." },
+    { "type": "text", "id": "label", "label": "Label" },
+    { "type": "text", "id": "heading", "label": "Heading" },
+    { "type": "richtext", "id": "text", "label": "Text" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-1" },
+    {
+      "type": "select", "id": "spacing_top", "label": "Space above",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "md"
+    },
+    {
+      "type": "select", "id": "spacing_bottom", "label": "Space below",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "md"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "point",
+      "name": "Point",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Benefit" },
+        { "type": "textarea", "id": "text", "label": "Text" }
+      ]
+    },
+    {
+      "type": "detail",
+      "name": "Detail",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Dimensions" },
+        { "type": "text", "id": "value", "label": "Value" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "GAVELLI benefits" }]
+}
+{% endschema %}

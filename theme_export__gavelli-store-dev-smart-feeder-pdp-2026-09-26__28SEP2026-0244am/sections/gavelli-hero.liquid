@@ -1,0 +1,669 @@
+{% comment %}
+  GAVELLI — homepage hero.
+
+  Art direction: a horizontal photograph for desktop/tablet (>= 750px) and a
+  separate vertical photograph for mobile (< 750px), switched with <picture>.
+  Only the matching file is downloaded. Each photograph keeps its own
+  proportions, so its composition is never cropped at rest.
+
+  Layouts
+  - split (default): text on the cream background beside the photograph on
+    desktop; photograph above the text on mobile/tablet. Used because the
+    current photographs have no calm area that keeps text legible without
+    an overlay.
+  - overlay: text set directly on a photograph's quiet area (no scrims,
+    gradients or boxes) — only for photographs composed for it.
+
+  Motion (progressive enhancement, CSS only, no JavaScript):
+  - text settles in once on load;
+  - optional, very small scroll-linked drift of the photograph (scroll-driven
+    animations), desktop/tablet only — never below 750px. Browsers without
+    support, and visitors who prefer reduced motion, get a static hero.
+
+  Mobile: one primary button only when "Hide secondary button on mobile" is
+  on (default). Mobile photograph srcset stops at 1000w (LCP weight).
+  Mobile (split, photograph first): the photograph is never taller than the
+  screen leaves room for, so the primary button stays inside the first screen
+  (see "Mobile: primary button inside the first screen" in the CSS).
+{% endcomment %}
+
+{%- liquid
+  assign image_desktop = section.settings.image
+  assign image_mobile = section.settings.image_mobile | default: image_desktop
+  assign has_image = false
+  if image_desktop != blank or section.settings.image_mobile != blank
+    assign has_image = true
+  endif
+  if image_desktop == blank
+    assign image_desktop = image_mobile
+  endif
+
+  assign ratio_desktop = 1.6
+  assign ratio_mobile = 0.8
+  if image_desktop != blank
+    assign ratio_desktop = image_desktop.aspect_ratio
+  endif
+  if image_mobile != blank
+    assign ratio_mobile = image_mobile.aspect_ratio
+  endif
+
+  assign alt_desktop = section.settings.image_alt | default: image_desktop.alt | escape
+
+  assign heading_tag = section.settings.heading_tag | default: 'h2'
+  assign layout = section.settings.layout | default: 'split'
+-%}
+
+{%- style -%}
+  .gv-hero-{{ section.id }} { --gv-hero-ratio: {{ ratio_mobile }}; }
+  @media screen and (min-width: 750px) {
+    .gv-hero-{{ section.id }} { --gv-hero-ratio: {{ ratio_desktop }}; }
+  }
+
+  .gv-hero-{{ section.id }}.gv-hero--split {
+    padding-top: {{ section.settings.padding_top | times: 0.6 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.6 | round: 0 }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .gv-hero-{{ section.id }}.gv-hero--split {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<style>
+  /* ---------- Shared ---------- */
+  .gv-hero { position: relative; }
+
+  .gv-hero__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: var(--gv-hero-ratio);
+    overflow: hidden;
+    background: rgba(var(--color-foreground), 0.04);
+  }
+
+  .gv-hero__media picture,
+  .gv-hero__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .gv-hero__media img {
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .gv-hero__content { max-width: 52rem; }
+
+  .gv-hero__eyebrow {
+    margin: 0 0 2rem;
+    font-family: var(--font-body-family);
+    font-size: 1.2rem;
+    line-height: 1.4;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(var(--color-foreground), 0.84);
+  }
+
+  @media screen and (min-width: 990px) {
+    .gv-hero__eyebrow { font-size: 1.25rem; margin-bottom: 2.4rem; }
+  }
+
+  .gv-hero__heading {
+    margin: 0;
+    font-size: clamp(3.4rem, 2.2rem + 3.2vw, 6.4rem);
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+    color: rgb(var(--color-foreground));
+    text-wrap: balance;
+  }
+
+  .gv-hero__text {
+    margin: 2.4rem 0 0;
+    max-width: 40rem;
+    font-size: 1.5rem;
+    line-height: 1.7;
+    color: rgba(var(--color-foreground), 0.8);
+    text-wrap: pretty;
+  }
+
+  @media screen and (min-width: 990px) {
+    .gv-hero__text { font-size: 1.6rem; margin-top: 2.8rem; }
+  }
+
+  .gv-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    margin-top: 3.2rem;
+  }
+
+  @media screen and (min-width: 990px) {
+    .gv-hero__actions { margin-top: 4rem; }
+  }
+
+  @media screen and (max-width: 480px) {
+    .gv-hero__actions .button { flex: 1 1 100%; }
+  }
+
+  /* One primary action on mobile: the secondary button is desktop/tablet only. */
+  @media screen and (max-width: 749px) {
+    .gv-hero--m-single-cta .gv-hero__actions .button--secondary { display: none; }
+  }
+
+  /* ---------- Overlay: text set on the photograph ---------- */
+  .gv-hero--overlay .gv-hero__stage {
+    position: relative;
+    display: grid;
+  }
+
+  .gv-hero--overlay .gv-hero__stage > * { grid-area: 1 / 1; }
+
+  .gv-hero--overlay .gv-hero__layer {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    padding-top: clamp(3.2rem, 5vw, 8rem);
+    padding-bottom: clamp(3.2rem, 5vw, 8rem);
+  }
+
+  /* Mobile placement */
+  .gv-hero--m-top .gv-hero__layer { align-items: flex-start; }
+  .gv-hero--m-center .gv-hero__layer { align-items: center; }
+  .gv-hero--m-bottom .gv-hero__layer { align-items: flex-end; }
+
+  @media screen and (max-width: 749px) {
+    .gv-hero--overlay .gv-hero__content { max-width: 34rem; }
+    .gv-hero--m-align-center .gv-hero__layer { justify-content: center; text-align: center; }
+    .gv-hero--m-align-center .gv-hero__actions { justify-content: center; }
+  }
+
+  /* Desktop / tablet placement */
+  @media screen and (min-width: 750px) {
+    .gv-hero--d-top .gv-hero__layer { align-items: flex-start; }
+    .gv-hero--d-center .gv-hero__layer { align-items: center; }
+    .gv-hero--d-bottom .gv-hero__layer { align-items: flex-end; }
+    .gv-hero--d-left .gv-hero__layer { justify-content: flex-start; text-align: left; }
+    .gv-hero--d-right .gv-hero__layer { justify-content: flex-end; text-align: left; }
+    .gv-hero--d-middle .gv-hero__layer { justify-content: center; text-align: center; }
+    .gv-hero--d-middle .gv-hero__actions { justify-content: center; }
+    .gv-hero--overlay .gv-hero__content { max-width: clamp(38rem, 38vw, 56rem); }
+  }
+
+  /* Text colour on the photograph: brand charcoal (default) or brand cream. */
+  .gv-hero--overlay.gv-hero--text-light .gv-hero__layer {
+    --color-foreground: 244, 239, 230;
+    --color-button: 244, 239, 230;
+    --color-button-text: 28, 27, 25;
+    --color-secondary-button-text: 244, 239, 230;
+  }
+
+  .gv-hero--overlay.gv-hero--text-light .gv-hero__actions .button--secondary {
+    --color-secondary-button: 0, 0, 0;
+    background-color: transparent;
+  }
+
+  /* ---------- Split: text on cream beside the photograph ----------
+     < 990px  stacked; the photograph runs edge to edge.
+     >= 990px text column left, photograph right, bleeding to the
+              viewport edge so it reads as one continuous image. */
+  .gv-hero--split { overflow-x: clip; }
+
+  .gv-hero--split .gv-hero__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: 4rem;
+  }
+
+  .gv-hero--split .gv-hero__media {
+    width: auto;
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .gv-hero--split .gv-hero__inner { gap: 5.6rem; }
+    .gv-hero--split .gv-hero__media {
+      margin-left: -5rem;
+      margin-right: -5rem;
+    }
+  }
+
+  @media screen and (max-width: 989px) {
+    .gv-hero--split.gv-hero--m-image-first .gv-hero__media { order: -1; }
+    .gv-hero-{{ section.id }}.gv-hero--split.gv-hero--m-image-first { padding-top: 0; }
+    .gv-hero--split .gv-hero__content { max-width: 56rem; }
+  }
+
+  @media screen and (min-width: 990px) {
+    .gv-hero--split .gv-hero__inner {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: clamp(5.6rem, 6vw, 9.6rem);
+    }
+
+    .gv-hero--split .gv-hero__media {
+      margin-left: 0;
+      margin-right: calc(-5rem - max(0px, (100vw - var(--page-width)) / 2));
+    }
+
+    .gv-hero--split .gv-hero__heading {
+      font-size: clamp(4rem, 3.5vw, 6rem);
+    }
+  }
+
+  /* ---------- Mobile: primary button inside the first screen ----------
+     Below 750px, in the stacked split layout, the photograph keeps its own
+     proportions unless that would push the primary button below the first
+     screen: its height is then capped to what the screen leaves after the
+     header and the text block (about 44rem), never under 32rem. It is not a
+     new fixed ratio: a photograph that already fits is left exactly as it is,
+     and width is always the full screen width. Selector is more specific than
+     the generic mobile rule in gavelli-system.css. */
+  @media screen and (max-width: 749.98px) {
+    .gv-hero.gv-hero--split.gv-hero--m-image-first .gv-hero__media {
+      aspect-ratio: auto;
+      height: min(calc(100vw / var(--gv-hero-ratio)), max(calc(100vh - 44rem), 32rem));
+      height: min(calc(100vw / var(--gv-hero-ratio)), max(calc(100svh - 44rem), 32rem));
+    }
+  }
+
+  /* ---------- Motion (enhancement only) ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    .gv-hero--animate .gv-hero__content > * {
+      animation: gvHeroRise 1.1s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    }
+    .gv-hero--animate .gv-hero__content > *:nth-child(2) { animation-delay: 0.08s; }
+    .gv-hero--animate .gv-hero__content > *:nth-child(3) { animation-delay: 0.16s; }
+    .gv-hero--animate .gv-hero__content > *:nth-child(4) { animation-delay: 0.24s; }
+
+    /* The photograph settles once on load (scale 1.04 -> 1 over 2.4s). Only
+       transform is animated, never opacity, so the image is painted at once
+       and the LCP is not delayed. */
+    .gv-hero--animate .gv-hero__media picture {
+      transform-origin: 60% 50%;
+      animation: gvHeroSettle 2.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* Scroll drift: from 750px up only (no scroll-linked animation on phones). */
+    @supports (animation-timeline: scroll()) {
+      @media (min-width: 750px) {
+        .gv-hero--parallax .gv-hero__media img {
+          transform-origin: 50% 0;
+          animation: gvHeroDrift linear both;
+          animation-timeline: scroll(root block);
+          animation-range: 0 100vh;
+          will-change: transform;
+        }
+      }
+    }
+  }
+
+  @keyframes gvHeroSettle {
+    from { transform: scale(1.04); }
+    to { transform: none; }
+  }
+
+  @keyframes gvHeroRise {
+    from { opacity: 0; transform: translate3d(0, 1.2rem, 0); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* At rest the photograph is shown exactly as composed; it only drifts
+     (max. 3% scale / 3% shift) once the visitor scrolls away. */
+  @keyframes gvHeroDrift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(0, 3%, 0) scale(1.03); }
+  }
+</style>
+
+{%- capture hero_content -%}
+  <div class="gv-hero__content">
+    {%- if section.settings.preheading != blank -%}
+      <p class="gv-hero__eyebrow">{{ section.settings.preheading | escape }}</p>
+    {%- endif -%}
+
+    {%- if section.settings.heading != blank -%}
+      <{{ heading_tag }} class="gv-hero__heading">
+        {{- section.settings.heading | escape | newline_to_br -}}
+      </{{ heading_tag }}>
+    {%- endif -%}
+
+    {%- if section.settings.text != blank -%}
+      <p class="gv-hero__text">{{ section.settings.text | escape }}</p>
+    {%- endif -%}
+
+    {%- if section.settings.button_primary_text != blank or section.settings.button_secondary_text != blank -%}
+      <div class="gv-hero__actions">
+        {%- if section.settings.button_primary_text != blank -%}
+          <a
+            {% if section.settings.button_primary_link != blank %}
+              href="{{ section.settings.button_primary_link }}"
+            {% else %}
+              role="link" aria-disabled="true"
+            {% endif %}
+            class="button button--primary"
+          >
+            {{- section.settings.button_primary_text | escape -}}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.button_secondary_text != blank -%}
+          <a
+            {% if section.settings.button_secondary_link != blank %}
+              href="{{ section.settings.button_secondary_link }}"
+            {% else %}
+              role="link" aria-disabled="true"
+            {% endif %}
+            class="button button--secondary"
+          >
+            {{- section.settings.button_secondary_text | escape -}}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+{%- endcapture -%}
+
+{%- capture hero_media -%}
+  {%- if has_image -%}
+    <div class="gv-hero__media">
+      <picture>
+        {%- if section.settings.image_mobile != blank and section.settings.image != blank -%}
+          <source
+            media="(max-width: 749px)"
+            srcset="
+              {%- liquid
+                assign mobile_widths = '480,750,1000' | split: ','
+                assign mobile_srcset = ''
+                for w in mobile_widths
+                  assign mw = w | plus: 0
+                  if image_mobile.width >= mw
+                    assign entry = image_mobile | image_url: width: mw | append: ' ' | append: mw | append: 'w'
+                    if mobile_srcset != ''
+                      assign mobile_srcset = mobile_srcset | append: ', '
+                    endif
+                    assign mobile_srcset = mobile_srcset | append: entry
+                  endif
+                endfor
+                if mobile_srcset == ''
+                  assign mobile_srcset = image_mobile | image_url: width: image_mobile.width | append: ' ' | append: image_mobile.width | append: 'w'
+                endif
+                echo mobile_srcset
+              -%}
+            "
+            sizes="100vw"
+            width="{{ image_mobile.width }}"
+            height="{{ image_mobile.height }}"
+          >
+        {%- endif -%}
+        {%- liquid
+          if layout == 'split'
+            assign img_sizes = '(min-width: 990px) 62vw, 100vw'
+          else
+            assign img_sizes = '100vw'
+          endif
+        -%}
+        {{
+          image_desktop
+          | image_url: width: 3000
+          | image_tag:
+            loading: 'eager',
+            fetchpriority: 'high',
+            widths: '750, 1000, 1400, 1800, 2200, 2600, 3000',
+            sizes: img_sizes,
+            alt: alt_desktop
+        }}
+      </picture>
+    </div>
+  {%- elsif request.design_mode -%}
+    <div class="gv-hero__media" role="img" aria-label="Image placeholder"></div>
+  {%- endif -%}
+{%- endcapture -%}
+
+<section
+  class="gv-hero gv-hero-{{ section.id }} gv-hero--{{ layout }} gv-hero--d-{{ section.settings.desktop_horizontal }} gv-hero--d-{{ section.settings.desktop_vertical }} gv-hero--m-{{ section.settings.mobile_vertical }} gv-hero--m-align-{{ section.settings.mobile_alignment }} gv-hero--text-{{ section.settings.text_tone }}{% if section.settings.mobile_image_first %} gv-hero--m-image-first{% endif %}{% if section.settings.hide_secondary_mobile %} gv-hero--m-single-cta{% endif %}{% if section.settings.animate_text %} gv-hero--animate{% endif %}{% if section.settings.parallax %} gv-hero--parallax{% endif %} color-{{ section.settings.color_scheme }} gradient"
+>
+  {%- if layout == 'overlay' and has_image -%}
+    <div class="gv-hero__stage">
+      {{ hero_media }}
+      <div class="gv-hero__layer page-width">
+        {{ hero_content }}
+      </div>
+    </div>
+  {%- else -%}
+    <div class="gv-hero__inner page-width">
+      {{ hero_content }}
+      {{ hero_media }}
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "GAVELLI hero",
+  "class": "section-gavelli-hero",
+  "settings": [
+    {
+      "type": "text",
+      "id": "preheading",
+      "label": "Preheading",
+      "default": "EVERYDAY, CONSIDERED"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Better everyday life,\nfor you and your pet."
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h1", "label": "H1 (use once per page)" },
+        { "value": "h2", "label": "H2" }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Thoughtfully selected essentials designed to make everyday moments with your pet simpler, calmer and more beautiful."
+    },
+    {
+      "type": "header",
+      "content": "Primary button"
+    },
+    {
+      "type": "text",
+      "id": "button_primary_text",
+      "label": "Primary button label",
+      "default": "Shop collection"
+    },
+    {
+      "type": "url",
+      "id": "button_primary_link",
+      "label": "Primary button link"
+    },
+    {
+      "type": "header",
+      "content": "Secondary button"
+    },
+    {
+      "type": "text",
+      "id": "button_secondary_text",
+      "label": "Secondary button label",
+      "default": "Discover GAVELLI"
+    },
+    {
+      "type": "url",
+      "id": "button_secondary_link",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_secondary_mobile",
+      "label": "Hide secondary button on mobile",
+      "info": "Keeps a single primary action on phones (below 750px).",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Photographs"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Desktop and tablet image (horizontal)",
+      "info": "Shown from 750px wide. Displayed at its own proportions, without cropping."
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Image alt text",
+      "info": "Describes the photograph for screen readers (used for both images). Leave blank to use the image's own alt text."
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile image (vertical)",
+      "info": "Shown below 750px wide. Only the image for the visitor's screen is downloaded. If empty, the desktop image is used."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "split", "label": "Text beside the photograph" },
+        { "value": "overlay", "label": "Text on the photograph" }
+      ],
+      "default": "split",
+      "info": "Use 'Text on the photograph' only when the photograph has a calm, even area for the text."
+    },
+    {
+      "type": "select",
+      "id": "text_tone",
+      "label": "Text colour on the photograph",
+      "options": [
+        { "value": "dark", "label": "Charcoal" },
+        { "value": "light", "label": "Cream" }
+      ],
+      "default": "dark"
+    },
+    {
+      "type": "select",
+      "id": "desktop_horizontal",
+      "label": "Desktop text position (horizontal)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "middle", "label": "Centre" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "desktop_vertical",
+      "label": "Desktop text position (vertical)",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "mobile_vertical",
+      "label": "Mobile text position",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "top"
+    },
+    {
+      "type": "select",
+      "id": "mobile_alignment",
+      "label": "Mobile text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Centre" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_image_first",
+      "label": "Mobile and tablet: show photograph above text",
+      "info": "Side-by-side layout only.",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Motion"
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_text",
+      "label": "Gentle entrance (text rises, photograph settles)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "parallax",
+      "label": "Subtle photograph drift on scroll",
+      "info": "Very small movement, CSS only, from 750px up. Turned off automatically for visitors who prefer reduced motion.",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colour"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Colour scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Section padding (side-by-side layout)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 96
+    }
+  ],
+  "presets": [
+    {
+      "name": "GAVELLI hero"
+    }
+  ]
+}
+{% endschema %}

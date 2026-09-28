@@ -1,0 +1,40 @@
+/* Gavelli — ajustes visuais do Header. Soma-se ao CSS nativo do Dawn, não sobrescreve. */
+
+.header__secondary-nav {
+  display: flex;
+  align-items: center;
+}
+
+.header__secondary-menu {
+  display: flex;
+  align-items: center;
+  gap: 2.8rem;
+  margin-right: 2.4rem;
+}
+
+.header__secondary-menu-item {
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgb(var(--color-foreground));
+  opacity: 0.85;
+  transition: opacity 0.15s ease;
+  border-radius: 0;
+}
+
+.header__secondary-menu-item:hover {
+  opacity: 1;
+}
+
+.header .list-menu--inline .list-menu__item--link {
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.header,
+.header__icon,
+.header__heading-logo-wrapper {
+  box-shadow: none;
+}

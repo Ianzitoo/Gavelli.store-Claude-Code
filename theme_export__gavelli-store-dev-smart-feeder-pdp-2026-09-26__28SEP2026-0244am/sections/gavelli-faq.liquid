@@ -1,0 +1,158 @@
+{%- comment -%}
+  GAVELLI — FAQ group (accessible accordions).
+  One section per category. Uses native <details>/<summary>: keyboard and
+  screen-reader accessible without JavaScript. Answers that depend on an
+  undefined policy can be flagged "To confirm": they show a clearly visible
+  placeholder note so they cannot be mistaken for final copy.
+  Renders nothing on the storefront when it has no questions.
+{%- endcomment -%}
+
+{%- if section.blocks.size > 0 -%}
+  <style>
+    .gv-faq__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.4rem; }
+    .gv-faq__head .gv-h3 { margin-top: 1.2rem; }
+    .gv-faq__intro { margin-top: 1.6rem; }
+
+    .gv-faq__list { border-top: 1px solid rgba(var(--color-foreground), 0.16); }
+
+    .gv-faq__item { border-bottom: 1px solid rgba(var(--color-foreground), 0.16); }
+
+    .gv-faq__item summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2.4rem;
+      min-height: 6.4rem;
+      padding: 2rem 0;
+      cursor: pointer;
+      list-style: none;
+      font-family: var(--font-heading-family);
+      font-weight: var(--font-heading-weight);
+      font-size: clamp(1.9rem, 1.7rem + 0.5vw, 2.3rem);
+      line-height: 1.3;
+      color: rgb(var(--color-foreground));
+    }
+
+    .gv-faq__item summary::-webkit-details-marker { display: none; }
+
+    .gv-faq__icon { position: relative; flex: 0 0 1.4rem; height: 1.4rem; }
+
+    .gv-faq__icon::before,
+    .gv-faq__icon::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: currentColor;
+      transition: transform var(--gv-dur) var(--gv-ease-out);
+    }
+
+    .gv-faq__icon::after { transform: rotate(90deg); }
+    .gv-faq__item[open] .gv-faq__icon::after { transform: rotate(0deg); }
+
+    .gv-faq__answer { padding: 0 0 2.8rem; max-width: var(--gv-measure); }
+    .gv-faq__answer .gv-body { max-width: none; }
+
+    .gv-faq__todo {
+      display: inline-block;
+      margin-top: 1.2rem;
+      padding: 0.4rem 1rem;
+      border: 1px dashed rgba(var(--color-foreground), 0.5);
+      font-size: 1.2rem;
+      letter-spacing: 0.06em;
+      color: rgba(var(--color-foreground), 0.8);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .gv-faq__item[open] .gv-faq__answer { animation: gvFaqOpen 0.5s var(--gv-ease-out) both; }
+    }
+
+    @keyframes gvFaqOpen {
+      from { opacity: 0; transform: translate3d(0, -0.6rem, 0); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @media screen and (min-width: 990px) {
+      .gv-faq__grid { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--gv-gap-lg); }
+      .gv-faq__head { position: sticky; top: 14vh; align-self: start; }
+    }
+  </style>
+
+  <section
+    id="{{ section.settings.anchor | default: section.settings.heading | handleize }}"
+    class="gv-faq color-{{ section.settings.color_scheme }} gradient gv-pt-{{ section.settings.spacing_top }} gv-pb-{{ section.settings.spacing_bottom }}"
+    aria-labelledby="GvFaq-{{ section.id }}"
+  >
+    <div class="page-width gv-faq__grid">
+      <header class="gv-faq__head">
+        {%- if section.settings.label != blank -%}
+          <p class="gv-label">{{ section.settings.label | escape }}</p>
+        {%- endif -%}
+        <h2 id="GvFaq-{{ section.id }}" class="gv-h3">{{ section.settings.heading | escape }}</h2>
+        {%- if section.settings.intro != blank -%}
+          <div class="gv-body gv-faq__intro">{{ section.settings.intro }}</div>
+        {%- endif -%}
+      </header>
+
+      <div class="gv-faq__list">
+        {%- for block in section.blocks -%}
+          <details class="gv-faq__item" {{ block.shopify_attributes }}>
+            <summary>
+              <span>{{ block.settings.question | escape }}</span>
+              <span class="gv-faq__icon" aria-hidden="true"></span>
+            </summary>
+            <div class="gv-faq__answer">
+              {%- if block.settings.answer != blank -%}
+                <div class="gv-body">{{ block.settings.answer }}</div>
+              {%- endif -%}
+              {%- if block.settings.to_confirm -%}
+                <p class="gv-faq__todo">To be confirmed{% if block.settings.todo_note != blank %}: {{ block.settings.todo_note | escape }}{% endif %}</p>
+              {%- endif -%}
+            </div>
+          </details>
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+{%- elsif request.design_mode -%}
+  <div class="page-width gv-pt-sm gv-pb-sm"><p class="gv-todo">GAVELLI FAQ: add questions to show this group.</p></div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "GAVELLI FAQ group",
+  "class": "section-gavelli-faq",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label" },
+    { "type": "text", "id": "heading", "label": "Category", "default": "Orders" },
+    { "type": "richtext", "id": "intro", "label": "Introduction" },
+    { "type": "text", "id": "anchor", "label": "Anchor (for links)" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-1" },
+    {
+      "type": "select", "id": "spacing_top", "label": "Space above",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "sm"
+    },
+    {
+      "type": "select", "id": "spacing_bottom", "label": "Space below",
+      "options": [{ "value": "none", "label": "None" }, { "value": "sm", "label": "Small" }, { "value": "md", "label": "Medium" }, { "value": "lg", "label": "Large" }],
+      "default": "sm"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "Question" },
+        { "type": "richtext", "id": "answer", "label": "Answer" },
+        { "type": "checkbox", "id": "to_confirm", "label": "Answer still to be confirmed", "info": "Shows a clearly marked placeholder. Complete before publishing.", "default": false },
+        { "type": "text", "id": "todo_note", "label": "What needs confirming" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "GAVELLI FAQ group", "blocks": [{ "type": "question" }] }]
+}
+{% endschema %}
