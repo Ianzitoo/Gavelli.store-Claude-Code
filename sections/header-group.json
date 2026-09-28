@@ -13,21 +13,55 @@
   "sections": {
     "announcement-bar": {
       "type": "announcement-bar",
-      "disabled": true,
+      "disabled": false,
       "blocks": {
-        "announcement-bar-0": {"type": "announcement", "settings": {"text": "Welcome to our store", "link": ""}}
+        "announcement-bar-0": {
+          "type": "announcement",
+          "settings": {
+            "text": "UK delivery — costs shown at checkout, before you pay",
+            "link": ""
+          }
+        }
       },
-      "block_order": ["announcement-bar-0"],
-      "settings": {"auto_rotate": false, "change_slides_speed": 5, "color_scheme": "scheme-1", "show_line_separator": true, "show_social": false, "enable_country_selector": false, "enable_language_selector": false}
+      "block_order": [
+        "announcement-bar-0"
+      ],
+      "settings": {
+        "auto_rotate": false,
+        "change_slides_speed": 5,
+        "color_scheme": "scheme-4",
+        "show_line_separator": false,
+        "show_social": false,
+        "enable_country_selector": false,
+        "enable_language_selector": false
+      }
     },
     "header": {
       "type": "header",
-      "settings": {"logo_position": "middle-center", "mobile_logo_position": "center", "menu": "gavelli-main", "menu_type_desktop": "dropdown", "sticky_header_type": "always", "show_line_separator": true, "color_scheme": "scheme-1", "menu_color_scheme": "scheme-1", "enable_country_selector": false, "enable_language_selector": false, "margin_bottom": 0, "padding_top": 24, "padding_bottom": 24}
+      "settings": {
+        "logo_position": "middle-center",
+        "mobile_logo_position": "center",
+        "menu": "gavelli-main",
+        "menu_type_desktop": "dropdown",
+        "sticky_header_type": "always",
+        "show_line_separator": true,
+        "color_scheme": "scheme-1",
+        "menu_color_scheme": "scheme-1",
+        "enable_country_selector": false,
+        "enable_language_selector": false,
+        "margin_bottom": 0,
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
     },
     "gavelli_system": {
       "type": "gavelli-system",
       "settings": {}
     }
   },
-  "order": ["announcement-bar", "header", "gavelli_system"]
+  "order": [
+    "announcement-bar",
+    "header",
+    "gavelli_system"
+  ]
 }

@@ -1,0 +1,88 @@
+{%- comment -%}
+  GAVELLI — homepage statement (the idea).
+  One sentence, set large, with an optional small photograph set inside it
+  like a word. The three principles that used to sit under it now live in
+  "How we choose", which says the same thing as questions; one statement of
+  values per page reads as conviction, two read as repetition.
+{%- endcomment -%}
+
+{{ 'gavelli-home.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign image = section.settings.image
+  assign focal = image.presentation.focal_point | default: '50% 50%'
+  assign focal_style = '--gv-focal: ' | append: focal | append: ';'
+-%}
+
+<section class="gvh gvh-statement-sec gvh-pad-lg color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width">
+    <div class="gvh-statement-sec__inner gvh-grid" data-gv-reveal>
+      {%- if section.settings.label != blank -%}
+        <p class="gv-label">{{ section.settings.label | escape }}</p>
+      {%- endif -%}
+      <h2 class="gvh-statement">
+        {{- section.settings.text_before | escape -}}
+        {%- if image != blank %}
+          <span class="gvh-pill">
+            {{- image | image_url: width: 360 | image_tag: loading: 'lazy', widths: '180, 270, 360', sizes: '140px', alt: '', style: focal_style -}}
+          </span>
+        {%- else %} —
+        {%- endif %}
+        {{ section.settings.text_after | escape -}}
+        {%- if section.settings.accent != blank %} <span class="gvh-accent">{{ section.settings.accent | escape }}</span>{%- endif -%}
+      </h2>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Home · Statement",
+  "tag": "div",
+  "class": "section-gvh-statement",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "The idea"
+    },
+    {
+      "type": "text",
+      "id": "text_before",
+      "label": "Sentence, before the photograph",
+      "default": "There is no shortage of things for dogs and cats",
+      "info": "Without a photograph, the two halves are joined by a dash."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Small photograph inside the sentence",
+      "info": "Optional. Shown as a small rounded crop around the focal point."
+    },
+    {
+      "type": "text",
+      "id": "text_after",
+      "label": "Sentence, after the photograph",
+      "default": "only of good reasons to choose one over another."
+    },
+    {
+      "type": "text",
+      "id": "accent",
+      "label": "Italic ending",
+      "default": "So we do the choosing first."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Colour scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home · Statement"
+    }
+  ]
+}
+{% endschema %}

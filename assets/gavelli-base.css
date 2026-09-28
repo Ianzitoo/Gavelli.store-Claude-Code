@@ -688,7 +688,8 @@ button.shopify-payment-button__button--unbranded {
   }
 
   .gv-footer .gv-footer__brand,
-  .gv-footer .gv-footer__newsletter {
+  .gv-footer .gv-footer__newsletter,
+  .gv-footer .gv-footer__navs {
     grid-column: 1 / -1;
   }
 }
