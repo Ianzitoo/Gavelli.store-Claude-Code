@@ -1,29 +1,25 @@
 {%- comment -%}
   GAVELLI — homepage opener (hero).
 
-  Two layouts, chosen for the photograph rather than fixed by the design:
-  - stacked (default): the heading sits on the ground above a full-bleed
-    photograph. Nothing is ever set on the photograph, so no overlay is
-    needed. Right for the current photograph, which has no calm area behind
-    the type.
-  - overlay: the heading sits on the photograph's lower left. Only for a
-    photograph composed for it: subject in the right third, a quiet, darker
-    lower left (path, wall, shade), horizon high. "Legibility" adds a small,
-    localised shade behind the text and is 0 by default.
+  The photograph is the first thing seen, at every width; the type sits on
+  the ground beside or below it, never on it (the current photographs have
+  no calm area to carry type).
 
-  Phones always show the text on the ground (above the photograph when
-  stacked, below it when overlay).
+  - Desktop (>= 990px): split. Type in the left five columns, bottom-aligned;
+    the photograph fills the right of the first screen and runs to the edge,
+    with a very slight scroll drift (CSS only).
+  - Tablet (750–989px): the horizontal photograph at its own proportions,
+    then the type below it.
+  - Phones: the vertical photograph first, sized so the heading and the
+    button still land in the first screen; the lede is left to the page
+    below (the label already says what Gavelli is).
 
-  The teaser card links the first product from the first screen. It is a
-  solid card, so it stays legible on any photograph; hidden on phones.
-  No fixed heights: the photograph keeps its own proportions, capped by the
-  viewport height.
+  No fixed heights: the photograph's height follows the viewport, clamped.
 {%- endcomment -%}
 
 {{ 'gavelli-home.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
-  assign layout = section.settings.layout | default: 'stacked'
   assign image = section.settings.image
   assign image_mobile = section.settings.image_mobile | default: image
   assign alt = section.settings.image_alt | default: image.alt | escape
@@ -32,32 +28,56 @@
   if image != blank
     assign ratio = image.aspect_ratio
   endif
-  assign ratio_mobile = '4 / 5'
-  if image_mobile != blank
-    assign ratio_mobile = image_mobile.aspect_ratio | at_least: 0.66
-  endif
 
   assign focal = image.presentation.focal_point | default: '50% 50%'
-  assign focal_style = '--gv-focal: ' | append: focal | append: ';'
-
-  assign teaser = section.settings.teaser_product
-  assign scrim = section.settings.legibility | divided_by: 100.0
+  assign focal_mobile = image_mobile.presentation.focal_point | default: '50% 50%'
+  assign media_style = '--gv-focal: ' | append: focal | append: '; --gvh-focal-mobile: ' | append: focal_mobile | append: '; --gvh-ratio: ' | append: ratio | append: ';'
 -%}
 
-{%- capture head -%}
-  <div class="gvh-opener__head gvh-grid gv-enter">
-    <div class="gvh-opener__title">
+<section class="gvh gvh-opener color-{{ section.settings.color_scheme }} gradient">
+  <div class="gvh-opener__media{% if section.settings.parallax %} gvh-opener__media--drift{% endif %}" style="{{ media_style }}">
+    <div class="gvh-opener__layer">
+      {%- if image != blank -%}
+        <picture>
+          {%- if section.settings.image_mobile != blank -%}
+            <source
+              media="(max-width: 749px)"
+              srcset="
+                {{- image_mobile | image_url: width: 500 }} 500w,
+                {{ image_mobile | image_url: width: 750 }} 750w,
+                {{ image_mobile | image_url: width: 1000 }} 1000w
+              "
+              sizes="100vw"
+            >
+          {%- endif -%}
+          {{
+            image
+            | image_url: width: 2400
+            | image_tag:
+              widths: '750, 1000, 1400, 1800, 2400',
+              sizes: '(min-width: 990px) 60vw, 100vw',
+              loading: 'eager',
+              fetchpriority: 'high',
+              alt: alt
+          }}
+        </picture>
+      {%- else -%}
+        {{ 'hero-apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="gvh-opener__text">
+    <div class="gvh-opener__head gv-enter">
       {%- if section.settings.label != blank -%}
         <p class="gv-label">{{ section.settings.label | escape }}</p>
       {%- endif -%}
-      <h1 class="gvh-display">
+      <h1 class="gvh-display gvh-opener__heading">
         {{- section.settings.heading | escape -}}
         {%- if section.settings.heading_accent != blank %} <span class="gvh-accent">{{ section.settings.heading_accent | escape }}</span>{%- endif -%}
       </h1>
-    </div>
-    <div class="gvh-opener__aside">
       {%- if section.settings.text != blank -%}
-        <p class="gvh-lede gvh-opener__lede">{{ section.settings.text | escape }}</p>
+        <p class="gvh-lede gvh-opener__lede small-hide">{{ section.settings.text | escape }}</p>
       {%- endif -%}
       {%- if section.settings.button_label != blank or section.settings.link_label != blank -%}
         <div class="gvh-opener__actions">
@@ -67,7 +87,7 @@
             </a>
           {%- endif -%}
           {%- if section.settings.link_label != blank and section.settings.link != blank -%}
-            <a class="gv-link{% if section.settings.hide_link_mobile %} small-hide{% endif %}" href="{{ section.settings.link }}">
+            <a class="gv-link small-hide" href="{{ section.settings.link }}">
               {{- section.settings.link_label | escape -}}
             </a>
           {%- endif -%}
@@ -75,95 +95,6 @@
       {%- endif -%}
     </div>
   </div>
-{%- endcapture -%}
-
-{%- capture media -%}
-  <div
-    class="gvh-opener__media"
-    style="--gvh-ratio: {{ ratio }}; --gvh-ratio-mobile: {{ ratio_mobile }};"
-  >
-    {%- if image != blank -%}
-      <picture>
-        {%- if section.settings.image_mobile != blank -%}
-          <source
-            media="(max-width: 749px)"
-            srcset="
-              {{- image_mobile | image_url: width: 500 }} 500w,
-              {{ image_mobile | image_url: width: 750 }} 750w,
-              {{ image_mobile | image_url: width: 1000 }} 1000w
-            "
-            sizes="100vw"
-          >
-        {%- endif -%}
-        {{
-          image
-          | image_url: width: 2800
-          | image_tag:
-            widths: '750, 1100, 1500, 1800, 2200, 2800',
-            sizes: '100vw',
-            loading: 'eager',
-            fetchpriority: 'high',
-            alt: alt,
-            style: focal_style
-        }}
-      </picture>
-    {%- else -%}
-      {{ 'hero-apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}
-    {%- endif -%}
-
-    {%- if layout == 'overlay' and scrim > 0 -%}
-      <span class="gvh-opener__scrim" style="--gvh-scrim: {{ scrim }};" aria-hidden="true"></span>
-    {%- endif -%}
-
-    {%- if layout == 'overlay' -%}
-      <div class="gvh-opener__overlay small-hide">
-        <div class="page-width">{{ head }}</div>
-      </div>
-    {%- endif -%}
-
-    {%- if teaser != blank -%}
-      <div class="gvh-teaser-wrap">
-        <div class="page-width gvh-teaser-row">
-          <a class="gvh-teaser" href="{{ teaser.url }}">
-            <span class="gvh-teaser__media">
-              {%- assign teaser_image = teaser.featured_media.preview_image -%}
-              {%- if teaser_image != blank -%}
-                {{ teaser_image | image_url: width: 320 | image_tag: loading: 'lazy', widths: '160, 240, 320', sizes: '104px', alt: '' }}
-              {%- endif -%}
-            </span>
-            <span class="gvh-teaser__body">
-              {%- if section.settings.teaser_label != blank -%}
-                <span class="gvh-teaser__label">{{ section.settings.teaser_label | escape }}</span>
-              {%- endif -%}
-              <span class="gvh-teaser__title">{{ section.settings.teaser_title | default: teaser.title | escape }}</span>
-              {%- if section.settings.teaser_text != blank -%}
-                <span class="gvh-teaser__text">{{ section.settings.teaser_text | escape }}</span>
-              {%- endif -%}
-              <span class="gvh-teaser__price">
-                {%- if teaser.price_varies -%}
-                  {{ 'products.product.price.from_price_html' | t: price: teaser.price_min | money }}
-                {%- else -%}
-                  {{ teaser.price | money }}
-                {%- endif -%}
-              </span>
-            </span>
-          </a>
-        </div>
-      </div>
-    {%- endif -%}
-  </div>
-{%- endcapture -%}
-
-<section
-  class="gvh gvh-opener gvh-opener--{{ layout }} gvh-opener--{{ section.settings.overlay_tone }} color-{{ section.settings.color_scheme }} gradient"
->
-  {%- if layout == 'overlay' -%}
-    {{ media }}
-    <div class="page-width gvh-phone-only">{{ head }}</div>
-  {%- else -%}
-    <div class="page-width">{{ head }}</div>
-    {{ media }}
-  {%- endif -%}
 </section>
 
 {% schema %}
@@ -171,19 +102,7 @@
   "name": "Home · Opener",
   "tag": "div",
   "class": "section-gvh-opener",
-  "limit": 1,
   "settings": [
-    {
-      "type": "select",
-      "id": "layout",
-      "label": "Layout",
-      "options": [
-        { "value": "stacked", "label": "Stacked: heading above the photograph" },
-        { "value": "overlay", "label": "Overlay: heading on the photograph" }
-      ],
-      "default": "stacked",
-      "info": "Use Overlay only with a photograph composed for type: subject in the right third, a calm, darker lower left. Otherwise keep Stacked."
-    },
     {
       "type": "text",
       "id": "label",
@@ -206,13 +125,13 @@
       "type": "text",
       "id": "text",
       "label": "Text",
-      "default": "A small collection for everyday life with a dog or cat. Everything in it is here for a reason."
+      "info": "Desktop and tablet only. Keep to one or two lines."
     },
     {
       "type": "text",
       "id": "button_label",
       "label": "Button label",
-      "default": "Shop the collection"
+      "default": "Shop now"
     },
     {
       "type": "url",
@@ -222,19 +141,14 @@
     {
       "type": "text",
       "id": "link_label",
-      "label": "Secondary link label",
-      "default": "Our story"
+      "label": "Link label",
+      "default": "Our story",
+      "info": "Desktop and tablet only."
     },
     {
       "type": "url",
       "id": "link",
-      "label": "Secondary link"
-    },
-    {
-      "type": "checkbox",
-      "id": "hide_link_mobile",
-      "label": "Hide secondary link on phones",
-      "default": true
+      "label": "Link"
     },
     {
       "type": "header",
@@ -243,14 +157,14 @@
     {
       "type": "image_picker",
       "id": "image",
-      "label": "Photograph (tablet and desktop)",
-      "info": "Horizontal. Set the focal point on the subject; it is kept in frame when the photograph is cropped."
+      "label": "Photograph",
+      "info": "Horizontal. On desktop it fills the right of the first screen, cropped around the focal point, so set the focal point on the subject."
     },
     {
       "type": "image_picker",
       "id": "image_mobile",
-      "label": "Photograph (phones)",
-      "info": "Optional. Vertical, 4:5."
+      "label": "Photograph on phones",
+      "info": "Vertical (3:4 or 4:5). Shown first on phones, cropped a little from top and bottom."
     },
     {
       "type": "text",
@@ -258,52 +172,11 @@
       "label": "Photograph description"
     },
     {
-      "type": "select",
-      "id": "overlay_tone",
-      "label": "Overlay: text colour",
-      "options": [
-        { "value": "light", "label": "Light (on a darker photograph)" },
-        { "value": "dark", "label": "Dark (on a lighter photograph)" }
-      ],
-      "default": "light"
-    },
-    {
-      "type": "range",
-      "id": "legibility",
-      "label": "Overlay: legibility shade",
-      "min": 0,
-      "max": 40,
-      "step": 5,
-      "unit": "%",
-      "default": 0,
-      "info": "Leave at 0 unless the text is hard to read. A soft shade in the lower left only, behind the text."
-    },
-    {
-      "type": "header",
-      "content": "Product card"
-    },
-    {
-      "type": "product",
-      "id": "teaser_product",
-      "label": "Product",
-      "info": "Optional. A small card in the corner of the photograph (tablet and desktop)."
-    },
-    {
-      "type": "text",
-      "id": "teaser_label",
-      "label": "Card label",
-      "default": "New · No. 01"
-    },
-    {
-      "type": "text",
-      "id": "teaser_title",
-      "label": "Card title",
-      "info": "Leave blank to use the product title."
-    },
-    {
-      "type": "text",
-      "id": "teaser_text",
-      "label": "Card text"
+      "type": "checkbox",
+      "id": "parallax",
+      "label": "Slight drift while scrolling",
+      "info": "Desktop and tablet only. Off for visitors who prefer reduced motion.",
+      "default": true
     },
     {
       "type": "color_scheme",

@@ -1,16 +1,16 @@
 {%- comment -%}
-  GAVELLI — homepage product feature ("the first piece").
-  One product on a stone stage, with its finish picker, three steps and a
-  real Add to basket (Dawn's <product-form>, so the basket notification
-  works exactly as on the product page).
+  GAVELLI — homepage product ("the first piece").
+  An introduction, not a product page: the object, a sentence or two, its
+  price and finishes, and one way through to the product page, where the
+  details (WiFi band, capacity, who it suits) sit next to the basket.
 
-  - The picker appears for products with a single option (e.g. Finish).
-    Products with more options link to their page instead of adding here.
-  - The photograph follows the chosen variant when the variant has its own
-    image (0.6s crossfade).
-  - Sold out / unavailable variants disable the button and say so.
-  Renders nothing for customers when the product is not available to the
-  online store; shows a note in the theme editor.
+  - The finish picker (single-option products) swaps the photograph when a
+    variant has its own image (0.6s crossfade) and points the button at that
+    variant.
+  - The photograph keeps the product images' own square shape: a product is
+    never cropped.
+  Renders nothing for customers when no product is set; shows a note in the
+  theme editor.
 {%- endcomment -%}
 
 {%- liquid
@@ -19,7 +19,6 @@
 
 {%- if product != blank -%}
   {{ 'gavelli-home.css' | asset_url | stylesheet_tag }}
-  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
 
   {%- liquid
     assign variant = product.selected_or_first_available_variant
@@ -36,11 +35,10 @@
     endfor
 
     assign active_media = variant.featured_media.id | default: product.featured_media.id
-    assign form_id = 'GvhProductForm-' | append: section.id
     assign fit = section.settings.image_fit | default: 'cover'
   -%}
 
-  <gvh-product class="gvh gvh-product gvh-product--{{ fit }} gvh-pad-md color-{{ section.settings.color_scheme }} gradient" id="{{ section.settings.anchor | default: 'the-first-piece' | handleize }}">
+  <gvh-product class="gvh gvh-product gvh-product--{{ fit }} gvh-pad-lg color-{{ section.settings.color_scheme }} gradient" id="{{ section.settings.anchor | default: 'the-first-piece' | handleize }}">
     <div class="page-width gvh-product__inner gvh-grid">
       <div class="gvh-product__figure">
         {%- if section.settings.number != blank or section.settings.category != blank -%}
@@ -68,11 +66,11 @@
               >
                 {{
                   media.preview_image
-                  | image_url: width: 1600
+                  | image_url: width: 1400
                   | image_tag:
                     loading: 'lazy',
-                    widths: '600, 900, 1200, 1600',
-                    sizes: '(min-width: 990px) 55vw, calc(100vw - 3rem)',
+                    widths: '600, 900, 1200, 1400',
+                    sizes: '(min-width: 990px) 46vw, calc(100vw - 3rem)',
                     alt: media.alt | default: product.title
                 }}
               </div>
@@ -85,18 +83,16 @@
       </div>
 
       <div class="gvh-product__info" data-gv-reveal>
-        <div class="gvh-product__intro">
-          {%- if section.settings.label != blank -%}
-            <p class="gv-label">{{ section.settings.label | escape }}</p>
+        {%- if section.settings.label != blank -%}
+          <p class="gv-label">{{ section.settings.label | escape }}</p>
+        {%- endif -%}
+        <h2 class="gvh-h2">{{ section.settings.heading | default: product.title | escape }}</h2>
+        <div class="gvh-lede gvh-product__lede">
+          {%- if section.settings.text != blank -%}
+            {{ section.settings.text }}
+          {%- else -%}
+            <p>{{ product.description | strip_html | truncatewords: 30 }}</p>
           {%- endif -%}
-          <h2 class="gvh-h2">{{ section.settings.heading | default: product.title | escape }}</h2>
-          <div class="gvh-lede">
-            {%- if section.settings.text != blank -%}
-              {{ section.settings.text }}
-            {%- else -%}
-              <p>{{ product.description | strip_html | truncatewords: 36 }}</p>
-            {%- endif -%}
-          </div>
         </div>
 
         <div class="gvh-product__buyline">
@@ -154,54 +150,13 @@
           {%- endif -%}
         </div>
 
-        {%- if section.blocks.size > 0 -%}
-          <ol class="gvh-steps" role="list">
-            {%- for block in section.blocks -%}
-              <li {{ block.shopify_attributes }}>
-                <span class="gvh-numeral">{{ forloop.index | prepend: '0' | slice: -2, 2 }} {{ block.settings.title | escape }}</span>
-                <p>{{ block.settings.text | escape }}</p>
-              </li>
-            {%- endfor -%}
-          </ol>
-        {%- endif -%}
-
         <div class="gvh-product__actions">
-          {%- if single_option or product.has_only_default_variant -%}
-            <product-form class="gvh-product__form" data-section-id="{{ section.id }}">
-              <div class="product-form__error-message-wrapper" role="alert" hidden>
-                <p class="gvh-product__error"><span class="product-form__error-message"></span></p>
-              </div>
-              {%- form 'product', product, id: form_id, novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
-                <input type="hidden" name="id" value="{{ variant.id }}" class="product-variant-id">
-                <button
-                  type="submit"
-                  name="add"
-                  class="button product-form__submit"
-                  {% unless variant.available %}disabled{% endunless %}
-                >
-                  <span data-gvh-button-label>
-                    {%- if variant.available -%}
-                      {{ 'products.product.add_to_cart' | t }}
-                    {%- else -%}
-                      {{ 'products.product.sold_out' | t }}
-                    {%- endif -%}
-                  </span>
-                  {%- render 'loading-spinner' -%}
-                </button>
-              {%- endform -%}
-            </product-form>
-          {%- else -%}
-            <a class="button" href="{{ product.url }}">{{ 'products.product.choose_options' | t }}</a>
+          <a class="button" href="{{ variant.url | default: product.url }}" data-gvh-link>
+            {{- section.settings.button_label | default: product.title | escape -}}
+          </a>
+          {%- if section.settings.note != blank -%}
+            <p class="gvh-note">{{ section.settings.note | escape }}</p>
           {%- endif -%}
-
-          <div class="gvh-product__meta">
-            <a class="gv-link" href="{{ variant.url | default: product.url }}" data-gvh-details>
-              {{- 'products.product.view_full_details' | t -}}
-            </a>
-            {%- if section.settings.note != blank -%}
-              <p class="gvh-note">{{ section.settings.note | escape }}</p>
-            {%- endif -%}
-          </div>
         </div>
       </div>
     </div>
@@ -210,9 +165,7 @@
       [
         {%- for v in product.variants -%}
           {
-            "id": {{ v.id }},
             "option1": {{ v.option1 | json }},
-            "available": {{ v.available | json }},
             "price": {{ v.price | money | json }},
             "compare": {% if v.compare_at_price > v.price %}{{ v.compare_at_price | money | json }}{% else %}null{% endif %},
             "media": {{ v.featured_media.id | default: 'null' }},
@@ -238,9 +191,6 @@
           const variant = this.variants.find((v) => v.option1 === value);
           if (!variant) return;
 
-          const input = this.querySelector('input[name="id"]');
-          if (input) input.value = variant.id;
-
           const price = this.querySelector('[data-gvh-price]');
           if (price) {
             price.textContent = variant.price;
@@ -254,14 +204,8 @@
           const selected = this.querySelector('[data-gvh-selected]');
           if (selected) selected.textContent = value;
 
-          const details = this.querySelector('[data-gvh-details]');
-          if (details && variant.url) details.href = variant.url;
-
-          const button = this.querySelector('.product-form__submit');
-          const label = this.querySelector('[data-gvh-button-label]');
-          const strings = window.variantStrings || {};
-          if (button) button.toggleAttribute('disabled', !variant.available);
-          if (label) label.textContent = variant.available ? strings.addToCart : strings.soldOut;
+          const link = this.querySelector('[data-gvh-link]');
+          if (link && variant.url) link.href = variant.url;
 
           if (variant.media) {
             const next = this.querySelector('[data-media-id="' + variant.media + '"]');
@@ -288,7 +232,6 @@
   "name": "Home · First piece",
   "tag": "div",
   "class": "section-gvh-product",
-  "max_blocks": 3,
   "settings": [
     {
       "type": "product",
@@ -311,17 +254,23 @@
       "type": "richtext",
       "id": "text",
       "label": "Text",
-      "info": "Leave blank to use the start of the product description."
+      "info": "Two or three lines. Leave blank to use the start of the product description."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "info": "Leads to the product page. Leave blank to use the product title."
     },
     {
       "type": "text",
       "id": "note",
-      "label": "Note beside the details link",
-      "info": "One short fact, e.g. what is in the box."
+      "label": "Note under the button",
+      "info": "One short, confirmed fact."
     },
     {
       "type": "header",
-      "content": "Stage"
+      "content": "Photograph"
     },
     {
       "type": "text",
@@ -340,7 +289,7 @@
       "id": "image_fit",
       "label": "Photograph",
       "options": [
-        { "value": "cover", "label": "Fill the stage (lifestyle or studio photograph)" },
+        { "value": "cover", "label": "Fill the frame (lifestyle or studio photograph)" },
         { "value": "contain", "label": "Product on the stone ground (cut-out)" }
       ],
       "default": "cover"
@@ -357,25 +306,6 @@
       "id": "color_scheme",
       "label": "Colour scheme",
       "default": "scheme-2"
-    }
-  ],
-  "blocks": [
-    {
-      "type": "step",
-      "name": "Step",
-      "settings": [
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Title",
-          "default": "Set up"
-        },
-        {
-          "type": "text",
-          "id": "text",
-          "label": "Text"
-        }
-      ]
     }
   ],
   "presets": [

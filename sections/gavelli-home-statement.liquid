@@ -1,9 +1,14 @@
 {%- comment -%}
-  GAVELLI — homepage statement (the idea).
-  One sentence, set large, with an optional small photograph set inside it
-  like a word. The three principles that used to sit under it now live in
-  "How we choose", which says the same thing as questions; one statement of
-  values per page reads as conviction, two read as repetition.
+  GAVELLI — homepage idea: one sentence and one photograph.
+  The page's single statement of what Gavelli is for. It says what the brand
+  cares about (ordinary life at home), not how it runs; the "how we choose"
+  detail lives on the About page.
+
+  - Desktop: a vertical photograph at its own proportions in the left
+    columns, the sentence set large on the right, bottom-aligned with it.
+  - Phones: the sentence first, then the photograph, narrower than the page
+    and set to the right, so the page does not read as the same stack twice
+    after the opener.
 {%- endcomment -%}
 
 {{ 'gavelli-home.css' | asset_url | stylesheet_tag }}
@@ -14,63 +19,84 @@
   assign focal_style = '--gv-focal: ' | append: focal | append: ';'
 -%}
 
-<section class="gvh gvh-statement-sec gvh-pad-lg color-{{ section.settings.color_scheme }} gradient">
-  <div class="page-width">
-    <div class="gvh-statement-sec__inner gvh-grid" data-gv-reveal>
+<section class="gvh gvh-idea gvh-pad-lg color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width gvh-idea__inner gvh-grid">
+    <div class="gvh-idea__media gv-media" data-gv-reveal="media">
+      {%- if image != blank -%}
+        {{
+          image
+          | image_url: width: 1400
+          | image_tag:
+            loading: 'lazy',
+            widths: '500, 750, 1000, 1400',
+            sizes: '(min-width: 990px) 36vw, 72vw',
+            alt: section.settings.image_alt | default: image.alt,
+            style: focal_style
+        }}
+      {%- else -%}
+        {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+      {%- endif -%}
+    </div>
+
+    <div class="gvh-idea__text" data-gv-reveal>
       {%- if section.settings.label != blank -%}
         <p class="gv-label">{{ section.settings.label | escape }}</p>
       {%- endif -%}
       <h2 class="gvh-statement">
-        {{- section.settings.text_before | escape -}}
-        {%- if image != blank %}
-          <span class="gvh-pill">
-            {{- image | image_url: width: 360 | image_tag: loading: 'lazy', widths: '180, 270, 360', sizes: '140px', alt: '', style: focal_style -}}
-          </span>
-        {%- else %} —
-        {%- endif %}
-        {{ section.settings.text_after | escape -}}
+        {{- section.settings.text | escape -}}
         {%- if section.settings.accent != blank %} <span class="gvh-accent">{{ section.settings.accent | escape }}</span>{%- endif -%}
       </h2>
+      {%- if section.settings.link_label != blank and section.settings.link != blank -%}
+        <a class="gv-link" href="{{ section.settings.link }}">{{ section.settings.link_label | escape }}</a>
+      {%- endif -%}
     </div>
   </div>
 </section>
 
 {% schema %}
 {
-  "name": "Home · Statement",
+  "name": "Home · Idea",
   "tag": "div",
-  "class": "section-gvh-statement",
+  "class": "section-gvh-idea",
   "settings": [
     {
       "type": "text",
       "id": "label",
-      "label": "Label",
-      "default": "The idea"
+      "label": "Label"
     },
     {
-      "type": "text",
-      "id": "text_before",
-      "label": "Sentence, before the photograph",
-      "default": "There is no shortage of things for dogs and cats",
-      "info": "Without a photograph, the two halves are joined by a dash."
-    },
-    {
-      "type": "image_picker",
-      "id": "image",
-      "label": "Small photograph inside the sentence",
-      "info": "Optional. Shown as a small rounded crop around the focal point."
-    },
-    {
-      "type": "text",
-      "id": "text_after",
-      "label": "Sentence, after the photograph",
-      "default": "only of good reasons to choose one over another."
+      "type": "textarea",
+      "id": "text",
+      "label": "Sentence",
+      "default": "The best of life with a dog or cat is ordinary: the walk, the bowl, the warm spot on the sofa."
     },
     {
       "type": "text",
       "id": "accent",
       "label": "Italic ending",
-      "default": "So we do the choosing first."
+      "default": "That is what Gavelli is for."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Photograph",
+      "info": "Vertical (4:5). Shown whole on desktop; set the focal point for phones."
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Photograph description"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "Our story"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
     },
     {
       "type": "color_scheme",
@@ -81,7 +107,7 @@
   ],
   "presets": [
     {
-      "name": "Home · Statement"
+      "name": "Home · Idea"
     }
   ]
 }

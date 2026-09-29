@@ -1,15 +1,17 @@
 {%- comment -%}
   GAVELLI — "The ordinary hours".
   Four moments of an ordinary day. Choosing a time opens its text and
-  brings its photograph forward; at the mealtimes marked "Show the product",
-  the moment says how the product fits into it, with a link.
+  brings its photograph forward. A moment marked "Show the product" says,
+  in its own words, where the product fits into it, with a link; use it
+  once, where the product genuinely belongs (the Smart Feeder is sized for
+  one cat or a small dog, and does its work while no one is home).
 
-  The first moment is open on load, so the idea (and the product's place in
-  the routine) reads without any interaction. One moment is always open.
+  The first moment is open on load, so the idea reads without any
+  interaction. One moment is always open.
 
-  Desktop: list on the left, one photograph on the right (sticky while the
-  list is read). Phones: each moment carries its own photograph inside its
-  panel, so what changes is always in view.
+  Tablet and desktop: list on the left, one photograph on the right (sticky
+  while the list is read). Phones: each moment carries its own photograph
+  inside its panel, so what changes is always in view.
   Accessible: buttons with aria-expanded, closed panels are inert.
 {%- endcomment -%}
 
@@ -66,7 +68,7 @@
             >
               <div class="gvh-hours__panel-inner">
                 {%- if block.settings.image != blank -%}
-                  <div class="gvh-hours__panel-image large-up-hide">
+                  <div class="gvh-hours__panel-image">
                     {{
                       block.settings.image
                       | image_url: width: 1000
@@ -84,8 +86,9 @@
                   {%- endif -%}
                   {%- if block.settings.show_product and product != blank -%}
                     <div class="gvh-hours__tie">
-                      {%- if section.settings.product_note != blank -%}
-                        <p>{{ section.settings.product_note | escape }}</p>
+                      {%- assign note = block.settings.product_note | default: section.settings.product_note -%}
+                      {%- if note != blank -%}
+                        <p>{{ note | escape }}</p>
                       {%- endif -%}
                       <a class="gv-link" href="{{ product.url }}">
                         {{- section.settings.product_link_label | default: product.title | escape -}}
@@ -100,7 +103,7 @@
       </ul>
     </div>
 
-    <div class="gvh-hours__visual small-hide medium-hide" data-gv-reveal="media">
+    <div class="gvh-hours__visual" data-gv-reveal="media">
       <div class="gvh-hours__frame">
         {%- for block in section.blocks -%}
           <div
@@ -118,7 +121,7 @@
                 | image_tag:
                   loading: 'lazy',
                   widths: '700, 1000, 1400',
-                  sizes: '(min-width: 990px) 48vw, 100vw',
+                  sizes: '(min-width: 750px) 48vw, 100vw',
                   alt: block.settings.image_alt | default: block.settings.image.alt,
                   style: focal_style
               }}
@@ -178,7 +181,7 @@
       "type": "text",
       "id": "label",
       "label": "Label",
-      "default": "A day, considered"
+      "default": "An ordinary day"
     },
     {
       "type": "text",
@@ -209,8 +212,8 @@
     {
       "type": "text",
       "id": "product_note",
-      "label": "What the product does in these moments",
-      "default": "Set mealtimes in the app, and the feeder keeps to them."
+      "label": "What the product does (default)",
+      "info": "Used when a moment has no note of its own."
     },
     {
       "type": "text",
@@ -269,6 +272,11 @@
           "id": "show_product",
           "label": "Show the product in this moment",
           "default": false
+        },
+        {
+          "type": "text",
+          "id": "product_note",
+          "label": "What the product does in this moment"
         }
       ]
     }

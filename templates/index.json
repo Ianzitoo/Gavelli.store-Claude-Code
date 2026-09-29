@@ -12,75 +12,43 @@
     "opener": {
       "type": "gavelli-home-opener",
       "settings": {
-        "layout": "stacked",
         "label": "Essentials for dogs and cats",
         "heading": "For the life you share",
         "heading_accent": "with them.",
-        "text": "A small collection for everyday life with a dog or cat. Everything in it is here for a reason.",
-        "button_label": "Shop the collection",
-        "button_link": "shopify://collections/shop",
-        "link_label": "Our story",
-        "link": "shopify://pages/about-us",
-        "hide_link_mobile": true,
+        "text": "Everyday things for dogs and cats: useful, easy to live with and good to have around the house.",
+        "button_label": "Shop the Smart Feeder",
+        "button_link": "shopify://products/smart-feeder",
+        "link_label": "",
+        "link": "",
         "image": "shopify://shop_images/gavelli-hero-desktop.jpg",
         "image_mobile": "shopify://shop_images/gavelli-hero-mobile.jpg",
         "image_alt": "A man in a waxed jacket walking a golden retriever along a leafy village footpath past stone cottages",
-        "overlay_tone": "light",
-        "legibility": 0,
-        "teaser_product": "smart-feeder",
-        "teaser_label": "New · No. 01",
-        "teaser_title": "The Smart Feeder",
-        "teaser_text": "Scheduled feeding, managed from your phone.",
+        "parallax": true,
         "color_scheme": "scheme-1"
       }
     },
     "statement": {
       "type": "gavelli-home-statement",
       "settings": {
-        "label": "The idea",
-        "text_before": "There is no shortage of things for dogs and cats",
-        "image": "shopify://shop_images/gavelli-for-dogs.jpg",
-        "text_after": "only of good reasons to choose one over another.",
-        "accent": "So we do the choosing first.",
+        "label": "",
+        "text": "The best of life with a dog or cat is ordinary: the walk, the bowl, the warm spot on the sofa.",
+        "accent": "That is what Gavelli is for.",
+        "image": "shopify://shop_images/gavelli-idea-dog-cat-sofa.jpg",
+        "image_alt": "A golden retriever and a grey cat asleep together on a rug and sofa in a calm, neutral living room",
+        "link_label": "Our story",
+        "link": "shopify://pages/about-us",
         "color_scheme": "scheme-1"
       }
     },
     "first_piece": {
       "type": "gavelli-home-product",
-      "blocks": {
-        "s1": {
-          "type": "step",
-          "settings": {
-            "title": "Set up",
-            "text": "Somewhere calm and level, on its UK power supply."
-          }
-        },
-        "s2": {
-          "type": "step",
-          "settings": {
-            "title": "Connect",
-            "text": "Pair it with its companion app on your phone."
-          }
-        },
-        "s3": {
-          "type": "step",
-          "settings": {
-            "title": "Schedule",
-            "text": "Set meal times, and change them when your routine does."
-          }
-        }
-      },
-      "block_order": [
-        "s1",
-        "s2",
-        "s3"
-      ],
       "settings": {
         "product": "smart-feeder",
         "label": "The first piece",
         "heading": "The Smart Feeder.",
-        "text": "<p>Scheduled feeding, managed from your phone. Set mealtimes in the app, and the feeder keeps to them.</p>",
-        "note": "UK power supply included",
+        "text": "<p>Scheduled feeding, managed from your phone. Set mealtimes in the app, and the feeder keeps to them, whether you're in the next room or out for the day.</p>",
+        "button_label": "Shop now",
+        "note": "Sized for one cat or a small dog.",
         "number": "No. 01",
         "category": "Feeding",
         "image_fit": "cover",
@@ -99,7 +67,7 @@
             "text": "<p>The kettle on, a bowl filled, and a dog who has been up for an hour already.</p>",
             "image": "shopify://shop_images/gavelli-day-0730-breakfast.jpg",
             "image_alt": "A golden retriever waiting by its bowl in a farmhouse kitchen, with kibble scattered on the floor",
-            "show_product": true
+            "show_product": false
           }
         },
         "m2": {
@@ -110,7 +78,8 @@
             "text": "<p>The house to themselves, and a square of sun moving slowly across the floor.</p>",
             "image": "shopify://shop_images/gavelli-day-1240-quiet-middle.jpg",
             "image_alt": "A grey cat curled up asleep in a patch of sunlight on a wooden floor",
-            "show_product": false
+            "show_product": true,
+            "product_note": "Lunch arrives on time, whether or not anyone is home."
           }
         },
         "m3": {
@@ -121,7 +90,7 @@
             "text": "<p>Keys down, lead back on its hook, and someone very pleased to see you.</p>",
             "image": "shopify://shop_images/gavelli-day-1820-back-through-door.jpg",
             "image_alt": "A golden retriever looking up at its owner's muddy boots in a hallway",
-            "show_product": true
+            "show_product": false
           }
         },
         "m4": {
@@ -143,72 +112,15 @@
         "m4"
       ],
       "settings": {
-        "label": "A day, considered",
+        "label": "An ordinary day",
         "heading": "The ordinary hours.",
         "heading_accent": "",
-        "intro": "<p>Life with a dog or cat is mostly the same few moments, repeated. They are what we have in mind whenever we choose something.</p>",
+        "intro": "<p>Life with a dog or cat is mostly a handful of moments, repeated every day.</p>",
         "product": "smart-feeder",
-        "product_note": "Set mealtimes in the app, and the feeder keeps to them.",
+        "product_note": "",
         "product_link_label": "Meet the Smart Feeder",
         "anchor": "ordinary-hours",
-        "color_scheme": "scheme-1"
-      }
-    },
-    "questions": {
-      "type": "gavelli-home-questions",
-      "blocks": {
-        "q1": {
-          "type": "question",
-          "settings": {
-            "title": "Does it do a real job?",
-            "text": "It should help with something that comes up most days. Being new or clever isn't enough."
-          }
-        },
-        "q2": {
-          "type": "question",
-          "settings": {
-            "title": "Is it easy to live with?",
-            "text": "Simple to set up, easy to clean and sensible to have around the house."
-          }
-        },
-        "q3": {
-          "type": "question",
-          "settings": {
-            "title": "Can we describe it accurately?",
-            "text": "We only state what we've been able to confirm. If we can't confirm something, we don't claim it."
-          }
-        }
-      },
-      "block_order": [
-        "q1",
-        "q2",
-        "q3"
-      ],
-      "settings": {
-        "label": "How we choose",
-        "heading": "We look at what a product does, how it fits into everyday life, and whether it",
-        "heading_accent": "earns its place at home.",
-        "link_label": "Read how we choose",
-        "link": "/pages/about-us#how-we-choose",
-        "link_2_label": "Ask us before you order",
-        "link_2": "shopify://pages/contact",
-        "anchor": "how-we-choose",
-        "color_scheme": "scheme-4"
-      }
-    },
-    "brand_image": {
-      "type": "gavelli-home-image",
-      "settings": {
-        "image": "shopify://shop_images/gavelli-idea-dog-cat-sofa.jpg",
-        "image_alt": "A golden retriever and a grey cat asleep together on a rug and sofa in a calm, neutral living room",
-        "parallax": true,
-        "label": "Why Gavelli",
-        "heading": "Fewer, better things for everyday life with pets.",
-        "text": "<p>The objects around our pets should earn their place at home. So we look for essentials that are useful every day, simple to live with and quietly well designed — and leave out the rest.</p>",
-        "link_label": "About Gavelli",
-        "link": "shopify://pages/about-us",
-        "color_scheme": "scheme-1",
-        "card_color_scheme": "scheme-1"
+        "color_scheme": "scheme-3"
       }
     },
     "gavelli_hero_pMH364": {
@@ -539,10 +451,8 @@
   "order": [
     "opener",
     "statement",
-    "first_piece",
     "hours",
-    "questions",
-    "brand_image",
+    "first_piece",
     "gavelli_hero_pMH364",
     "collection",
     "how_we_choose",
