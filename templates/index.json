@@ -9,50 +9,41 @@
  */
 {
   "sections": {
-    "opener": {
+    "hero": {
       "type": "gavelli-home-opener",
       "settings": {
-        "label": "Essentials for dogs and cats",
+        "label": "Everyday things for dogs and cats",
         "heading": "For the life you share",
         "heading_accent": "with them.",
-        "text": "Everyday things for dogs and cats: useful, easy to live with and good to have around the house.",
-        "button_label": "Shop the Smart Feeder",
-        "button_link": "shopify://products/smart-feeder",
-        "link_label": "",
-        "link": "",
-        "image": "shopify://shop_images/gavelli-hero-desktop.jpg",
-        "image_mobile": "shopify://shop_images/gavelli-hero-mobile.jpg",
-        "image_alt": "A man in a waxed jacket walking a golden retriever along a leafy village footpath past stone cottages",
-        "parallax": true,
-        "color_scheme": "scheme-1"
+        "button_label": "Shop the collection",
+        "button_link": "shopify://collections/shop",
+        "image_alt": "",
+        "shade": "none",
+        "overlay_header": true,
+        "show_placeholder": true
       }
     },
     "statement": {
       "type": "gavelli-home-statement",
       "settings": {
-        "label": "",
-        "text": "The best of life with a dog or cat is ordinary: the walk, the bowl, the warm spot on the sofa.",
-        "accent": "That is what Gavelli is for.",
-        "image": "shopify://shop_images/gavelli-idea-dog-cat-sofa.jpg",
-        "image_alt": "A golden retriever and a grey cat asleep together on a rug and sofa in a calm, neutral living room",
-        "link_label": "Our story",
+        "text": "The best of life with a dog or cat is ordinary: the walk, the bowl,",
+        "accent": "the warm spot on the sofa.",
+        "link_label": "About Gavelli",
         "link": "shopify://pages/about-us",
         "color_scheme": "scheme-1"
       }
     },
-    "first_piece": {
-      "type": "gavelli-home-product",
+    "collection_v2": {
+      "type": "gavelli-home-collection",
       "settings": {
-        "product": "smart-feeder",
-        "label": "The first piece",
-        "heading": "The Smart Feeder.",
-        "text": "<p>Scheduled feeding, managed from your phone. Set mealtimes in the app, and the feeder keeps to them, whether you're in the next room or out for the day.</p>",
-        "button_label": "Shop now",
-        "note": "Sized for one cat or a small dog.",
-        "number": "No. 01",
-        "category": "Feeding",
+        "collection": "shop",
+        "label": "The collection",
+        "heading": "Useful, and good to live with.",
+        "limit": 4,
+        "link_label": "Shop all",
         "image_fit": "cover",
-        "anchor": "the-first-piece",
+        "show_placeholder": true,
+        "anchor": "collection",
         "color_scheme": "scheme-2"
       }
     },
@@ -63,45 +54,48 @@
           "type": "moment",
           "settings": {
             "time": "07:30",
+            "name": "Breakfast",
             "title": "Breakfast, unhurried.",
-            "text": "<p>The kettle on, a bowl filled, and a dog who has been up for an hour already.</p>",
+            "text": "<p>The kettle on, a bowl on the floor, and a dog who has been up for an hour already.</p>",
             "image": "shopify://shop_images/gavelli-day-0730-breakfast.jpg",
             "image_alt": "A golden retriever waiting by its bowl in a farmhouse kitchen, with kibble scattered on the floor",
-            "show_product": false
+            "tone": "linen"
           }
         },
         "m2": {
           "type": "moment",
           "settings": {
             "time": "12:40",
+            "name": "Midday",
             "title": "The quiet middle.",
-            "text": "<p>The house to themselves, and a square of sun moving slowly across the floor.</p>",
+            "text": "<p>The house to themselves. A patch of sun on the floorboards, and a long sleep in it.</p>",
             "image": "shopify://shop_images/gavelli-day-1240-quiet-middle.jpg",
             "image_alt": "A grey cat curled up asleep in a patch of sunlight on a wooden floor",
-            "show_product": true,
-            "product_note": "Lunch arrives on time, whether or not anyone is home."
+            "tone": "paper"
           }
         },
         "m3": {
           "type": "moment",
           "settings": {
             "time": "18:20",
+            "name": "Home again",
             "title": "Back through the door.",
-            "text": "<p>Keys down, lead back on its hook, and someone very pleased to see you.</p>",
+            "text": "<p>Keys down, coat on the hook, and the best welcome of the day.</p>",
             "image": "shopify://shop_images/gavelli-day-1820-back-through-door.jpg",
             "image_alt": "A golden retriever looking up at its owner's muddy boots in a hallway",
-            "show_product": false
+            "tone": "stone"
           }
         },
         "m4": {
           "type": "moment",
           "settings": {
             "time": "22:15",
+            "name": "Late",
             "title": "Lights down.",
-            "text": "<p>A cat in the warm spot on the sofa that was, until recently, yours.</p>",
+            "text": "<p>A last look at the garden, then the warm end of the sofa.</p>",
             "image": "shopify://shop_images/gavelli-day-2215-lights-down.jpg",
             "image_alt": "A grey cat curled up on a cushion on the sofa in the warm light of a lamp",
-            "show_product": false
+            "tone": "ink"
           }
         }
       },
@@ -112,15 +106,11 @@
         "m4"
       ],
       "settings": {
-        "label": "An ordinary day",
-        "heading": "The ordinary hours.",
+        "label": "Ordinary Hours",
+        "heading": "One day at home.",
         "heading_accent": "",
-        "intro": "<p>Life with a dog or cat is mostly a handful of moments, repeated every day.</p>",
-        "product": "smart-feeder",
-        "product_note": "",
-        "product_link_label": "Meet the Smart Feeder",
-        "anchor": "ordinary-hours",
-        "color_scheme": "scheme-3"
+        "tabs_label": "Times of day",
+        "anchor": "ordinary-hours"
       }
     },
     "gavelli_hero_pMH364": {
@@ -449,10 +439,10 @@
     }
   },
   "order": [
-    "opener",
+    "hero",
     "statement",
+    "collection_v2",
     "hours",
-    "first_piece",
     "gavelli_hero_pMH364",
     "collection",
     "how_we_choose",

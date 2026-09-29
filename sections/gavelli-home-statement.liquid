@@ -1,97 +1,49 @@
 {%- comment -%}
-  GAVELLI — homepage idea: one sentence and one photograph.
-  The page's single statement of what Gavelli is for. It says what the brand
-  cares about (ordinary life at home), not how it runs; the "how we choose"
-  detail lives on the About page.
-
-  - Desktop: a vertical photograph at its own proportions in the left
-    columns, the sentence set large on the right, bottom-aligned with it.
-  - Phones: the sentence first, then the photograph, narrower than the page
-    and set to the right, so the page does not read as the same stack twice
-    after the opener.
+  GAVELLI — homepage statement (v2).
+  One sentence, set centred, and nothing else but a small link: the page's
+  breath between the hero and the collection. No photograph, so the page
+  does not fall into an image / text / image rhythm. The italic ending is the
+  sentence's own last phrase.
 {%- endcomment -%}
 
 {{ 'gavelli-home.css' | asset_url | stylesheet_tag }}
 
-{%- liquid
-  assign image = section.settings.image
-  assign focal = image.presentation.focal_point | default: '50% 50%'
-  assign focal_style = '--gv-focal: ' | append: focal | append: ';'
--%}
-
-<section class="gvh gvh-idea gvh-pad-lg color-{{ section.settings.color_scheme }} gradient">
-  <div class="page-width gvh-idea__inner gvh-grid">
-    <div class="gvh-idea__media gv-media" data-gv-reveal="media">
-      {%- if image != blank -%}
-        {{
-          image
-          | image_url: width: 1400
-          | image_tag:
-            loading: 'lazy',
-            widths: '500, 750, 1000, 1400',
-            sizes: '(min-width: 990px) 36vw, 72vw',
-            alt: section.settings.image_alt | default: image.alt,
-            style: focal_style
-        }}
-      {%- else -%}
-        {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
-      {%- endif -%}
-    </div>
-
-    <div class="gvh-idea__text" data-gv-reveal>
-      {%- if section.settings.label != blank -%}
-        <p class="gv-label">{{ section.settings.label | escape }}</p>
-      {%- endif -%}
-      <h2 class="gvh-statement">
-        {{- section.settings.text | escape -}}
-        {%- if section.settings.accent != blank %} <span class="gvh-accent">{{ section.settings.accent | escape }}</span>{%- endif -%}
-      </h2>
-      {%- if section.settings.link_label != blank and section.settings.link != blank -%}
-        <a class="gv-link" href="{{ section.settings.link }}">{{ section.settings.link_label | escape }}</a>
-      {%- endif -%}
-    </div>
+<section class="gvh gvh-statement-block color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width gvh-statement-block__inner" data-gv-reveal>
+    <h2 class="gvh-statement">
+      {{- section.settings.text | escape -}}
+      {%- if section.settings.accent != blank %} <span class="gvh-accent">{{ section.settings.accent | escape }}</span>{%- endif -%}
+    </h2>
+    {%- if section.settings.link_label != blank and section.settings.link != blank -%}
+      <a class="gv-link" href="{{ section.settings.link }}">{{ section.settings.link_label | escape }}</a>
+    {%- endif -%}
   </div>
 </section>
 
 {% schema %}
 {
-  "name": "Home · Idea",
+  "name": "Home · Statement",
   "tag": "div",
-  "class": "section-gvh-idea",
+  "class": "section-gvh-statement",
   "settings": [
-    {
-      "type": "text",
-      "id": "label",
-      "label": "Label"
-    },
     {
       "type": "textarea",
       "id": "text",
       "label": "Sentence",
-      "default": "The best of life with a dog or cat is ordinary: the walk, the bowl, the warm spot on the sofa."
+      "default": "The best of life with a dog or cat is ordinary: the walk, the bowl,"
     },
     {
       "type": "text",
       "id": "accent",
       "label": "Italic ending",
-      "default": "That is what Gavelli is for."
-    },
-    {
-      "type": "image_picker",
-      "id": "image",
-      "label": "Photograph",
-      "info": "Vertical (4:5). Shown whole on desktop; set the focal point for phones."
-    },
-    {
-      "type": "text",
-      "id": "image_alt",
-      "label": "Photograph description"
+      "default": "the warm spot on the sofa.",
+      "info": "The last phrase of the sentence."
     },
     {
       "type": "text",
       "id": "link_label",
       "label": "Link label",
-      "default": "Our story"
+      "default": "About Gavelli"
     },
     {
       "type": "url",
@@ -107,7 +59,7 @@
   ],
   "presets": [
     {
-      "name": "Home · Idea"
+      "name": "Home · Statement"
     }
   ]
 }

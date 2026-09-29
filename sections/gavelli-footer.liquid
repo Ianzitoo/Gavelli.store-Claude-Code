@@ -201,9 +201,35 @@
   .gv-footer__bottom p {
     margin: 0;
   }
+
+  /* Quiet footer (no wordmark): Letters across the top, then the real logo
+     at a modest size beside the links, then the small print. */
+  .gv-footer--quiet .gv-footer__brand .gv-logo svg { width: 10.4rem; }
+
+  .gv-footer--quiet .gv-footer__newsletter {
+    padding-bottom: clamp(4.8rem, 3rem + 4vw, 11.2rem);
+    border-bottom: 1px solid rgba(var(--color-foreground), 0.14);
+  }
+
+  @media screen and (min-width: 990px) {
+    .gv-footer--quiet .gv-footer__newsletter {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: minmax(0, 6fr) minmax(0, 1fr) minmax(0, 5fr);
+      grid-template-areas: 'label . text' 'title . form';
+      column-gap: 2.4rem;
+      align-items: end;
+    }
+
+    .gv-footer--quiet .gv-footer__label { grid-area: label; }
+    .gv-footer--quiet .gv-footer__newsletter-title { grid-area: title; margin: 0; }
+    .gv-footer--quiet .gv-footer__newsletter-text { grid-area: text; margin: 0 0 2.4rem; }
+    .gv-footer--quiet .gv-footer__newsletter-form { grid-area: form; }
+    .gv-footer--quiet .gv-footer__brand { grid-column: 1 / span 4; }
+  }
 </style>
 
-<footer class="gv-footer gv-footer-{{ section.id }} color-{{ section.settings.color_scheme }} gradient">
+<footer class="gv-footer gv-footer-{{ section.id }}{% unless section.settings.show_wordmark %} gv-footer--quiet{% endunless %} color-{{ section.settings.color_scheme }} gradient">
   <div class="page-width">
     <div class="gv-footer__grid">
       {%- if section.settings.newsletter_enable -%}
@@ -255,7 +281,9 @@
             {%- endif -%}
           {%- endform -%}
         </div>
-      {%- elsif section.settings.show_wordmark == false -%}
+      {%- endif -%}
+
+      {%- if section.settings.show_wordmark == false -%}
         <div class="gv-footer__brand">
           <a href="{{ routes.root_url }}" class="gv-logo link--text" aria-label="{{ shop.name | escape }}">
             {{- 'gavelli-logo-full.svg' | inline_asset_content -}}

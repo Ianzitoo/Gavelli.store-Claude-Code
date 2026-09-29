@@ -1,20 +1,22 @@
 {%- comment -%}
-  GAVELLI — homepage opener (hero).
+  GAVELLI — homepage hero (v2).
 
-  The photograph is the first thing seen, at every width; the type sits on
-  the ground beside or below it, never on it (the current photographs have
-  no calm area to carry type).
+  One full-bleed photograph fills the first screen; the header sits over it
+  (transparent, Linen type) until the page moves, then returns to its solid
+  sticky state. The type sits on the photograph's own shaded area, bottom
+  left: label (what Gavelli sells), heading, one button.
 
-  - Desktop (>= 990px): split. Type in the left five columns, bottom-aligned;
-    the photograph fills the right of the first screen and runs to the edge,
-    with a very slight scroll drift (CSS only).
-  - Tablet (750–989px): the horizontal photograph at its own proportions,
-    then the type below it.
-  - Phones: the vertical photograph first, sized so the heading and the
-    button still land in the first screen; the lede is left to the page
-    below (the label already says what Gavelli is).
+  - Desktop and landscape tablet: the horizontal photograph.
+  - Phones and portrait tablet: the vertical photograph (art-directed, not
+    a crop of the horizontal one).
+  - The photograph brief asks for a naturally dark, plain type area. For a
+    photograph without one, "Legibility shade" adds a soft shade behind the
+    type only.
+  - No photograph yet: a clearly labelled placeholder, when "Show
+    placeholders" is on (for review); otherwise a plain Ink ground.
 
-  No fixed heights: the photograph's height follows the viewport, clamped.
+  The overlay header needs :has() (all current browsers). Without it the
+  header stays solid and the hero simply starts below it.
 {%- endcomment -%}
 
 {{ 'gavelli-home.css' | asset_url | stylesheet_tag }}
@@ -23,91 +25,105 @@
   assign image = section.settings.image
   assign image_mobile = section.settings.image_mobile | default: image
   assign alt = section.settings.image_alt | default: image.alt | escape
-
-  assign ratio = '16 / 9'
-  if image != blank
-    assign ratio = image.aspect_ratio
-  endif
-
   assign focal = image.presentation.focal_point | default: '50% 50%'
   assign focal_mobile = image_mobile.presentation.focal_point | default: '50% 50%'
-  assign media_style = '--gv-focal: ' | append: focal | append: '; --gvh-focal-mobile: ' | append: focal_mobile | append: '; --gvh-ratio: ' | append: ratio | append: ';'
+  assign media_style = '--gv-focal: ' | append: focal | append: '; --gvh-focal-mobile: ' | append: focal_mobile | append: ';'
 -%}
 
-<section class="gvh gvh-opener color-{{ section.settings.color_scheme }} gradient">
-  <div class="gvh-opener__media{% if section.settings.parallax %} gvh-opener__media--drift{% endif %}" style="{{ media_style }}">
-    <div class="gvh-opener__layer">
-      {%- if image != blank -%}
-        <picture>
-          {%- if section.settings.image_mobile != blank -%}
-            <source
-              media="(max-width: 749px)"
-              srcset="
-                {{- image_mobile | image_url: width: 500 }} 500w,
-                {{ image_mobile | image_url: width: 750 }} 750w,
-                {{ image_mobile | image_url: width: 1000 }} 1000w
-              "
-              sizes="100vw"
-            >
-          {%- endif -%}
-          {{
-            image
-            | image_url: width: 2400
-            | image_tag:
-              widths: '750, 1000, 1400, 1800, 2400',
-              sizes: '(min-width: 990px) 60vw, 100vw',
-              loading: 'eager',
-              fetchpriority: 'high',
-              alt: alt
-          }}
-        </picture>
-      {%- else -%}
-        {{ 'hero-apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}
-      {%- endif -%}
-    </div>
+<section
+  class="gvh gvh-hero gvh-hero--shade-{{ section.settings.shade }}{% if section.settings.overlay_header %} gvh-hero--overlay{% endif %} color-scheme-4"
+  aria-labelledby="GvhHeroHeading-{{ section.id }}"
+>
+  <div class="gvh-hero__media" style="{{ media_style }}">
+    {%- if image != blank -%}
+      <picture>
+        {%- if section.settings.image_mobile != blank -%}
+          <source
+            media="(max-width: 749px), (max-width: 1099px) and (orientation: portrait)"
+            srcset="
+              {{- image_mobile | image_url: width: 600 }} 600w,
+              {{ image_mobile | image_url: width: 900 }} 900w,
+              {{ image_mobile | image_url: width: 1200 }} 1200w,
+              {{ image_mobile | image_url: width: 1600 }} 1600w
+            "
+            sizes="100vw"
+          >
+        {%- endif -%}
+        {{
+          image
+          | image_url: width: 2800
+          | image_tag:
+            widths: '900, 1200, 1600, 2000, 2400, 2800',
+            sizes: '100vw',
+            loading: 'eager',
+            fetchpriority: 'high',
+            alt: alt
+        }}
+      </picture>
+    {%- elsif section.settings.show_placeholder -%}
+      <div class="gvh-placeholder gvh-placeholder--dark">
+        <p class="gvh-placeholder__label">
+          Placeholder · hero photograph not yet shot<br>
+          The hall, 08:10 — see the photography brief
+        </p>
+      </div>
+    {%- endif -%}
   </div>
 
-  <div class="gvh-opener__text">
-    <div class="gvh-opener__head gv-enter">
+  <div class="gvh-hero__shade" aria-hidden="true"></div>
+
+  <div class="page-width gvh-hero__inner">
+    <div class="gvh-hero__text gv-enter">
       {%- if section.settings.label != blank -%}
-        <p class="gv-label">{{ section.settings.label | escape }}</p>
+        <p class="gv-label gvh-hero__label">{{ section.settings.label | escape }}</p>
       {%- endif -%}
-      <h1 class="gvh-display gvh-opener__heading">
+      <h1 class="gvh-display gvh-hero__heading" id="GvhHeroHeading-{{ section.id }}">
         {{- section.settings.heading | escape -}}
         {%- if section.settings.heading_accent != blank %} <span class="gvh-accent">{{ section.settings.heading_accent | escape }}</span>{%- endif -%}
       </h1>
-      {%- if section.settings.text != blank -%}
-        <p class="gvh-lede gvh-opener__lede small-hide">{{ section.settings.text | escape }}</p>
-      {%- endif -%}
-      {%- if section.settings.button_label != blank or section.settings.link_label != blank -%}
-        <div class="gvh-opener__actions">
-          {%- if section.settings.button_label != blank -%}
-            <a class="button" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
-              {{- section.settings.button_label | escape -}}
-            </a>
-          {%- endif -%}
-          {%- if section.settings.link_label != blank and section.settings.link != blank -%}
-            <a class="gv-link small-hide" href="{{ section.settings.link }}">
-              {{- section.settings.link_label | escape -}}
-            </a>
-          {%- endif -%}
+      {%- if section.settings.button_label != blank -%}
+        <div class="gvh-hero__actions">
+          <a class="button" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
+            {{- section.settings.button_label | escape -}}
+          </a>
         </div>
       {%- endif -%}
     </div>
   </div>
 </section>
 
+{%- if section.settings.overlay_header -%}
+  <script>
+    (function () {
+      // The hero rises under the sticky header by exactly the space the
+      // header takes (its height plus its bottom margin, which stays constant
+      // while it compacts), so nothing moves when the page scrolls.
+      var header = document.querySelector('.section-header');
+      if (!header) return;
+      var root = document.documentElement;
+      function measure() {
+        var space = header.offsetHeight + (parseFloat(getComputedStyle(header).marginBottom) || 0);
+        root.style.setProperty('--gvh-header-space', space + 'px');
+      }
+      measure();
+      window.addEventListener('resize', measure);
+      header.addEventListener('transitionend', measure);
+    })();
+  </script>
+{%- endif -%}
+
 {% schema %}
 {
-  "name": "Home · Opener",
+  "name": "Home · Hero",
   "tag": "div",
-  "class": "section-gvh-opener",
+  "class": "section-gvh-hero",
   "settings": [
     {
       "type": "text",
       "id": "label",
       "label": "Label",
-      "default": "Essentials for dogs and cats"
+      "default": "Everyday things for dogs and cats",
+      "info": "Says what Gavelli sells, above the heading."
     },
     {
       "type": "text",
@@ -123,32 +139,15 @@
     },
     {
       "type": "text",
-      "id": "text",
-      "label": "Text",
-      "info": "Desktop and tablet only. Keep to one or two lines."
-    },
-    {
-      "type": "text",
       "id": "button_label",
       "label": "Button label",
-      "default": "Shop now"
+      "default": "Shop the collection"
     },
     {
       "type": "url",
       "id": "button_link",
-      "label": "Button link"
-    },
-    {
-      "type": "text",
-      "id": "link_label",
-      "label": "Link label",
-      "default": "Our story",
-      "info": "Desktop and tablet only."
-    },
-    {
-      "type": "url",
-      "id": "link",
-      "label": "Link"
+      "label": "Button link",
+      "info": "A commercial choice: the collection, or one product. The layout does not depend on it."
     },
     {
       "type": "header",
@@ -157,14 +156,14 @@
     {
       "type": "image_picker",
       "id": "image",
-      "label": "Photograph",
-      "info": "Horizontal. On desktop it fills the right of the first screen, cropped around the focal point, so set the focal point on the subject."
+      "label": "Photograph, horizontal",
+      "info": "16:9 or wider, 2800px. Keep the left 40% dark and plain for the type; set the focal point on the subject."
     },
     {
       "type": "image_picker",
       "id": "image_mobile",
-      "label": "Photograph on phones",
-      "info": "Vertical (3:4 or 4:5). Shown first on phones, cropped a little from top and bottom."
+      "label": "Photograph, vertical",
+      "info": "4:5, 1600px. Phones and portrait tablets. Keep the lower third dark and plain for the type."
     },
     {
       "type": "text",
@@ -172,22 +171,34 @@
       "label": "Photograph description"
     },
     {
+      "type": "select",
+      "id": "shade",
+      "label": "Legibility shade",
+      "options": [
+        { "value": "none", "label": "None (the photograph has its own dark area)" },
+        { "value": "soft", "label": "Soft" },
+        { "value": "strong", "label": "Strong" }
+      ],
+      "default": "none",
+      "info": "A shade behind the type only, for photographs without a calm dark area."
+    },
+    {
       "type": "checkbox",
-      "id": "parallax",
-      "label": "Slight drift while scrolling",
-      "info": "Desktop and tablet only. Off for visitors who prefer reduced motion.",
+      "id": "overlay_header",
+      "label": "Header over the photograph",
       "default": true
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Colour scheme",
-      "default": "scheme-1"
+      "type": "checkbox",
+      "id": "show_placeholder",
+      "label": "Show placeholders",
+      "default": false,
+      "info": "Labels the missing photograph for review. Turn off before publishing."
     }
   ],
   "presets": [
     {
-      "name": "Home · Opener"
+      "name": "Home · Hero"
     }
   ]
 }

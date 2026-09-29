@@ -13,7 +13,7 @@
   "sections": {
     "announcement-bar": {
       "type": "announcement-bar",
-      "disabled": false,
+      "disabled": true,
       "blocks": {
         "announcement-bar-0": {
           "type": "announcement",
