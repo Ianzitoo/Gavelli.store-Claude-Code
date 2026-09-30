@@ -24,7 +24,7 @@
 {%- liquid
   assign image = section.settings.image
   assign image_mobile = section.settings.image_mobile | default: image
-  assign alt = section.settings.image_alt | default: image.alt | escape
+  assign alt = section.settings.image_alt | default: image.alt
   assign focal = image.presentation.focal_point | default: '50% 50%'
   assign focal_mobile = image_mobile.presentation.focal_point | default: '50% 50%'
   assign media_style = '--gv-focal: ' | append: focal | append: '; --gvh-focal-mobile: ' | append: focal_mobile | append: ';'
@@ -45,6 +45,9 @@
               {{ image_mobile | image_url: width: 900 }} 900w,
               {{ image_mobile | image_url: width: 1200 }} 1200w,
               {{ image_mobile | image_url: width: 1600 }} 1600w
+              {%- if image_mobile.width > 1600 -%}
+                , {{ image_mobile | image_url: width: image_mobile.width }} {{ image_mobile.width }}w
+              {%- endif -%}
             "
             sizes="100vw"
           >

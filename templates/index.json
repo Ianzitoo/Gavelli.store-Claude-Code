@@ -17,10 +17,12 @@
         "heading_accent": "with them.",
         "button_label": "Shop the collection",
         "button_link": "shopify://collections/shop",
-        "image_alt": "",
+        "image": "shopify://shop_images/gavelli-hero-desktop.jpg",
+        "image_mobile": "shopify://shop_images/gavelli-hero-mobile.jpg",
+        "image_alt": "A man in a waxed jacket walking a golden retriever along a leafy village footpath past stone cottages",
         "shade": "none",
         "overlay_header": true,
-        "show_placeholder": true
+        "show_placeholder": false
       }
     },
     "statement": {
