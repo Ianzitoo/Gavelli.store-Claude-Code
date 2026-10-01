@@ -60,7 +60,7 @@
         "label": "Good to know",
         "heading": "The details.",
         "faq_label": "Questions",
-        "contact_note": "<p>Something else? <a href=\"/pages/contact\" title=\"Contact\">Write to us</a> and we'll reply within 24 hours on business days.</p>",
+        "contact_note": "<p>Questions? <a href=\"/pages/contact\" title=\"Contact\">Write to us</a> before you order.</p>",
         "color_scheme": "scheme-2"
       }
     },

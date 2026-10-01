@@ -40,8 +40,14 @@
     assign in_use = in_use_product.metafields.custom.in_use_image.value | default: section.settings.in_use_image
   endif
 
+  # The review placeholder never reaches the live store: theme editor only.
+  assign show_placeholder = false
+  if section.settings.show_placeholder and request.design_mode
+    assign show_placeholder = true
+  endif
+
   assign solo = false
-  if count == 1 and in_use == blank and section.settings.show_placeholder == false
+  if count == 1 and in_use == blank and show_placeholder == false
     assign solo = true
   endif
 
@@ -200,7 +206,7 @@
       "id": "show_placeholder",
       "label": "Show placeholders",
       "default": false,
-      "info": "Labels the missing in-use photograph for review. Turn off before publishing."
+      "info": "Labels the missing in-use photograph for review. Shown in the theme editor only, never on the live store."
     },
     {
       "type": "text",

@@ -14,8 +14,6 @@
   .gv-contact__value a { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.4rem; }
   .gv-contact__links { display: flex; flex-direction: column; gap: 1.6rem; align-items: flex-start; }
 
-  .gv-contact__todo { display: inline-block; padding: 0.4rem 1rem; border: 1px dashed rgba(var(--color-foreground), 0.5); font-size: 1.2rem; letter-spacing: 0.06em; }
-
   .gv-form { display: grid; gap: 2.4rem; }
   .gv-form__row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.4rem; }
   .gv-form__field { display: grid; gap: 0.8rem; }
@@ -71,11 +69,12 @@
         </div>
       {%- endif -%}
       <div class="gv-contact__row">
-        <p class="gv-label">Response time</p>
         {%- if section.settings.response_time != blank -%}
+          <p class="gv-label">Response time</p>
           <p class="gv-body">{{ section.settings.response_time | escape }}</p>
         {%- else -%}
-          <p class="gv-contact__todo">To be confirmed: typical response time</p>
+          <p class="gv-label">Questions</p>
+          <p class="gv-body">Write to us before you order.</p>
         {%- endif -%}
       </div>
       <div class="gv-contact__row gv-contact__links">
@@ -129,7 +128,7 @@
   "class": "section-gavelli-contact",
   "settings": [
     { "type": "text", "id": "email", "label": "Contact email", "info": "Leave blank to hide." },
-    { "type": "text", "id": "response_time", "label": "Typical response time", "info": "Until set, a 'To be confirmed' note is shown." },
+    { "type": "text", "id": "response_time", "label": "Typical response time", "info": "Only once there is a real service level. Until set, the row reads 'Questions — Write to us before you order.'" },
     { "type": "url", "id": "faq_link", "label": "FAQ link" },
     { "type": "url", "id": "shop_link", "label": "Shop link" },
     { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-1" },

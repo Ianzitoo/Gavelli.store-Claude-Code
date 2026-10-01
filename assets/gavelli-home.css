@@ -233,6 +233,59 @@
     --color-foreground: 244, 239, 230;
     color: rgb(244, 239, 230);
   }
+
+  /* Scrim: a short Ink gradient from the top edge (~150px on phones, ~170px
+     on desktop) so the Linen type and icons hold their contrast on a light
+     photograph. Eased stops keep it from reading as a band on the wall.
+     Strength comes from the hero's "Header scrim" setting; it fades out with
+     the clear header when the page scrolls or a menu opens. Painted behind
+     the header's content (z-index -1 inside the sticky header). */
+  body:has(.gvh-hero--overlay) .section-header .header-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: -1;
+    height: 15rem;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      rgba(28, 27, 25, var(--gvh-header-scrim, 0.4)) 0%,
+      rgba(28, 27, 25, calc(var(--gvh-header-scrim, 0.4) * 0.62)) 35%,
+      rgba(28, 27, 25, calc(var(--gvh-header-scrim, 0.4) * 0.26)) 65%,
+      rgba(28, 27, 25, 0) 100%
+    );
+    opacity: 0;
+    transition: opacity var(--gv-dur) var(--gv-ease);
+  }
+
+  html:not(.gv-scrolled) body:has(.gvh-hero--overlay) .section-header:not(:has(details[open])) .header-wrapper::before {
+    opacity: 1;
+  }
+
+  /* Focus on the clear header: a Linen ring with an Ink halo outside it, so
+     it shows on any part of the photograph. The solid header keeps the
+     site-wide 2px Ink outline. */
+  html:not(.gv-scrolled) body:has(.gvh-hero--overlay) .section-header:not(:has(details[open])) :is(a, button, summary, [tabindex]):focus-visible {
+    outline: 2px solid rgb(244, 239, 230);
+    outline-offset: 0;
+    box-shadow: 0 0 0 4px rgb(28, 27, 25);
+  }
+
+  html:not(.gv-scrolled) body:has(.gvh-hero--overlay) .section-header:not(:has(details[open])) shopify-account.header__icon::part(signed-out-avatar):focus-visible {
+    outline: 2px solid rgb(244, 239, 230);
+    outline-offset: 0;
+    box-shadow: 0 0 0 4px rgb(28, 27, 25);
+  }
+
+  @media screen and (min-width: 990px) {
+    body:has(.gvh-hero--overlay) .section-header .header-wrapper::before { height: 17rem; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:has(.gvh-hero--overlay) .section-header .header-wrapper::before { transition: none; }
 }
 
 /* ==========================================================================
@@ -511,7 +564,7 @@
 }
 
 /* ==========================================================================
-   4 · Ordinary Hours — a day as a timeline; the ground follows the light
+   4 · Ordinary Hours — a day as a timeline; one ground, the light in the photograph
    ========================================================================== */
 
 .gvh-hours {

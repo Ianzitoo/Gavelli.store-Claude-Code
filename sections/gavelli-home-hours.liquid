@@ -1,10 +1,11 @@
 {%- comment -%}
   GAVELLI — "Ordinary Hours" (v2).
   One house through one day. The times are the navigation: a horizontal row
-  in the order of the day. Choosing one crossfades the scene (0.6s) and moves
-  the section's ground to that hour's tone (Linen at breakfast to Ink at
-  night) in the same 0.6s. The first scene shows on arrival; nothing plays by
-  itself. Brand world only: no product, link or button.
+  in the order of the day. Choosing one crossfades the scene (0.6s). The
+  section keeps one ground (Linen by default) and the change of light stays
+  in the photograph; set "Ground" to "Follow the hour" to move the ground to
+  each hour's tone instead. The first scene shows on arrival; nothing plays
+  by itself. Brand world only: no product, link or button.
 
   - Scene: full width. 2:1 on desktop, 3:2 on tablet, 4:5 on phones, cut
     from one 3:2 master around its focal point.
@@ -16,11 +17,19 @@
 
 {{ 'gavelli-home.css' | asset_url | stylesheet_tag }}
 
-{%- assign first_tone = section.blocks.first.settings.tone | default: 'linen' -%}
+{%- liquid
+  assign ground = section.settings.ground | default: 'linen'
+  assign follow_hour = false
+  if ground == 'hour'
+    assign follow_hour = true
+    assign ground = section.blocks.first.settings.tone | default: 'linen'
+  endif
+-%}
 
 <gvh-hours
   class="gvh gvh-hours gvh-pad-lg"
-  data-tone="{{ first_tone }}"
+  data-tone="{{ ground }}"
+  {% if follow_hour %}data-follow-hour{% endif %}
   id="{{ section.settings.anchor | default: 'ordinary-hours' | handleize }}"
   aria-labelledby="GvhHoursHeading-{{ section.id }}"
   role="region"
@@ -77,7 +86,7 @@
               alt: scene_alt,
               style: focal_style
           }}
-        {%- else -%}
+        {%- elsif request.design_mode -%}
           <span class="gvh-placeholder gvh-placeholder--dark">
             <span class="gvh-placeholder__label">Placeholder · {{ block.settings.time | escape }} photograph not yet chosen</span>
           </span>
@@ -141,6 +150,7 @@
         });
         this.panels.forEach((panel, i) => { panel.hidden = i !== index; });
         this.scenes.forEach((scene, i) => scene.classList.toggle('is-active', i === index));
+        if (!this.hasAttribute('data-follow-hour')) return;
         const tone = this.tabs[index] && this.tabs[index].dataset.tone;
         if (tone) this.dataset.tone = tone;
       }
@@ -177,6 +187,20 @@
       "id": "tabs_label",
       "label": "Name of the time list (screen readers)",
       "default": "Times of day"
+    },
+    {
+      "type": "select",
+      "id": "ground",
+      "label": "Ground",
+      "options": [
+        { "value": "linen", "label": "Linen" },
+        { "value": "paper", "label": "Paper" },
+        { "value": "stone", "label": "Stone" },
+        { "value": "ink", "label": "Ink" },
+        { "value": "hour", "label": "Follow the hour" }
+      ],
+      "default": "linen",
+      "info": "One ground for the whole section; the light changes in the photograph. 'Follow the hour' uses each moment's own ground."
     },
     {
       "type": "text",
@@ -230,6 +254,7 @@
           "type": "select",
           "id": "tone",
           "label": "Ground at this hour",
+          "info": "Used only when the section's Ground is 'Follow the hour'.",
           "options": [
             { "value": "linen", "label": "Linen (morning)" },
             { "value": "paper", "label": "Paper (midday)" },

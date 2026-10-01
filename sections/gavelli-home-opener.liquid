@@ -63,7 +63,7 @@
             alt: alt
         }}
       </picture>
-    {%- elsif section.settings.show_placeholder -%}
+    {%- elsif section.settings.show_placeholder and request.design_mode -%}
       <div class="gvh-placeholder gvh-placeholder--dark">
         <p class="gvh-placeholder__label">
           Placeholder · hero photograph not yet shot<br>
@@ -96,6 +96,9 @@
 </section>
 
 {%- if section.settings.overlay_header -%}
+  <style>
+    :root { --gvh-header-scrim: {{ section.settings.header_scrim | divided_by: 100.0 }}; }
+  </style>
   <script>
     (function () {
       // The hero rises under the sticky header by exactly the space the
@@ -192,11 +195,22 @@
       "default": true
     },
     {
+      "type": "range",
+      "id": "header_scrim",
+      "label": "Header scrim",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "%",
+      "default": 40,
+      "info": "A short Ink gradient behind the header over the photograph. Use the lowest value that keeps the header text and icons readable."
+    },
+    {
       "type": "checkbox",
       "id": "show_placeholder",
       "label": "Show placeholders",
       "default": false,
-      "info": "Labels the missing photograph for review. Turn off before publishing."
+      "info": "Labels the missing photograph for review. Shown in the theme editor only, never on the live store."
     }
   ],
   "presets": [
