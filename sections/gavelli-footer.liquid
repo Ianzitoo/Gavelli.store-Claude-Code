@@ -83,7 +83,7 @@
   .gv-footer__heading {
     margin: 0 0 2rem;
     font-family: var(--font-body-family);
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: var(--font-body-weight);
     letter-spacing: 0.16em;
     text-transform: uppercase;
@@ -170,7 +170,7 @@
     background: transparent;
     color: rgb(var(--color-foreground));
     font-family: var(--font-body-family);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
     cursor: pointer;
@@ -200,6 +200,47 @@
 
   .gv-footer__bottom p {
     margin: 0;
+  }
+
+  .gv-footer__contact {
+    margin: 2rem 0 0;
+    font-size: 1.4rem;
+    line-height: 1.7;
+    color: rgba(var(--color-foreground), 0.8);
+  }
+
+  .gv-footer__contact a {
+    color: rgb(var(--color-foreground));
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.3em;
+    text-decoration-color: rgba(var(--color-foreground), 0.45);
+  }
+
+  .gv-footer__grid > .gv-footer__contact { margin: 0; }
+
+  .gv-footer__social { margin-top: 2rem; }
+  .gv-footer__social .list-social { justify-content: flex-start; }
+  .gv-footer__social .list-social__link { color: rgba(var(--color-foreground), 0.8); }
+
+  .gv-footer__company { display: grid; gap: 0.4rem; }
+
+  /* Payment methods: Shopify's own marks, shown in one tone. */
+  .gv-footer__payments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .gv-footer__payments svg {
+    display: block;
+    width: 3.8rem;
+    height: 2.4rem;
+    filter: grayscale(1);
+    opacity: 0.72;
   }
 
   /* Quiet footer (no wordmark): Letters across the top, then the real logo
@@ -283,6 +324,20 @@
         </div>
       {%- endif -%}
 
+      {%- capture contact_html -%}
+        {%- if section.settings.contact_email != blank -%}
+          <p class="gv-footer__contact">
+            {{- section.settings.contact_label | default: 'Write to us' | escape }}: <a href="mailto:{{ section.settings.contact_email | escape }}">{{ section.settings.contact_email | escape }}</a>
+          </p>
+        {%- endif -%}
+      {%- endcapture -%}
+      {%- liquid
+        assign has_social = false
+        if settings.social_facebook_link != blank or settings.social_instagram_link != blank or settings.social_youtube_link != blank or settings.social_tiktok_link != blank or settings.social_twitter_link != blank or settings.social_pinterest_link != blank or settings.social_snapchat_link != blank or settings.social_tumblr_link != blank or settings.social_vimeo_link != blank
+          assign has_social = true
+        endif
+      -%}
+
       {%- if section.settings.show_wordmark == false -%}
         <div class="gv-footer__brand">
           <a href="{{ routes.root_url }}" class="gv-logo link--text" aria-label="{{ shop.name | escape }}">
@@ -291,7 +346,14 @@
           {%- if section.settings.tagline != blank -%}
             <p class="gv-footer__tagline">{{ section.settings.tagline | escape }}</p>
           {%- endif -%}
+          {{ contact_html }}
+          {%- if has_social -%}
+            {{ 'component-list-social.css' | asset_url | stylesheet_tag }}
+            <div class="gv-footer__social">{%- render 'social-icons' -%}</div>
+          {%- endif -%}
         </div>
+      {%- elsif contact_html != blank -%}
+        {{ contact_html }}
       {%- endif -%}
 
       <div class="gv-footer__navs">
@@ -358,8 +420,24 @@
         &copy; {{ 'now' | date: '%Y' }} {{ section.settings.copyright_name | default: shop.name | escape -}}
         {%- if section.settings.show_wordmark and section.settings.tagline != blank %} · {{ section.settings.tagline | escape }}{%- endif -%}
       </p>
+      {%- if section.settings.company_name != blank or section.settings.company_address != blank -%}
+        <p class="gv-footer__company">
+          {%- if section.settings.company_name != blank -%}<span>{{ section.settings.company_name | escape }}</span>{%- endif -%}
+          {%- if section.settings.company_address != blank -%}<span>{{ section.settings.company_address | escape | newline_to_br }}</span>{%- endif -%}
+        </p>
+      {%- endif -%}
       {%- if section.settings.bottom_note != blank -%}
         <p>{{ section.settings.bottom_note | escape }}</p>
+      {%- endif -%}
+      {%- if section.settings.show_payment_icons and shop.enabled_payment_types.size > 0 -%}
+        <div>
+          <span class="visually-hidden">{{ 'sections.footer.payment' | t }}</span>
+          <ul class="gv-footer__payments" role="list">
+            {%- for type in shop.enabled_payment_types -%}
+              <li>{{ type | payment_type_svg_tag }}</li>
+            {%- endfor -%}
+          </ul>
+        </div>
       {%- endif -%}
     </div>
   </div>
@@ -438,13 +516,13 @@
       "type": "text",
       "id": "newsletter_heading",
       "label": "Heading",
-      "default": "Hear what we"
+      "default": "Hear when something"
     },
     {
       "type": "text",
       "id": "newsletter_heading_accent",
       "label": "Heading, italic ending",
-      "default": "choose next."
+      "default": "new arrives."
     },
     {
       "type": "text",
@@ -464,6 +542,22 @@
     },
     {
       "type": "header",
+      "content": "Contact"
+    },
+    {
+      "type": "text",
+      "id": "contact_label",
+      "label": "Contact line",
+      "default": "Write to us"
+    },
+    {
+      "type": "text",
+      "id": "contact_email",
+      "label": "Contact email",
+      "info": "Leave blank to hide. Social links appear only when set in Theme settings > Social media."
+    },
+    {
+      "type": "header",
       "content": "Bottom bar"
     },
     {
@@ -476,6 +570,25 @@
       "type": "text",
       "id": "bottom_note",
       "label": "Note"
+    },
+    {
+      "type": "text",
+      "id": "company_name",
+      "label": "Trading name",
+      "info": "Only if registered. Leave blank to hide."
+    },
+    {
+      "type": "textarea",
+      "id": "company_address",
+      "label": "Registered address",
+      "info": "Only if it exists. Leave blank to hide."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "Show payment methods",
+      "default": true,
+      "info": "Shopify's own marks for the methods enabled at checkout, in one tone."
     },
     {
       "type": "header",

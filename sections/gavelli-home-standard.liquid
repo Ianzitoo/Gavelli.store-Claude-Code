@@ -1,0 +1,159 @@
+{%- comment -%}
+  GAVELLI — homepage, "The Gavelli standard" (Phase B).
+  The brand's standard in plain words: useful, easy to live with, described
+  as it is, right down to the details. Text only: no icon, badge, number or
+  photograph (a pause between two photographic sections).
+  Language: never chosen / selected / curated, never designed / made /
+  engineered / tested by us, and no operational promise (response time).
+
+  - Phones: one column; each standard on its own ruled line.
+  - Desktop: label, heading and lede in columns 1–5; the standards in
+    columns 7–12, the closing line under them.
+{%- endcomment -%}
+
+<section
+  class="gvh gvh-standard gvh-rhythm color-{{ section.settings.color_scheme }} gradient"
+  id="{{ section.settings.anchor | default: 'the-gavelli-standard' | handleize }}"
+  aria-labelledby="GvhStandardHeading-{{ section.id }}"
+>
+  <div class="page-width gvh-standard__grid">
+    <div class="gvh-standard__head" data-gv-reveal>
+      {%- if section.settings.label != blank -%}
+        <p class="gv-label">{{ section.settings.label | escape }}</p>
+      {%- endif -%}
+      <h2 class="gvh-h2 gvh-standard__heading" id="GvhStandardHeading-{{ section.id }}">
+        {{- section.settings.heading | escape -}}
+        {%- if section.settings.heading_accent != blank %} <span class="gvh-accent">{{ section.settings.heading_accent | escape }}</span>{%- endif -%}
+      </h2>
+      {%- if section.settings.lede != blank -%}
+        <p class="gvh-lede gvh-standard__lede">{{ section.settings.lede | escape }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="gvh-standard__body">
+      {%- if section.blocks.size > 0 -%}
+        <ul class="gvh-standard__list" role="list">
+          {%- for block in section.blocks -%}
+            <li class="gvh-standard__item" data-gv-reveal {{ block.shopify_attributes }}>
+              <h3 class="gvh-standard__title">{{ block.settings.title | escape }}</h3>
+              {%- if block.settings.text != blank -%}
+                <p class="gvh-standard__text">{{ block.settings.text | escape }}</p>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      {%- if section.settings.closing != blank or section.settings.link_label != blank -%}
+        <div class="gvh-standard__close" data-gv-reveal>
+          {%- if section.settings.closing != blank -%}
+            <p class="gvh-standard__close-text">{{ section.settings.closing | escape }}</p>
+          {%- endif -%}
+          {%- if section.settings.link_label != blank -%}
+            <a class="gv-link" href="{{ section.settings.link | default: '/pages/contact' }}">{{ section.settings.link_label | escape }}</a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Home · The Gavelli standard",
+  "tag": "div",
+  "class": "section-gvh-standard",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "The Gavelli standard"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "One standard:"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading, italic ending",
+      "default": "good to live with."
+    },
+    {
+      "type": "text",
+      "id": "lede",
+      "label": "Lede",
+      "default": "Everything that carries the Gavelli name is held to it."
+    },
+    {
+      "type": "paragraph",
+      "content": "Say only what can be confirmed. Avoid chosen, selected, curated, designed by, made by, engineered or tested by us, and any promise about response times."
+    },
+    {
+      "type": "text",
+      "id": "closing",
+      "label": "Closing line",
+      "default": "Not sure it's right for your pet? Ask before you order."
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Closing link",
+      "default": "Write to us"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Closing link destination",
+      "info": "Defaults to /pages/contact"
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Anchor",
+      "default": "the-gavelli-standard"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Colour scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "standard",
+      "name": "Standard",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Useful, every day."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Line",
+          "default": "It does a real job, the kind that comes up most days."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home · The Gavelli standard",
+      "blocks": [
+        { "type": "standard", "settings": { "title": "Useful, every day.", "text": "It does a real job, the kind that comes up most days." } },
+        { "type": "standard", "settings": { "title": "Easy to live with.", "text": "Simple to set up, and sensible to have around the house." } },
+        { "type": "standard", "settings": { "title": "Described as it is.", "text": "We say what it does, and nothing it doesn't. If we can't confirm it, we don't claim it." } },
+        { "type": "standard", "settings": { "title": "Right down to the details.", "text": "How it looks in the room, how clearly it's explained, and how thoughtfully every detail is considered." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

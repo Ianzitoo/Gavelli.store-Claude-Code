@@ -19,7 +19,6 @@
   header stays solid and the hero simply starts below it.
 {%- endcomment -%}
 
-{{ 'gavelli-home.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
   assign image = section.settings.image
@@ -86,7 +85,14 @@
       </h1>
       {%- if section.settings.button_label != blank -%}
         <div class="gvh-hero__actions">
-          <a class="button" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
+          {%- liquid
+            assign button_href = section.settings.button_link | default: routes.all_products_collection_url
+            assign button_anchor = section.settings.button_anchor | strip | remove: '#' | handleize
+            if button_anchor != blank
+              assign button_href = '#' | append: button_anchor
+            endif
+          -%}
+          <a class="button" href="{{ button_href }}"{% if button_anchor != blank %} data-gvh-jump{% endif %}>
             {{- section.settings.button_label | escape -}}
           </a>
         </div>
@@ -94,6 +100,30 @@
     </div>
   </div>
 </section>
+
+<script>
+  (function () {
+    // The button jumps to a section on this page: a smooth scroll unless the
+    // visitor prefers reduced motion, then keyboard focus moves to that
+    // section's heading.
+    document.addEventListener('click', function (event) {
+      var link = event.target.closest && event.target.closest('[data-gvh-jump]');
+      if (!link) return;
+      var id = decodeURIComponent(link.getAttribute('href').slice(1));
+      var target = document.getElementById(id);
+      if (!target) return;
+      event.preventDefault();
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+      if (window.history && history.pushState) history.pushState(null, '', '#' + id);
+      var heading = target.querySelector('h2, h1');
+      if (heading) {
+        if (!heading.hasAttribute('tabindex')) heading.setAttribute('tabindex', '-1');
+        heading.focus({ preventScroll: true });
+      }
+    });
+  })();
+</script>
 
 {%- if section.settings.overlay_header -%}
   <style>
@@ -154,6 +184,12 @@
       "id": "button_link",
       "label": "Button link",
       "info": "A commercial choice: the collection, or one product. The layout does not depend on it."
+    },
+    {
+      "type": "text",
+      "id": "button_anchor",
+      "label": "Button jumps to a section on this page",
+      "info": "The section's anchor, e.g. the-feeder. When set, it replaces the button link and scrolls down the page."
     },
     {
       "type": "header",

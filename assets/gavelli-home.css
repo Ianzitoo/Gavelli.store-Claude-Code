@@ -289,7 +289,8 @@
 }
 
 /* ==========================================================================
-   2 · Statement — one sentence, centred: the page's breath
+   Statement — one sentence, centred (no longer on the home page; kept for
+   the section, which can still be added in the editor)
    ========================================================================== */
 
 .gvh-statement-block {
@@ -422,7 +423,8 @@
 }
 
 /* ==========================================================================
-   3 · Collection — one card, composed by how many products there are
+   Collection — one card, composed by how many products there are (no
+   longer on the home page; kept for the section)
    ========================================================================== */
 
 .gvh-coll__head {
@@ -564,7 +566,194 @@
 }
 
 /* ==========================================================================
-   4 · Ordinary Hours — a day as a timeline; one ground, the light in the photograph
+   Section rhythm (Phase B) — 64/56px on phones, 96px on tablets, 128px on
+   desktop. "Good to know" is shorter (see below).
+   ========================================================================== */
+
+.gvh-rhythm { padding-top: 6.4rem; padding-bottom: 5.6rem; }
+
+@media screen and (min-width: 750px) {
+  .gvh-rhythm { padding-top: 9.6rem; padding-bottom: 9.6rem; }
+}
+
+@media screen and (min-width: 990px) {
+  .gvh-rhythm { padding-top: 12.8rem; padding-bottom: 12.8rem; }
+}
+
+/* ==========================================================================
+   2 · The feeder — one object as a portrait
+   ========================================================================== */
+
+.gvh-feeder__grid { display: grid; grid-template-columns: minmax(0, 1fr); }
+
+.gvh-feeder__head { display: grid; gap: 1.6rem; }
+.gvh-feeder__heading { max-width: 12em; }
+.gvh-feeder__heading:focus:not(:focus-visible) { outline: none; }
+
+.gvh-feeder__media {
+  position: relative;
+  display: block;
+  margin-top: 3.2rem;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background-color: rgb(232, 225, 213);
+}
+
+.gvh-feeder__img {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--gv-dur) var(--gv-ease-out);
+}
+
+.gvh-feeder__img.is-active { opacity: 1; }
+
+.gvh-feeder__media img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--gv-focal, 50% 50%);
+}
+
+.gvh-feeder__info { display: grid; gap: 2rem; margin-top: 2.4rem; }
+
+.gvh-feeder__row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.8rem 1.6rem;
+}
+
+.gvh-feeder__name {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: clamp(2.4rem, 2rem + 0.8vw, 3.2rem);
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+  color: rgb(var(--color-foreground));
+}
+
+.gvh-feeder__price {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin: 0;
+  font-size: 1.7rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.gvh-feeder__soldout {
+  font-size: 1.2rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gvh-muted);
+}
+
+.gvh-feeder__soldout[hidden] { display: none; }
+
+.gvh-feeder__colours { display: flex; align-items: center; gap: 0.8rem; margin-top: -0.8rem; }
+.gvh-feeder__swatches { display: flex; gap: 0.2rem; margin-left: -1rem; }
+
+.gvh-feeder__swatch {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+
+.gvh-feeder__chip {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: var(--gvh-chip);
+  box-shadow: inset 0 0 0 1px rgba(var(--color-foreground), 0.28);
+  transition: box-shadow var(--gv-dur-fast) var(--gv-ease);
+}
+
+.gvh-feeder__swatch[aria-pressed='true'] .gvh-feeder__chip {
+  box-shadow: inset 0 0 0 1px rgba(var(--color-foreground), 0.28), 0 0 0 3px rgb(var(--color-background)), 0 0 0 4px rgb(var(--color-foreground));
+}
+
+.gvh-feeder__swatch:focus-visible { outline-offset: 0; }
+
+.gvh-feeder__colour-name { margin: 0; font-size: 1.4rem; letter-spacing: 0.02em; color: var(--gvh-text); }
+
+.gvh-feeder__text { max-width: 44rem; }
+.gvh-feeder__text-more { display: none; }
+
+.gvh-feeder__facts {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 1.4rem;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: var(--gvh-text);
+}
+
+.gvh-feeder__facts li + li::before { content: '·'; margin: 0 0.8rem; }
+
+.gvh-feeder__service {
+  margin: 0;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--gvh-rule);
+  font-size: 1.4rem;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: var(--gvh-text);
+}
+
+.gvh-feeder__cta { width: 100%; min-height: 5.2rem; margin-top: 0.4rem; }
+
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  .gvh-feeder__media { width: 80%; }
+  .gvh-feeder__info { max-width: 56rem; }
+  .gvh-feeder__cta { width: auto; justify-self: start; padding: 0 3.2rem; }
+}
+
+@media screen and (min-width: 990px) {
+  .gvh-feeder__grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-rows: 1fr auto auto 1fr;
+    column-gap: 2.4rem;
+  }
+
+  .gvh-feeder__media {
+    grid-column: 1 / span 7;
+    grid-row: 1 / span 4;
+    margin-top: 0;
+    max-height: 78rem;
+  }
+
+  .gvh-feeder__head { grid-column: 9 / -1; grid-row: 2; }
+  .gvh-feeder__info { grid-column: 9 / -1; grid-row: 3; margin-top: 3.2rem; }
+  .gvh-feeder__text-more { display: inline; }
+  .gvh-feeder__cta { width: auto; justify-self: start; padding: 0 3.2rem; }
+
+  /* Without a photograph, the text stands alone across the grid. */
+  .gvh-feeder__grid:not(:has(.gvh-feeder__media)) { grid-template-rows: auto; }
+  .gvh-feeder__grid:not(:has(.gvh-feeder__media)) .gvh-feeder__head { grid-column: 1 / span 5; grid-row: 1; }
+  .gvh-feeder__grid:not(:has(.gvh-feeder__media)) .gvh-feeder__info { grid-column: 7 / -1; grid-row: 1; margin-top: 0; }
+}
+
+/* ==========================================================================
+   3 · Ordinary Hours — a day that keeps to time; one ground, the light in
+   the photograph. A swiped row below 990px, tabs above.
    ========================================================================== */
 
 .gvh-hours {
@@ -579,43 +768,39 @@
 .gvh-hours[data-tone='stone'] { --color-background: 232, 225, 213; --color-foreground: 28, 27, 25; }
 .gvh-hours[data-tone='ink'] { --color-background: 28, 27, 25; --color-foreground: 244, 239, 230; }
 
-.gvh-hours :is(.gv-label, .gvh-h2, .gvh-hours__tab, .gvh-hours__title, .gvh-hours__text) {
-  transition: color var(--gv-dur) var(--gv-ease-out), border-color var(--gv-dur) var(--gv-ease-out);
-}
-
+.gvh-hours__top { display: grid; gap: 3.2rem; }
 .gvh-hours__head { display: grid; gap: 1.6rem; }
 
 .gvh-hours__tabs {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
-  column-gap: clamp(1rem, 0.4rem + 1.4vw, 2.4rem);
-  margin-top: clamp(3.2rem, 2rem + 2.5vw, 5.6rem);
+  column-gap: 1.2rem;
 }
 
 .gvh-hours__tab {
   appearance: none;
   display: grid;
-  align-content: start;
-  gap: 0.6rem;
-  min-height: 5.6rem;
+  align-content: end;
+  gap: 0.4rem;
+  min-height: 4.4rem;
   margin: 0;
-  padding: 1.4rem 0 0;
+  padding: 0.6rem 0 0.8rem;
   border: 0;
-  border-top: 1px solid rgba(var(--color-foreground), 0.22);
+  border-bottom: 1px solid rgba(var(--color-foreground), 0.22);
   background: none;
   font: inherit;
   text-align: left;
   color: var(--gvh-muted);
   cursor: pointer;
+  transition: color var(--gv-dur-fast) var(--gv-ease), border-color var(--gv-dur-fast) var(--gv-ease);
 }
 
+.gvh-hours__tab[aria-current='true'],
 .gvh-hours__tab[aria-selected='true'] {
   color: rgb(var(--color-foreground));
-  border-top-color: rgb(var(--color-foreground));
+  border-bottom-color: rgb(var(--color-foreground));
 }
-
-.gvh-hours__tab:focus-visible { outline: 1px solid currentColor; outline-offset: 0.6rem; }
 
 @media (hover: hover) {
   .gvh-hours__tab:hover { color: rgb(var(--color-foreground)); }
@@ -624,42 +809,49 @@
 .gvh-hours__time {
   font-family: var(--font-heading-family);
   font-weight: var(--font-heading-weight);
-  font-size: clamp(2.4rem, 1.6rem + 1.9vw, 4rem);
+  font-size: clamp(2.2rem, 1.8rem + 1vw, 3.2rem);
   line-height: 1;
 }
 
-.gvh-hours__name { font-size: 1.4rem; letter-spacing: 0.02em; }
+.gvh-hours__name { display: none; font-size: 1.3rem; letter-spacing: 0.02em; }
 
-@media screen and (max-width: 749px) {
-  .gvh-hours__name { display: none; }
+.gvh-hours__body { margin-top: 2.4rem; }
+
+/* Below 990px: the scenes as one row, swiped sideways, full bleed so the
+   next scene shows at the edge of the screen. */
+.gvh-hours__scenes {
+  display: flex;
+  gap: 1.2rem;
+  margin: 0 -1.5rem;
+  padding: 0 1.5rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 1.5rem;
+  scrollbar-width: none;
 }
 
-.gvh-hours__stage {
+.gvh-hours__scenes::-webkit-scrollbar { display: none; }
+.gvh-hours__scenes:focus-visible { outline-offset: -2px; }
+
+.gvh-hours__scene {
+  display: grid;
+  align-content: start;
+  gap: 1.6rem;
+  flex: 0 0 30rem;
+  scroll-snap-align: start;
+}
+
+.gvh-hours__media {
   position: relative;
-  margin-top: clamp(1.6rem, 1rem + 2vw, 4rem);
   aspect-ratio: 4 / 5;
   overflow: hidden;
   background-color: rgba(var(--color-foreground), 0.08);
 }
 
-@media screen and (min-width: 750px) {
-  .gvh-hours__stage { aspect-ratio: 3 / 2; }
-}
-
-@media screen and (min-width: 990px) {
-  .gvh-hours__stage { aspect-ratio: 2 / 1; max-height: 82svh; width: 100%; }
-}
-
-.gvh-hours__scene {
+.gvh-hours__media img {
   position: absolute;
   inset: 0;
-  opacity: 0;
-  transition: opacity var(--gv-dur) var(--gv-ease-out);
-}
-
-.gvh-hours__scene.is-active { opacity: 1; }
-
-.gvh-hours__scene img {
   display: block;
   width: 100%;
   height: 100%;
@@ -667,39 +859,217 @@
   object-position: var(--gv-focal, 50% 50%);
 }
 
-.gvh-hours__captions { margin-top: clamp(2.8rem, 2rem + 2vw, 4.8rem); }
-
-.gvh-hours__panel { display: grid; gap: 1.2rem; }
-.gvh-hours__panel[hidden] { display: none; }
-.gvh-hours__panel-title { display: grid; gap: 1rem; }
+.gvh-hours__caption { display: grid; gap: 0.8rem; }
 
 .gvh-hours__title {
   margin: 0;
   font-family: var(--font-heading-family);
   font-weight: var(--font-heading-weight);
-  font-size: clamp(3rem, 2rem + 2vw, 4.8rem);
-  line-height: 1.05;
+  font-size: clamp(2.6rem, 2rem + 1.6vw, 4.4rem);
+  line-height: 1.08;
   letter-spacing: -0.01em;
   color: rgb(var(--color-foreground));
 }
 
-.gvh-hours__text { max-width: 48rem; }
+.gvh-hours__text { max-width: 44rem; }
 
-@media screen and (min-width: 750px) {
-  .gvh-hours__panel {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 2rem;
-  }
+.gvh-hours__more { margin: 3.2rem 0 0; }
 
-  .gvh-hours__text { margin-top: 2.6rem; }
+@media screen and (max-width: 749px) {
+  .gvh-hours__text { font-size: 1.5rem; }
+}
+
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  .gvh-hours__scenes { margin: 0 -5rem; padding: 0 5rem; scroll-padding-inline: 5rem; }
+  .gvh-hours__scene { flex-basis: 36rem; }
 }
 
 @media screen and (min-width: 990px) {
-  .gvh-hours__panel {
+  .gvh-hours__top {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 2.4rem;
+    align-items: end;
+  }
+
+  .gvh-hours__head { grid-column: 1 / span 6; }
+  .gvh-hours__tabs { grid-column: 7 / -1; column-gap: 2.4rem; }
+  .gvh-hours__tab { gap: 0.6rem; padding-bottom: 1.2rem; }
+  .gvh-hours__name { display: block; }
+
+  .gvh-hours__body { margin-top: 4.8rem; }
+
+  .gvh-hours__scenes {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .gvh-hours__scene {
+    grid-area: 1 / 1;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 2.4rem;
+    align-items: end;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--gv-dur) var(--gv-ease-out), visibility 0s linear var(--gv-dur);
+  }
+
+  .gvh-hours__scene.is-active {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity var(--gv-dur) var(--gv-ease-out), visibility 0s;
+  }
+
+  .gvh-hours__media { grid-column: 1 / span 7; aspect-ratio: 1 / 1; max-height: 68rem; }
+  .gvh-hours__caption { grid-column: 9 / -1; gap: 1.2rem; }
+  .gvh-hours__caption-time { display: none; }
+  .gvh-hours__text { margin-top: 1.2rem; }
+
+  .gvh-hours__more { margin-top: 4.8rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gvh-hours,
+  .gvh-hours__scene,
+  .gvh-hours__scene.is-active,
+  .gvh-feeder__img { transition: none; }
+}
+
+/* ==========================================================================
+   4 · The Gavelli standard — text only, a pause between photographs
+   ========================================================================== */
+
+.gvh-standard__grid { display: grid; gap: 4rem; }
+.gvh-standard__head { display: grid; gap: 1.6rem; align-content: start; }
+.gvh-standard__heading { max-width: 10em; }
+.gvh-standard__lede { max-width: 40rem; margin-top: 0.8rem; }
+
+.gvh-standard__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--gvh-rule);
+}
+
+.gvh-standard__item {
+  display: grid;
+  gap: 0.8rem;
+  padding: 2.4rem 0;
+  border-bottom: 1px solid var(--gvh-rule);
+}
+
+.gvh-standard__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: clamp(2.4rem, 2rem + 1vw, 3.2rem);
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+  color: rgb(var(--color-foreground));
+}
+
+.gvh-standard__text {
+  margin: 0;
+  max-width: 48rem;
+  font-size: 1.5rem;
+  font-weight: 300;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+  color: var(--gvh-text);
+}
+
+.gvh-standard__close {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 1.2rem 2.4rem;
+  margin-top: 3.2rem;
+}
+
+.gvh-standard__close-text { margin: 0; font-size: 1.6rem; line-height: 1.6; color: var(--gvh-text); }
+
+@media screen and (min-width: 990px) {
+  .gvh-standard__grid {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: 2.4rem;
   }
 
-  .gvh-hours__panel-title { grid-column: 1 / span 5; }
-  .gvh-hours__text { grid-column: 7 / span 5; }
+  .gvh-standard__head { grid-column: 1 / span 5; }
+  .gvh-standard__body { grid-column: 7 / -1; }
+
+  .gvh-standard__item {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    column-gap: 2.4rem;
+    align-items: baseline;
+    padding: 2.8rem 0;
+  }
+}
+
+/* ==========================================================================
+   5 · Good to know — delivery, returns, set-up, questions; text only
+   ========================================================================== */
+
+.gvh-know { padding-top: 5.6rem; padding-bottom: 5.6rem; }
+
+.gvh-know__grid { display: grid; gap: 3.2rem; }
+.gvh-know__head { display: grid; gap: 1.6rem; justify-items: start; align-content: start; }
+
+.gvh-know__list {
+  margin: 0;
+  border-top: 1px solid var(--gvh-rule);
+}
+
+.gvh-know__item {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr);
+  gap: 1.6rem;
+  align-items: baseline;
+  padding: 1.6rem 0;
+  border-bottom: 1px solid var(--gvh-rule);
+}
+
+.gvh-know__label { color: var(--gvh-muted); }
+
+.gvh-know__value {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.6;
+  color: rgb(var(--color-foreground));
+}
+
+.gvh-know__value a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  text-decoration-color: rgba(var(--color-foreground), 0.45);
+}
+
+@media screen and (min-width: 990px) {
+  .gvh-know { padding-top: 8.8rem; padding-bottom: 8.8rem; }
+
+  .gvh-know__grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 2.4rem;
+  }
+
+  .gvh-know__head { grid-column: 1 / span 3; }
+
+  .gvh-know__list {
+    grid-column: 5 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 2.4rem;
+    border-top: 0;
+  }
+
+  .gvh-know__item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    align-content: start;
+    padding: 1.6rem 0 0;
+    border-top: 1px solid var(--gvh-rule);
+    border-bottom: 0;
+  }
 }

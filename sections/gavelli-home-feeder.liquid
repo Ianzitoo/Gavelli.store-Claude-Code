@@ -1,0 +1,372 @@
+{%- comment -%}
+  GAVELLI — homepage, "The feeder" (Phase B).
+  One product shown as a portrait: what it is, what it solves, what it costs,
+  what comes with it, and one way through to its page. Never a grid card.
+
+  - Name, price and colours come from the product chosen here; nothing about
+    the product is typed into the theme.
+  - Colour swatches are generated from the variants. Choosing one swaps the
+    photograph (when the variant has its own), the colour name and price, and
+    points the button at that colour on the product page.
+  - Phones: one column (label, heading, photograph, name and price,
+    colours, text, facts, service line, full-width button).
+    Desktop: photograph in columns 1–7, text in columns 9–12, centred.
+  - No placeholder: without a photograph the text simply stands alone.
+{%- endcomment -%}
+
+{%- liquid
+  assign product = section.settings.product
+  assign current = product.selected_or_first_available_variant
+  assign anchor = section.settings.anchor | default: 'the-feeder' | handleize
+
+  assign colour_index = 0
+  assign has_colours = false
+  if product != blank and product.has_only_default_variant == false
+    for option in product.options_with_values
+      assign option_name = option.name | downcase
+      if option_name == 'colour' or option_name == 'color'
+        assign colour_index = forloop.index0
+        assign has_colours = true
+      endif
+    endfor
+    if has_colours == false and product.options.size == 1
+      assign has_colours = true
+    endif
+  endif
+
+  assign sizes = '(min-width: 1440px) 75rem, (min-width: 990px) 52vw, calc(100vw - 3rem)'
+-%}
+
+{%- if product != blank -%}
+  <section
+    class="gvh gvh-feeder gvh-rhythm color-{{ section.settings.color_scheme }} gradient"
+    id="{{ anchor }}"
+    aria-labelledby="GvhFeederHeading-{{ section.id }}"
+    data-gvh-feeder
+  >
+    <div class="page-width gvh-feeder__grid">
+      <div class="gvh-feeder__head" data-gv-reveal>
+        {%- if section.settings.label != blank -%}
+          <p class="gv-label">{{ section.settings.label | escape }}</p>
+        {%- endif -%}
+        <h2 class="gvh-h2 gvh-feeder__heading" id="GvhFeederHeading-{{ section.id }}" tabindex="-1">
+          {{- section.settings.heading | escape -}}
+          {%- if section.settings.heading_accent != blank %} <span class="gvh-accent">{{ section.settings.heading_accent | escape }}</span>{%- endif -%}
+        </h2>
+      </div>
+
+      {%- liquid
+        assign has_media = false
+        if section.settings.image != blank or product.featured_media != blank
+          assign has_media = true
+        endif
+      -%}
+      {%- if has_media -%}
+        <a
+          class="gvh-feeder__media"
+          href="{{ current.url | default: product.url }}"
+          tabindex="-1"
+          aria-hidden="true"
+          data-gv-reveal="media"
+          data-gvh-feeder-link
+        >
+          {%- if section.settings.image != blank -%}
+            {%- liquid
+              assign focal = section.settings.image.presentation.focal_point | default: '50% 50%'
+              assign focal_style = '--gv-focal: ' | append: focal | append: ';'
+            -%}
+            {{
+              section.settings.image
+              | image_url: width: 1600
+              | image_tag:
+                loading: 'lazy',
+                widths: '500, 750, 1000, 1300, 1600',
+                sizes: sizes,
+                alt: '',
+                style: focal_style
+            }}
+          {%- else -%}
+            {%- comment -%} One photograph per colour that has its own; the rest share the product's. {%- endcomment -%}
+            {%- liquid
+              assign shown_ids = ','
+            -%}
+            {%- for v in product.variants -%}
+              {%- liquid
+                assign media = v.featured_media | default: product.featured_media
+                assign key = ',' | append: media.id | append: ','
+                assign duplicate = false
+                if shown_ids contains key
+                  assign duplicate = true
+                endif
+              -%}
+              {%- unless duplicate -%}
+                {%- liquid
+                  assign shown_ids = shown_ids | append: media.id | append: ','
+                  assign focal = media.presentation.focal_point | default: '50% 50%'
+                  assign focal_style = '--gv-focal: ' | append: focal | append: ';'
+                  assign variant_ids = ' '
+                  for w in product.variants
+                    assign w_media = w.featured_media | default: product.featured_media
+                    if w_media.id == media.id
+                      assign variant_ids = variant_ids | append: w.id | append: ' '
+                    endif
+                  endfor
+                  assign current_key = ' ' | append: current.id | append: ' '
+                  assign shows_current = false
+                  if variant_ids contains current_key
+                    assign shows_current = true
+                  endif
+                -%}
+                <span class="gvh-feeder__img{% if shows_current %} is-active{% endif %}" data-gvh-feeder-variants="{{ variant_ids | strip }}">
+                  {{
+                    media
+                    | image_url: width: 1600
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '500, 750, 1000, 1300, 1600',
+                      sizes: sizes,
+                      alt: '',
+                      style: focal_style
+                  }}
+                </span>
+              {%- endunless -%}
+            {%- endfor -%}
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+
+      <div class="gvh-feeder__info" data-gv-reveal>
+        <div class="gvh-feeder__row">
+          <h3 class="gvh-feeder__name">{{ product.title | escape }}</h3>
+          <p class="gvh-feeder__price">
+            <span data-gvh-feeder-price>{{ current.price | money }}</span>
+            <span class="gvh-feeder__soldout" data-gvh-feeder-soldout{% if current.available %} hidden{% endif %}>Sold out</span>
+          </p>
+        </div>
+
+        {%- if has_colours -%}
+          {%- assign option = product.options_with_values[colour_index] -%}
+          <div class="gvh-feeder__colours">
+            <div class="gvh-feeder__swatches" role="group" aria-label="{{ option.name | escape }}">
+              {%- for v in product.variants -%}
+                {%- liquid
+                  assign value = v.options[colour_index]
+                  if seen_values == blank
+                    assign seen_values = '|'
+                  endif
+                  assign seen_key = '|' | append: value | append: '|'
+                  if seen_values contains seen_key
+                    continue
+                  endif
+                  assign seen_values = seen_values | append: seen_key
+
+                  assign chip = '#d8d2c6'
+                  for ov in option.values
+                    if ov.name == value and ov.swatch.color != blank
+                      assign chip = ov.swatch.color
+                    endif
+                  endfor
+                  assign lower = value | downcase
+                  if chip == '#d8d2c6'
+                    if lower contains 'black'
+                      assign chip = '#1c1b19'
+                    elsif lower contains 'white'
+                      assign chip = '#f7f5f1'
+                    endif
+                  endif
+                -%}
+                <button
+                  type="button"
+                  class="gvh-feeder__swatch"
+                  aria-pressed="{% if v.id == current.id %}true{% else %}false{% endif %}"
+                  data-gvh-feeder-variant="{{ v.id }}"
+                  data-price="{{ v.price | money | escape }}"
+                  data-available="{{ v.available }}"
+                  data-url="{{ v.url }}"
+                  data-name="{{ value | escape }}"
+                >
+                  <span class="gvh-feeder__chip" style="--gvh-chip: {{ chip }};" aria-hidden="true"></span>
+                  <span class="visually-hidden">{{ value | escape }}</span>
+                </button>
+              {%- endfor -%}
+            </div>
+            <p class="gvh-feeder__colour-name" aria-live="polite" data-gvh-feeder-colour>{{ current.options[colour_index] | escape }}</p>
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.text != blank -%}
+          <p class="gvh-lede gvh-feeder__text">
+            {{- section.settings.text | escape -}}
+            {%- if section.settings.text_more != blank %}<span class="gvh-feeder__text-more"> {{ section.settings.text_more | escape }}</span>{%- endif -%}
+          </p>
+        {%- endif -%}
+
+        {%- liquid
+          assign facts = section.settings.fact_1 | append: '|' | append: section.settings.fact_2 | append: '|' | append: section.settings.fact_3 | split: '|'
+        -%}
+        {%- capture facts_html -%}
+          {%- for fact in facts -%}
+            {%- assign f = fact | strip -%}
+            {%- if f != blank -%}<li>{{ f | escape }}</li>{%- endif -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+        {%- if facts_html != blank -%}
+          <ul class="gvh-feeder__facts" role="list">{{ facts_html }}</ul>
+        {%- endif -%}
+
+        {%- if section.settings.service_line != blank -%}
+          <p class="gvh-feeder__service">{{ section.settings.service_line | escape }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.button_label != blank -%}
+          <a class="button gvh-feeder__cta" href="{{ current.url | default: product.url }}" data-gvh-feeder-link>
+            {{- section.settings.button_label | escape -}}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+  </section>
+
+  {%- if has_colours -%}
+    <script>
+      (function () {
+        var root = document.currentScript && document.currentScript.previousElementSibling;
+        if (!root || !root.matches('[data-gvh-feeder]')) root = document.querySelector('[data-gvh-feeder]');
+        if (!root || root.dataset.gvhReady) return;
+        root.dataset.gvhReady = 'true';
+        var swatches = root.querySelectorAll('[data-gvh-feeder-variant]');
+        swatches.forEach(function (swatch) {
+          swatch.addEventListener('click', function () {
+            var id = swatch.getAttribute('data-gvh-feeder-variant');
+            swatches.forEach(function (s) { s.setAttribute('aria-pressed', s === swatch ? 'true' : 'false'); });
+            root.querySelectorAll('[data-gvh-feeder-variants]').forEach(function (img) {
+              var ids = img.getAttribute('data-gvh-feeder-variants').split(' ');
+              img.classList.toggle('is-active', ids.indexOf(id) !== -1);
+            });
+            var price = root.querySelector('[data-gvh-feeder-price]');
+            if (price) price.textContent = swatch.getAttribute('data-price');
+            var soldout = root.querySelector('[data-gvh-feeder-soldout]');
+            if (soldout) soldout.hidden = swatch.getAttribute('data-available') === 'true';
+            var name = root.querySelector('[data-gvh-feeder-colour]');
+            if (name) name.textContent = swatch.getAttribute('data-name');
+            root.querySelectorAll('[data-gvh-feeder-link]').forEach(function (a) { a.href = swatch.getAttribute('data-url'); });
+          });
+        });
+      })();
+    </script>
+  {%- endif -%}
+{%- elsif request.design_mode -%}
+  <div class="page-width" style="padding: 4rem 1.5rem;">
+    <p class="gv-todo">GAVELLI home: the feeder. Choose a product.</p>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Home · The feeder",
+  "tag": "div",
+  "class": "section-gvh-feeder",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product",
+      "info": "Name, price and colours come from the product."
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "The feeder"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Mealtimes keep to time,"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading, italic ending",
+      "default": "even when you can't."
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Set the times once in the app. The feeder serves each meal on schedule."
+    },
+    {
+      "type": "text",
+      "id": "text_more",
+      "label": "Text, desktop only ending",
+      "default": "A lie-in, a late train, a long day out.",
+      "info": "Added after the text on desktop."
+    },
+    {
+      "type": "header",
+      "content": "Facts"
+    },
+    {
+      "type": "text",
+      "id": "fact_1",
+      "label": "Fact 1",
+      "default": "2-litre"
+    },
+    {
+      "type": "text",
+      "id": "fact_2",
+      "label": "Fact 2",
+      "default": "iOS and Android app"
+    },
+    {
+      "type": "text",
+      "id": "fact_3",
+      "label": "Fact 3",
+      "default": "UK plug"
+    },
+    {
+      "type": "text",
+      "id": "service_line",
+      "label": "Service line",
+      "default": "Free UK delivery · 14 days to change your mind",
+      "info": "Must match the published delivery and returns policies."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button",
+      "default": "View the feeder"
+    },
+    {
+      "type": "header",
+      "content": "Photograph"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Photograph",
+      "info": "Optional. Leave empty to use each colour's own product photograph. 4:5."
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Anchor",
+      "default": "the-feeder",
+      "info": "The hero button can jump here, e.g. #the-feeder"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Colour scheme",
+      "default": "scheme-2"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home · The feeder"
+    }
+  ]
+}
+{% endschema %}
