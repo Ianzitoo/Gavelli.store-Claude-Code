@@ -15,6 +15,24 @@
     } catch (e) {}
   })(document.documentElement);
 </script>
+{%- comment -%}
+  Extra faces used by the editorial type: Cormorant italic (the one italic
+  phrase per heading, 400 with 500 as fallback) and Jost 300 (ledes).
+  Each is loaded only when the font library offers it; otherwise the
+  browser falls back to the faces the layout already loads.
+{%- endcomment -%}
+{%- liquid
+  assign gv_head_italic = settings.type_header_font | font_modify: 'style', 'italic'
+  if gv_head_italic
+    assign gv_head_italic_400 = gv_head_italic | font_modify: 'weight', '400'
+  endif
+  assign gv_body_300 = settings.type_body_font | font_modify: 'weight', '300'
+-%}
+{% style %}
+  {%- if gv_head_italic %}{{ gv_head_italic | font_face: font_display: 'swap' }}{% endif -%}
+  {%- if gv_head_italic_400 %}{{ gv_head_italic_400 | font_face: font_display: 'swap' }}{% endif -%}
+  {%- if gv_body_300 %}{{ gv_body_300 | font_face: font_display: 'swap' }}{% endif -%}
+{% endstyle %}
 {{ 'gavelli-system.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'gavelli-motion.js' | asset_url }}" defer="defer"></script>
 

@@ -1,0 +1,652 @@
+/* ==========================================================================
+   GAVELLI — homepage, v2 ("Refinement, not reinvention").
+   Shared by the gavelli-home-* sections. Builds on gavelli-system.css
+   (tokens, .gv-label, .gv-link, reveals) and the theme's .button.
+   No fixed section heights: every block grows with its content, image and
+   viewport. Proportions come from aspect ratios and fluid type only.
+   ========================================================================== */
+
+.gvh {
+  --gvh-t-display: clamp(5rem, 1.6rem + 8vw, 12.4rem);
+  --gvh-t-statement: clamp(3.4rem, 1.8rem + 3.6vw, 6.8rem);
+  --gvh-t-h2: clamp(4rem, 2.4rem + 2.9vw, 6.4rem);
+  --gvh-t-h2-sm: clamp(3.2rem, 2rem + 2.5vw, 5.6rem);
+  --gvh-t-card: clamp(3rem, 2.2rem + 1.5vw, 4.4rem);
+  --gvh-text: rgba(var(--color-foreground), 0.8);
+  --gvh-muted: rgba(var(--color-foreground), 0.7);
+  --gvh-rule: rgba(var(--color-foreground), 0.16);
+  position: relative;
+  color: rgb(var(--color-foreground));
+}
+
+.gvh-pad-md { padding-top: var(--gv-space-md); padding-bottom: var(--gv-space-md); }
+.gvh-pad-lg { padding-top: var(--gv-space-lg); padding-bottom: var(--gv-space-lg); }
+
+@media screen and (min-width: 990px) {
+  .gvh-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 2.4rem;
+  }
+}
+
+/* --- Type ---------------------------------------------------------------- */
+
+.gvh-display,
+.gvh-statement,
+.gvh-h2,
+.gvh-h2-sm,
+.gvh-card-title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  color: rgb(var(--color-foreground));
+  text-wrap: balance;
+}
+
+.gvh-display { font-size: var(--gvh-t-display); line-height: 0.94; letter-spacing: -0.02em; }
+.gvh-statement { font-size: var(--gvh-t-statement); line-height: 1.08; letter-spacing: -0.012em; }
+.gvh-h2 { font-size: var(--gvh-t-h2); line-height: 1; letter-spacing: -0.012em; }
+.gvh-h2-sm { font-size: var(--gvh-t-h2-sm); line-height: 1.12; letter-spacing: -0.01em; }
+.gvh-card-title { font-size: var(--gvh-t-card); line-height: 1.08; letter-spacing: -0.005em; }
+
+/* The emotional half of a heading: once per heading, never a whole line. */
+.gvh-accent { font-style: italic; font-weight: 400; }
+
+.gvh-lede,
+.gvh-body {
+  margin: 0;
+  color: var(--gvh-text);
+  text-wrap: pretty;
+  letter-spacing: 0.01em;
+}
+
+.gvh-lede { font-size: clamp(1.6rem, 1.5rem + 0.2vw, 1.8rem); line-height: 1.65; font-weight: 300; }
+.gvh-body { font-size: 1.5rem; line-height: 1.7; }
+.gvh-lede p,
+.gvh-body p { margin: 0 0 1em; }
+.gvh-lede p:last-child,
+.gvh-body p:last-child { margin-bottom: 0; }
+
+.gvh-note { margin: 0; font-size: 1.3rem; line-height: 1.5; letter-spacing: 0.02em; color: var(--gvh-muted); }
+
+.gvh-numeral {
+  font-family: var(--font-heading-family);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--gvh-muted);
+}
+
+.gvh .gv-label { color: var(--gvh-muted); }
+
+
+/* ==========================================================================
+   Placeholders — only where a photograph does not exist yet, and labelled
+   as such (hatched ground, small caps note). Never a stand-in "photograph".
+   ========================================================================== */
+
+.gvh-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.4rem;
+  text-align: center;
+  background-color: rgb(232, 225, 213);
+  background-image: repeating-linear-gradient(135deg, rgba(28, 27, 25, 0.07) 0 1px, transparent 1px 12px);
+}
+
+.gvh-placeholder--dark {
+  background-color: #3e372f;
+  background-image: repeating-linear-gradient(135deg, rgba(244, 239, 230, 0.07) 0 1px, transparent 1px 12px);
+}
+
+.gvh-placeholder__label {
+  margin: 0;
+  max-width: 34rem;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(28, 27, 25, 0.72);
+}
+
+.gvh-placeholder--dark .gvh-placeholder__label { color: rgba(244, 239, 230, 0.8); }
+
+/* ==========================================================================
+   1 · Hero — one full-bleed photograph, type on its shaded area
+   ========================================================================== */
+
+.gvh-hero {
+  position: relative;
+  display: flex;
+  height: 100svh;
+  min-height: 52rem;
+  max-height: 120rem;
+  overflow: hidden;
+  overflow: clip;
+  background-color: #3e372f;
+}
+
+.gvh-hero__media { position: absolute; inset: 0; }
+
+.gvh-hero__media picture,
+.gvh-hero__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.gvh-hero__media img {
+  object-fit: cover;
+  object-position: var(--gv-focal, 50% 50%);
+}
+
+@media screen and (max-width: 749px), screen and (max-width: 1099px) and (orientation: portrait) {
+  .gvh-hero__media img { object-position: var(--gvh-focal-mobile, 50% 50%); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .gvh-hero__media img { animation: gvhSettle var(--gv-dur-slow) var(--gv-ease-out) both; }
+}
+
+@keyframes gvhSettle {
+  from { transform: scale(var(--gv-settle)); }
+  to { transform: none; }
+}
+
+/* The placeholder note sits top right, clear of the header and the type. */
+.gvh-hero .gvh-placeholder {
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: calc(var(--gvh-header-space, 0px) + 3.2rem) 5rem 0;
+  text-align: right;
+}
+
+.gvh-hero .gvh-placeholder__label { max-width: 48rem; }
+
+@media screen and (max-width: 749px) {
+  .gvh-hero .gvh-placeholder { padding-right: 1.5rem; padding-left: 1.5rem; }
+}
+
+/* Legibility shade: behind the type only, for photographs without a calm
+   dark area. Off by default (the brief asks for one in the photograph). */
+.gvh-hero__shade { position: absolute; inset: 0; pointer-events: none; display: none; }
+.gvh-hero--shade-soft .gvh-hero__shade,
+.gvh-hero--shade-strong .gvh-hero__shade { display: block; }
+.gvh-hero--shade-soft { --gvh-shade: 0.5; }
+.gvh-hero--shade-strong { --gvh-shade: 0.72; }
+.gvh-hero__shade { background: linear-gradient(to top, rgba(28, 27, 25, var(--gvh-shade, 0)) 0%, rgba(28, 27, 25, 0) 58%); }
+
+@media screen and (min-width: 990px) {
+  .gvh-hero__shade { background: linear-gradient(to right, rgba(28, 27, 25, var(--gvh-shade, 0)) 0%, rgba(28, 27, 25, 0) 55%); }
+}
+
+.gvh-hero__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  padding-bottom: clamp(2.8rem, 1rem + 5vw, 9.6rem);
+}
+
+.gvh-hero__text {
+  display: grid;
+  gap: clamp(1.6rem, 1.2rem + 1vw, 2.8rem);
+  justify-items: start;
+  width: 100%;
+  max-width: 64rem;
+}
+
+.gvh-hero .gv-label { color: rgba(var(--color-foreground), 0.86); }
+
+.gvh-hero__heading {
+  font-size: clamp(4.8rem, 2.4rem + 5.4vw, 10.8rem);
+  line-height: 0.95;
+  max-width: 6.4em;
+}
+
+.gvh-hero__actions { margin-top: 0.8rem; width: 100%; }
+
+@media screen and (max-width: 749px) {
+  .gvh-hero__actions .button { width: 100%; }
+}
+
+/* Header over the hero ---------------------------------------------------
+   The hero rises under the sticky header by exactly the space the header
+   takes (measured by the section's script), and the header shows Linen type
+   on a clear ground until the page scrolls or a menu opens. Browsers without
+   :has() keep the solid header and the hero starts below it. */
+@supports selector(:has(*)) {
+  .gvh-hero--overlay { margin-top: calc(-1 * var(--gvh-header-space, 0px)); }
+
+  html:not(.gv-scrolled) body:has(.gvh-hero--overlay) .section-header:not(:has(details[open])) .header-wrapper {
+    background: transparent;
+    border-bottom-color: rgba(244, 239, 230, 0.2);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  html:not(.gv-scrolled) body:has(.gvh-hero--overlay) .section-header:not(:has(details[open])) .header {
+    --color-foreground: 244, 239, 230;
+    color: rgb(244, 239, 230);
+  }
+}
+
+/* ==========================================================================
+   2 · Statement — one sentence, centred: the page's breath
+   ========================================================================== */
+
+.gvh-statement-block {
+  padding-top: clamp(8.8rem, 5rem + 8vw, 17.6rem);
+  padding-bottom: clamp(8.8rem, 5rem + 8vw, 17.6rem);
+}
+
+.gvh-statement-block__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(2.8rem, 2rem + 1.5vw, 4.4rem);
+  text-align: center;
+}
+
+.gvh-statement-block .gvh-statement {
+  max-width: 18em;
+  font-size: clamp(3rem, 1.8rem + 2.6vw, 5.2rem);
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   Product card (collection section; the collection page can share it)
+   ========================================================================== */
+
+.gvh-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.gvh-card:focus-visible { outline: 1px solid rgb(var(--color-foreground)); outline-offset: 0.6rem; }
+
+.gvh-card__media {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background-color: rgb(232, 225, 213);
+}
+
+.gvh-card__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--gv-dur-reveal) var(--gv-ease-out), opacity var(--gv-dur) var(--gv-ease-out);
+}
+
+.gvh-card--contain .gvh-card__img {
+  object-fit: contain;
+  box-sizing: border-box;
+  padding: 10%;
+}
+
+.gvh-card__img--alt { opacity: 0; object-fit: cover; padding: 0; }
+
+@media (hover: hover) {
+  .gvh-card:hover .gvh-card__img { transform: scale(1.03); }
+  .gvh-card:hover .gvh-card__img--alt { opacity: 1; }
+  .gvh-card:hover .gvh-card__cta { background-size: 35% 1px; }
+}
+
+.gvh-card__info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 0.6rem;
+  padding-top: 2rem;
+}
+
+/* The way through sits on the card's last line, so a row of cards keeps
+   its links level whatever the length of each name. */
+.gvh-card__info > :nth-last-child(2) { margin-bottom: 1.2rem; }
+
+.gvh-card__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1.6rem;
+}
+
+.gvh-card__name {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: clamp(2.4rem, 2rem + 0.6vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+  color: rgb(var(--color-foreground));
+  text-wrap: balance;
+}
+
+.gvh-card__price {
+  margin: 0;
+  font-size: 1.6rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.gvh-card__line {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.6;
+  color: var(--gvh-text);
+}
+
+.gvh-card__note {
+  margin: 0;
+  font-size: 1.3rem;
+  letter-spacing: 0.02em;
+  color: var(--gvh-muted);
+}
+
+.gvh-card__cta {
+  align-self: flex-start;
+  margin-top: auto;
+  padding-bottom: 0.6rem;
+  font-size: 1.3rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: linear-gradient(currentColor, currentColor) left bottom / 100% 1px no-repeat;
+  transition: background-size var(--gv-dur) var(--gv-ease-out);
+}
+
+/* ==========================================================================
+   3 · Collection — one card, composed by how many products there are
+   ========================================================================== */
+
+.gvh-coll__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 2rem 2.4rem;
+}
+
+.gvh-coll__titles { display: grid; gap: 1.6rem; }
+.gvh-coll__heading { max-width: 11em; }
+.gvh-coll__all { white-space: nowrap; }
+
+.gvh-coll__list {
+  list-style: none;
+  margin: clamp(3.2rem, 2rem + 3vw, 6.4rem) 0 0;
+  padding: 0;
+}
+
+.gvh-coll__inuse {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background-color: rgb(232, 225, 213);
+}
+
+.gvh-coll__inuse img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--gv-focal, 50% 50%);
+}
+
+/* Phones: one card at full width; two or more become one row swiped
+   sideways, the next card showing at the edge. The in-use photograph waits
+   for the product page. */
+@media screen and (max-width: 749px) {
+  .gvh-coll:not(.gvh-coll--n1) .gvh-coll__list {
+    display: flex;
+    gap: 1.4rem;
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding: 0 1.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.5rem;
+    scrollbar-width: none;
+  }
+
+  .gvh-coll:not(.gvh-coll--n1) .gvh-coll__list::-webkit-scrollbar { display: none; }
+
+  .gvh-coll:not(.gvh-coll--n1) .gvh-coll__item {
+    flex: 0 0 78%;
+    scroll-snap-align: start;
+  }
+
+  .gvh-coll__inuse { display: none; }
+
+  /* A single product gets a full-width outlined action under the thumb. */
+  .gvh-coll--n1 .gvh-card__cta {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 5.2rem;
+    padding: 0;
+    border: 1px solid rgb(var(--color-foreground));
+    background: none;
+  }
+}
+
+/* Tablet: two columns; three products share one row. */
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  .gvh-coll__layout {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2rem;
+  }
+
+  .gvh-coll__head,
+  .gvh-coll__list { grid-column: 1 / -1; }
+
+  .gvh-coll__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4.8rem 2rem;
+  }
+
+  .gvh-coll--n3 .gvh-coll__list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  .gvh-coll--n1 .gvh-coll__list { grid-column: 1; display: block; }
+  .gvh-coll--n1.gvh-coll--solo .gvh-coll__list { grid-column: 2; }
+
+  .gvh-coll--n1 .gvh-coll__inuse {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    margin-top: clamp(3.2rem, 2rem + 3vw, 6.4rem);
+  }
+}
+
+/* Desktop: the page's 12 columns. */
+@media screen and (min-width: 990px) {
+  .gvh-coll__layout {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 2.4rem;
+  }
+
+  .gvh-coll__head,
+  .gvh-coll__list { grid-column: 1 / -1; }
+
+  .gvh-coll__list {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 6.4rem 2.4rem;
+  }
+
+  /* 1 product: heading and card on the left, the in-use photograph large
+     on the right, ending on the same line as the card. */
+  .gvh-coll--n1 .gvh-coll__layout { align-items: end; }
+  .gvh-coll--n1 .gvh-coll__head { grid-column: 1 / span 4; grid-row: 1; }
+  .gvh-coll--n1 .gvh-coll__list { grid-column: 1 / span 4; grid-row: 2; display: block; }
+  .gvh-coll--n1 .gvh-coll__inuse { grid-column: 7 / span 6; grid-row: 1 / span 2; }
+
+  /* 1 product, no in-use photograph: heading left, card right. */
+  .gvh-coll--solo .gvh-coll__head { grid-column: 1 / span 5; grid-row: 1; }
+  .gvh-coll--solo .gvh-coll__list { grid-column: 8 / span 5; grid-row: 1 / span 2; margin-top: 0; }
+
+  /* 2: set apart, the second a step lower. */
+  .gvh-coll--n2 .gvh-coll__item:nth-child(1) { grid-column: 1 / span 5; }
+  .gvh-coll--n2 .gvh-coll__item:nth-child(2) { grid-column: 8 / span 5; margin-top: clamp(8rem, 4rem + 4vw, 12rem); }
+
+  .gvh-coll--n3 .gvh-coll__item { grid-column: span 4; }
+  .gvh-coll--n4 .gvh-coll__item { grid-column: span 3; }
+}
+
+/* ==========================================================================
+   4 · Ordinary Hours — a day as a timeline; the ground follows the light
+   ========================================================================== */
+
+.gvh-hours {
+  display: block;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  transition: background-color var(--gv-dur) var(--gv-ease-out), color var(--gv-dur) var(--gv-ease-out);
+}
+
+.gvh-hours[data-tone='linen'] { --color-background: 244, 239, 230; --color-foreground: 28, 27, 25; }
+.gvh-hours[data-tone='paper'] { --color-background: 250, 247, 242; --color-foreground: 28, 27, 25; }
+.gvh-hours[data-tone='stone'] { --color-background: 232, 225, 213; --color-foreground: 28, 27, 25; }
+.gvh-hours[data-tone='ink'] { --color-background: 28, 27, 25; --color-foreground: 244, 239, 230; }
+
+.gvh-hours :is(.gv-label, .gvh-h2, .gvh-hours__tab, .gvh-hours__title, .gvh-hours__text) {
+  transition: color var(--gv-dur) var(--gv-ease-out), border-color var(--gv-dur) var(--gv-ease-out);
+}
+
+.gvh-hours__head { display: grid; gap: 1.6rem; }
+
+.gvh-hours__tabs {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  column-gap: clamp(1rem, 0.4rem + 1.4vw, 2.4rem);
+  margin-top: clamp(3.2rem, 2rem + 2.5vw, 5.6rem);
+}
+
+.gvh-hours__tab {
+  appearance: none;
+  display: grid;
+  align-content: start;
+  gap: 0.6rem;
+  min-height: 5.6rem;
+  margin: 0;
+  padding: 1.4rem 0 0;
+  border: 0;
+  border-top: 1px solid rgba(var(--color-foreground), 0.22);
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: var(--gvh-muted);
+  cursor: pointer;
+}
+
+.gvh-hours__tab[aria-selected='true'] {
+  color: rgb(var(--color-foreground));
+  border-top-color: rgb(var(--color-foreground));
+}
+
+.gvh-hours__tab:focus-visible { outline: 1px solid currentColor; outline-offset: 0.6rem; }
+
+@media (hover: hover) {
+  .gvh-hours__tab:hover { color: rgb(var(--color-foreground)); }
+}
+
+.gvh-hours__time {
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: clamp(2.4rem, 1.6rem + 1.9vw, 4rem);
+  line-height: 1;
+}
+
+.gvh-hours__name { font-size: 1.4rem; letter-spacing: 0.02em; }
+
+@media screen and (max-width: 749px) {
+  .gvh-hours__name { display: none; }
+}
+
+.gvh-hours__stage {
+  position: relative;
+  margin-top: clamp(1.6rem, 1rem + 2vw, 4rem);
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background-color: rgba(var(--color-foreground), 0.08);
+}
+
+@media screen and (min-width: 750px) {
+  .gvh-hours__stage { aspect-ratio: 3 / 2; }
+}
+
+@media screen and (min-width: 990px) {
+  .gvh-hours__stage { aspect-ratio: 2 / 1; max-height: 82svh; width: 100%; }
+}
+
+.gvh-hours__scene {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--gv-dur) var(--gv-ease-out);
+}
+
+.gvh-hours__scene.is-active { opacity: 1; }
+
+.gvh-hours__scene img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--gv-focal, 50% 50%);
+}
+
+.gvh-hours__captions { margin-top: clamp(2.8rem, 2rem + 2vw, 4.8rem); }
+
+.gvh-hours__panel { display: grid; gap: 1.2rem; }
+.gvh-hours__panel[hidden] { display: none; }
+.gvh-hours__panel-title { display: grid; gap: 1rem; }
+
+.gvh-hours__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: clamp(3rem, 2rem + 2vw, 4.8rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: rgb(var(--color-foreground));
+}
+
+.gvh-hours__text { max-width: 48rem; }
+
+@media screen and (min-width: 750px) {
+  .gvh-hours__panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2rem;
+  }
+
+  .gvh-hours__text { margin-top: 2.6rem; }
+}
+
+@media screen and (min-width: 990px) {
+  .gvh-hours__panel {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 2.4rem;
+  }
+
+  .gvh-hours__panel-title { grid-column: 1 / span 5; }
+  .gvh-hours__text { grid-column: 7 / span 5; }
+}

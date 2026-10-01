@@ -1,0 +1,66 @@
+{%- comment -%}
+  GAVELLI — homepage statement (v2).
+  One sentence, set centred, and nothing else but a small link: the page's
+  breath between the hero and the collection. No photograph, so the page
+  does not fall into an image / text / image rhythm. The italic ending is the
+  sentence's own last phrase.
+{%- endcomment -%}
+
+{{ 'gavelli-home.css' | asset_url | stylesheet_tag }}
+
+<section class="gvh gvh-statement-block color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width gvh-statement-block__inner" data-gv-reveal>
+    <h2 class="gvh-statement">
+      {{- section.settings.text | escape -}}
+      {%- if section.settings.accent != blank %} <span class="gvh-accent">{{ section.settings.accent | escape }}</span>{%- endif -%}
+    </h2>
+    {%- if section.settings.link_label != blank and section.settings.link != blank -%}
+      <a class="gv-link" href="{{ section.settings.link }}">{{ section.settings.link_label | escape }}</a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Home · Statement",
+  "tag": "div",
+  "class": "section-gvh-statement",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Sentence",
+      "default": "The best of life with a dog or cat is ordinary: the walk, the bowl,"
+    },
+    {
+      "type": "text",
+      "id": "accent",
+      "label": "Italic ending",
+      "default": "the warm spot on the sofa.",
+      "info": "The last phrase of the sentence."
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "About Gavelli"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Colour scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home · Statement"
+    }
+  ]
+}
+{% endschema %}

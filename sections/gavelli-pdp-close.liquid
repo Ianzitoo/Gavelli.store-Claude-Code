@@ -1,0 +1,73 @@
+{%- comment -%}
+  GAVELLI — product page, closing (PDP V2).
+  The payoff: the product in the colour already selected, one line of
+  reason, and Add to basket. The button submits the purchase form in
+  "Product · Purchase", so it always adds the selected colour; there is no
+  second colour choice here, only a link back to it.
+{%- endcomment -%}
+
+{%- liquid
+  assign current = product.selected_or_first_available_variant
+-%}
+
+<section class="gvp gvp-close color-{{ section.settings.color_scheme }} gradient" data-gvp-close aria-labelledby="GvpClose-{{ section.id }}">
+  <div class="page-width gvp-close__grid">
+    <div class="gvp-close__media" data-gv-reveal="media">
+      {%- for v in product.variants -%}
+        {%- if v.featured_media -%}
+          <div class="gvp-close__img" data-variant-slide="{{ v.id }}"{% unless v.id == current.id %} hidden{% endunless %}>
+            {{
+              v.featured_media
+              | image_url: width: 1400
+              | image_tag:
+                widths: '500, 700, 900, 1100, 1400',
+                sizes: '(min-width: 750px) 42vw, 70vw',
+                alt: '',
+                loading: 'lazy'
+            }}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    <div class="gvp-close__text" data-gv-reveal>
+      <h2 class="gvp-h2 gvp-close__heading" id="GvpClose-{{ section.id }}">
+        {{- section.settings.heading -}}
+        {%- if section.settings.heading_italic != blank %} <em>{{ section.settings.heading_italic }}</em>{% endif -%}
+      </h2>
+      {%- if section.settings.text != blank -%}
+        <p class="gvp-body gvp-close__lede">{{ section.settings.text | escape }}</p>
+      {%- endif -%}
+      <p class="gvp-close__meta">
+        {{ product.title | escape }} · <span data-gvp-colour-name>{{ current.option1 | escape }}</span> · <span data-gvp-price>{{ current.price | money }}</span>
+      </p>
+      <div class="gvp-close__actions">
+        <button type="button" class="button button--full-width gvp-close__btn" data-gvp-buy {% unless current.available %}disabled{% endunless %}>
+          {{ section.settings.button_label | escape }}
+        </button>
+        {%- if section.settings.note != blank -%}
+          <p class="gvp-close__note">{{ section.settings.note | escape }}</p>
+        {%- endif -%}
+        {%- if product.has_only_default_variant == false -%}
+          <a class="gvp-close__change" href="#gvp-colour" data-gvp-change>Change colour</a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Product · Closing",
+  "tag": "div",
+  "class": "section-gvp-close",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "One less thing" },
+    { "type": "text", "id": "heading_italic", "label": "Heading, italic phrase", "default": "to rush home for." },
+    { "type": "text", "id": "text", "label": "Text", "default": "Set the times once. The feeder keeps them." },
+    { "type": "text", "id": "button_label", "label": "Button", "default": "Add to basket" },
+    { "type": "text", "id": "note", "label": "Note under the button", "default": "Free UK delivery · 5–10 working days" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-3" }
+  ]
+}
+{% endschema %}

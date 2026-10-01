@@ -1,6 +1,10 @@
 {%- comment -%}
   GAVELLI — footer.
-  Minimal editorial footer: wordmark, navigation, legal links and newsletter.
+  Editorial footer: the newsletter leads (one sign-up per page, site-wide),
+  then navigation and legal links, then the wordmark set across the full
+  width of the page as the closing gesture. The wordmark is the lettering
+  only (assets/gavelli-wordmark.svg): the full lockup with the G monogram
+  is too heavy at this size.
   Uses Shopify's native customer form for newsletter sign-up and native
   policy objects for legal links (only policies that exist are linked).
 {%- endcomment -%}
@@ -26,11 +30,42 @@
     gap: 4.8rem;
   }
 
+  .gv-footer__navs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3.2rem 2.4rem;
+    align-content: start;
+  }
+
   @media screen and (min-width: 990px) {
     .gv-footer__grid {
-      grid-template-columns: 1.3fr 0.7fr 0.7fr 1.5fr;
-      gap: 6.4rem;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: 2.4rem;
     }
+
+    .gv-footer__newsletter,
+    .gv-footer__brand { grid-column: 1 / span 6; }
+    .gv-footer__navs { grid-column: 8 / span 5; }
+  }
+
+  .gv-footer__label {
+    margin: 0 0 1.6rem;
+    font-size: 1.2rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(var(--color-foreground), 0.7);
+  }
+
+  .gv-footer__wordmark {
+    margin-top: clamp(6.4rem, 4rem + 5vw, 12rem);
+    color: rgb(var(--color-foreground));
+    line-height: 0;
+  }
+
+  .gv-footer__wordmark svg {
+    display: block;
+    width: 100%;
+    height: auto;
   }
 
   .gv-footer__brand .gv-logo svg {
@@ -78,22 +113,27 @@
   .gv-footer__newsletter { scroll-margin-top: 12rem; }
 
   .gv-footer__newsletter-title {
-    margin: 0 0 1.2rem;
-    font-size: calc(var(--font-heading-scale) * 2.4rem);
-    line-height: 1.2;
+    margin: 0 0 1.6rem;
+    font-size: clamp(3.2rem, 2.4rem + 2vw, 5.6rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
   }
 
+  .gv-footer__newsletter-title .gvh-accent { font-style: italic; font-weight: 400; }
+
   .gv-footer__newsletter-text {
-    margin: 0 0 2.4rem;
-    font-size: 1.4rem;
-    color: rgba(var(--color-foreground), 0.7);
+    margin: 0 0 3.2rem;
+    max-width: 44rem;
+    font-size: 1.5rem;
+    line-height: 1.7;
+    color: rgba(var(--color-foreground), 0.8);
   }
 
   .gv-footer__form {
     display: flex;
     align-items: stretch;
     border-bottom: 1px solid rgba(var(--color-foreground), 0.45);
-    max-width: 44rem;
+    max-width: 52rem;
   }
 
   .gv-footer__form input[type='email'] {
@@ -104,9 +144,9 @@
     border: 0;
     background: transparent;
     color: rgb(var(--color-foreground));
-    font-family: var(--font-body-family);
-    font-size: 1.5rem;
-    letter-spacing: 0.02em;
+    font-family: var(--font-heading-family);
+    font-size: 2.2rem;
+    letter-spacing: 0;
     outline: none;
   }
 
@@ -150,7 +190,7 @@
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 1.6rem;
-    margin-top: 6.4rem;
+    margin-top: 3.2rem;
     padding-top: 2.4rem;
     border-top: 1px solid rgba(var(--color-foreground), 0.14);
     font-size: 1.2rem;
@@ -161,74 +201,47 @@
   .gv-footer__bottom p {
     margin: 0;
   }
+
+  /* Quiet footer (no wordmark): Letters across the top, then the real logo
+     at a modest size beside the links, then the small print. */
+  .gv-footer--quiet .gv-footer__brand .gv-logo svg { width: 10.4rem; }
+
+  .gv-footer--quiet .gv-footer__newsletter {
+    padding-bottom: clamp(4.8rem, 3rem + 4vw, 11.2rem);
+    border-bottom: 1px solid rgba(var(--color-foreground), 0.14);
+  }
+
+  @media screen and (min-width: 990px) {
+    .gv-footer--quiet .gv-footer__newsletter {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: minmax(0, 6fr) minmax(0, 1fr) minmax(0, 5fr);
+      grid-template-areas: 'label . text' 'title . form';
+      column-gap: 2.4rem;
+      align-items: end;
+    }
+
+    .gv-footer--quiet .gv-footer__label { grid-area: label; }
+    .gv-footer--quiet .gv-footer__newsletter-title { grid-area: title; margin: 0; }
+    .gv-footer--quiet .gv-footer__newsletter-text { grid-area: text; margin: 0 0 2.4rem; }
+    .gv-footer--quiet .gv-footer__newsletter-form { grid-area: form; }
+    .gv-footer--quiet .gv-footer__brand { grid-column: 1 / span 4; }
+  }
 </style>
 
-<footer class="gv-footer gv-footer-{{ section.id }} color-{{ section.settings.color_scheme }} gradient">
+<footer class="gv-footer gv-footer-{{ section.id }}{% unless section.settings.show_wordmark %} gv-footer--quiet{% endunless %} color-{{ section.settings.color_scheme }} gradient">
   <div class="page-width">
     <div class="gv-footer__grid">
-      <div class="gv-footer__brand">
-        <a href="{{ routes.root_url }}" class="gv-logo link--text" aria-label="{{ shop.name | escape }}">
-          {{- 'gavelli-logo-full.svg' | inline_asset_content -}}
-        </a>
-        {%- if section.settings.tagline != blank -%}
-          <p class="gv-footer__tagline">{{ section.settings.tagline | escape }}</p>
-        {%- endif -%}
-      </div>
-
-      {%- if section.settings.menu != blank and section.settings.menu.links.size > 0 -%}
-        <nav class="gv-footer__nav" aria-label="{{ section.settings.menu_heading | default: section.settings.menu.title | escape }}">
-          {%- if section.settings.menu_heading != blank -%}
-            <h2 class="gv-footer__heading">{{ section.settings.menu_heading | escape }}</h2>
-          {%- endif -%}
-          <ul class="gv-footer__list" role="list">
-            {%- for link in section.settings.menu.links -%}
-              <li>
-                <a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
-              </li>
-            {%- endfor -%}
-          </ul>
-        </nav>
-      {%- endif -%}
-
-      {%- liquid
-        comment
-          Legal links: a policy is linked only when it has been written in
-          Settings > Policies. Until then, Delivery and Returns fall back to
-          the FAQ page (if set) so that no link is ever broken.
-        endcomment
-        assign shipping_url = shop.shipping_policy.url
-        if shop.shipping_policy.body == blank
-          assign shipping_url = section.settings.delivery_fallback_url
-        endif
-        assign returns_url = shop.refund_policy.url
-        if shop.refund_policy.body == blank
-          assign returns_url = section.settings.returns_fallback_url
-        endif
-      -%}
-      <nav class="gv-footer__legal" aria-label="{{ section.settings.legal_heading | default: 'Information' | escape }}">
-        {%- if section.settings.legal_heading != blank -%}
-          <h2 class="gv-footer__heading">{{ section.settings.legal_heading | escape }}</h2>
-        {%- endif -%}
-        <ul class="gv-footer__list" role="list">
-          {%- if shipping_url != blank -%}
-            <li><a href="{{ shipping_url }}">Delivery</a></li>
-          {%- endif -%}
-          {%- if returns_url != blank -%}
-            <li><a href="{{ returns_url }}">Returns</a></li>
-          {%- endif -%}
-          {%- if shop.privacy_policy.body != blank -%}
-            <li><a href="{{ shop.privacy_policy.url }}">Privacy</a></li>
-          {%- endif -%}
-          {%- if shop.terms_of_service.body != blank -%}
-            <li><a href="{{ shop.terms_of_service.url }}">Terms</a></li>
-          {%- endif -%}
-        </ul>
-      </nav>
-
       {%- if section.settings.newsletter_enable -%}
         <div class="gv-footer__newsletter" id="newsletter">
+          {%- if section.settings.newsletter_label != blank -%}
+            <p class="gv-footer__label">{{ section.settings.newsletter_label | escape }}</p>
+          {%- endif -%}
           {%- if section.settings.newsletter_heading != blank -%}
-            <h2 class="gv-footer__newsletter-title">{{ section.settings.newsletter_heading | escape }}</h2>
+            <h2 class="gv-footer__newsletter-title">
+              {{- section.settings.newsletter_heading | escape -}}
+              {%- if section.settings.newsletter_heading_accent != blank %} <span class="gvh-accent">{{ section.settings.newsletter_heading_accent | escape }}</span>{%- endif -%}
+            </h2>
           {%- endif -%}
           {%- if section.settings.newsletter_text != blank -%}
             <p class="gv-footer__newsletter-text">{{ section.settings.newsletter_text | escape }}</p>
@@ -269,10 +282,82 @@
           {%- endform -%}
         </div>
       {%- endif -%}
+
+      {%- if section.settings.show_wordmark == false -%}
+        <div class="gv-footer__brand">
+          <a href="{{ routes.root_url }}" class="gv-logo link--text" aria-label="{{ shop.name | escape }}">
+            {{- 'gavelli-logo-full.svg' | inline_asset_content -}}
+          </a>
+          {%- if section.settings.tagline != blank -%}
+            <p class="gv-footer__tagline">{{ section.settings.tagline | escape }}</p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <div class="gv-footer__navs">
+        {%- if section.settings.menu != blank and section.settings.menu.links.size > 0 -%}
+          <nav class="gv-footer__nav" aria-label="{{ section.settings.menu_heading | default: section.settings.menu.title | escape }}">
+            {%- if section.settings.menu_heading != blank -%}
+              <h2 class="gv-footer__heading">{{ section.settings.menu_heading | escape }}</h2>
+            {%- endif -%}
+            <ul class="gv-footer__list" role="list">
+              {%- for link in section.settings.menu.links -%}
+                <li>
+                  <a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+                </li>
+              {%- endfor -%}
+            </ul>
+          </nav>
+        {%- endif -%}
+
+        {%- liquid
+          comment
+            Legal links: a policy is linked only when it has been written in
+            Settings > Policies. Until then, Delivery and Returns fall back to
+            the FAQ page (if set) so that no link is ever broken.
+          endcomment
+          assign shipping_url = shop.shipping_policy.url
+          if shop.shipping_policy.body == blank
+            assign shipping_url = section.settings.delivery_fallback_url
+          endif
+          assign returns_url = shop.refund_policy.url
+          if shop.refund_policy.body == blank
+            assign returns_url = section.settings.returns_fallback_url
+          endif
+        -%}
+        <nav class="gv-footer__legal" aria-label="{{ section.settings.legal_heading | default: 'Information' | escape }}">
+          {%- if section.settings.legal_heading != blank -%}
+            <h2 class="gv-footer__heading">{{ section.settings.legal_heading | escape }}</h2>
+          {%- endif -%}
+          <ul class="gv-footer__list" role="list">
+            {%- if shipping_url != blank -%}
+              <li><a href="{{ shipping_url }}">Delivery</a></li>
+            {%- endif -%}
+            {%- if returns_url != blank -%}
+              <li><a href="{{ returns_url }}">Returns</a></li>
+            {%- endif -%}
+            {%- if shop.privacy_policy.body != blank -%}
+              <li><a href="{{ shop.privacy_policy.url }}">Privacy</a></li>
+            {%- endif -%}
+            {%- if shop.terms_of_service.body != blank -%}
+              <li><a href="{{ shop.terms_of_service.url }}">Terms</a></li>
+            {%- endif -%}
+          </ul>
+        </nav>
+      </div>
     </div>
 
+    {%- if section.settings.show_wordmark -%}
+      <div class="gv-footer__wordmark" aria-hidden="true">
+        {{- 'gavelli-wordmark.svg' | inline_asset_content -}}
+      </div>
+    {%- endif -%}
+
     <div class="gv-footer__bottom">
-      <p>&copy; {{ 'now' | date: '%Y' }} {{ section.settings.copyright_name | default: shop.name | escape }}</p>
+      <p>
+        &copy; {{ 'now' | date: '%Y' }} {{ section.settings.copyright_name | default: shop.name | escape -}}
+        {%- if section.settings.show_wordmark and section.settings.tagline != blank %} · {{ section.settings.tagline | escape }}{%- endif -%}
+      </p>
       {%- if section.settings.bottom_note != blank -%}
         <p>{{ section.settings.bottom_note | escape }}</p>
       {%- endif -%}
@@ -345,14 +430,37 @@
     },
     {
       "type": "text",
+      "id": "newsletter_label",
+      "label": "Label",
+      "default": "Letters"
+    },
+    {
+      "type": "text",
       "id": "newsletter_heading",
       "label": "Heading",
-      "default": "Thoughtful things for life with pets."
+      "default": "Hear what we"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading_accent",
+      "label": "Heading, italic ending",
+      "default": "choose next."
     },
     {
       "type": "text",
       "id": "newsletter_text",
       "label": "Text"
+    },
+    {
+      "type": "header",
+      "content": "Wordmark"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wordmark",
+      "label": "Show the wordmark across the full width",
+      "default": true,
+      "info": "When off, the small logo and tagline return to the top of the footer."
     },
     {
       "type": "header",
@@ -377,7 +485,7 @@
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "Colour scheme",
-      "default": "scheme-4"
+      "default": "scheme-3"
     },
     {
       "type": "range",

@@ -1,0 +1,79 @@
+{%- comment -%}
+  GAVELLI — product page, the moment (PDP V2).
+  Why someone would want it: one real situation, one photograph of the
+  product in use. The photograph is the one chosen here, or otherwise the
+  product's first photograph that is not tied to a colour.
+{%- endcomment -%}
+
+{%- liquid
+  assign image = section.settings.image
+  if image == blank and product
+    assign variant_media_ids = ','
+    for v in product.variants
+      if v.featured_media
+        assign variant_media_ids = variant_media_ids | append: v.featured_media.id | append: ','
+      endif
+    endfor
+    for media in product.media
+      assign key = ',' | append: media.id | append: ','
+      unless variant_media_ids contains key
+        if media.media_type == 'image'
+          assign image = media.preview_image
+          break
+        endif
+      endunless
+    endfor
+  endif
+  assign focal = image.presentation.focal_point | default: section.settings.focal
+  assign focal_style = '--gvp-focal: ' | append: focal | append: ';'
+-%}
+
+<section class="gvp gvp-moment color-{{ section.settings.color_scheme }} gradient{% if image == blank %} gvp-moment--text{% endif %}" aria-labelledby="GvpMoment-{{ section.id }}">
+  <div class="page-width gvp-moment__grid">
+    {%- if image != blank -%}
+      <div class="gvp-moment__media" data-gv-reveal="media">
+        {{
+          image
+          | image_url: width: 2400
+          | image_tag:
+            widths: '600, 900, 1200, 1600, 2000, 2400',
+            sizes: '(min-width: 990px) 58vw, 100vw',
+            alt: section.settings.image_alt | default: image.alt,
+            loading: 'lazy',
+            style: focal_style
+        }}
+      </div>
+    {%- endif -%}
+    <div class="gvp-moment__text" data-gv-reveal>
+      {%- if section.settings.label != blank -%}
+        <p class="gv-label">{{ section.settings.label | escape }}</p>
+      {%- endif -%}
+      <h2 class="gvp-h2" id="GvpMoment-{{ section.id }}">
+        {{- section.settings.heading -}}
+        {%- if section.settings.heading_italic != blank %} <em>{{ section.settings.heading_italic }}</em>{% endif -%}
+      </h2>
+      {%- if section.settings.text != blank -%}
+        <div class="gvp-body">{{ section.settings.text }}</div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Product · Moment",
+  "tag": "div",
+  "class": "section-gvp-moment",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Photograph", "info": "Leave empty to use the product's in-use photograph." },
+    { "type": "text", "id": "image_alt", "label": "Photograph description", "default": "A cat eating from the black Gavelli WiFi Smart Feeder at home" },
+    { "type": "text", "id": "focal", "label": "Focal point", "default": "55% 50%" },
+    { "type": "text", "id": "label", "label": "Label", "default": "Every day" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Mealtimes keep to time," },
+    { "type": "text", "id": "heading_italic", "label": "Heading, italic phrase", "default": "even when you can't." },
+    { "type": "richtext", "id": "text", "label": "Text" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-2" }
+  ],
+  "presets": [{ "name": "Product · Moment" }]
+}
+{% endschema %}

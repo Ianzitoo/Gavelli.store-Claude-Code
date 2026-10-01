@@ -1,0 +1,115 @@
+{%- comment -%}
+  GAVELLI — product card (homepage collection; meant to be the same card on
+  the collection page).
+  Shows only what helps someone decide to look closer: the clean
+  photograph (4:5), name, price, one line on what the product does, an
+  optional note on its options, and the way through.
+
+  Accepts:
+  - product: {Object}
+  - sizes: {String} image sizes attribute
+  - show_alt: {Boolean} fade to the in-use photograph on hover (desktop
+    pointers only; decorative, no information lives there)
+  - fit: {String} 'cover' | 'contain'
+
+  Data, all from the product:
+  - line: metafield custom.card_line (single line text); otherwise the first
+    sentence of the description, when it is short enough.
+  - in-use photograph: metafield custom.in_use_image (file); otherwise none.
+  - note: the options of a single-option product ("Black or white",
+    "3 sizes"), and "Sold out" when nothing can be bought.
+{%- endcomment -%}
+
+{%- liquid
+  assign line = product.metafields.custom.card_line.value
+  if line == blank
+    assign desc = product.description | strip_html | strip_newlines | strip
+    assign first = desc | split: '. ' | first | strip
+    if first != blank and first.size <= 90
+      assign last_char = first | slice: -1
+      if last_char == '.' or last_char == '!' or last_char == '?'
+        assign line = first
+      else
+        assign line = first | append: '.'
+      endif
+    endif
+  endif
+
+  assign note = ''
+  if product.has_only_default_variant == false and product.options_with_values.size == 1
+    assign option = product.options_with_values.first
+    assign option_name = option.name | downcase
+    if option_name contains 'colour' or option_name contains 'color'
+      if option.values.size <= 3
+        assign note = option.values | join: ' or ' | downcase | capitalize
+      else
+        assign note = option.values.size | append: ' colours'
+      endif
+    elsif option_name contains 'size'
+      assign note = option.values.size | append: ' sizes'
+    endif
+  endif
+  unless product.available
+    if note != blank
+      assign note = note | append: ' · Sold out'
+    else
+      assign note = 'Sold out'
+    endif
+  endunless
+
+  assign alt_image = blank
+  if show_alt
+    assign alt_image = product.metafields.custom.in_use_image.value
+  endif
+
+  assign media = product.featured_media
+  assign media_alt = media.alt | default: product.title
+  assign card_fit = fit | default: 'cover'
+-%}
+
+<a class="gvh-card gvh-card--{{ card_fit }}" href="{{ product.url }}">
+  <div class="gvh-card__media">
+    {%- if media != blank -%}
+      {{
+        media.preview_image
+        | image_url: width: 1200
+        | image_tag:
+          loading: 'lazy',
+          widths: '400, 600, 800, 1000, 1200',
+          sizes: sizes,
+          alt: media_alt,
+          class: 'gvh-card__img'
+      }}
+    {%- else -%}
+      <span class="gvh-placeholder__label">Product photograph to come</span>
+    {%- endif -%}
+    {%- if alt_image != blank -%}
+      {{
+        alt_image
+        | image_url: width: 1200
+        | image_tag:
+          loading: 'lazy',
+          widths: '400, 600, 800, 1000, 1200',
+          sizes: sizes,
+          alt: '',
+          class: 'gvh-card__img gvh-card__img--alt'
+      }}
+    {%- endif -%}
+  </div>
+  <div class="gvh-card__info">
+    <div class="gvh-card__row">
+      <h3 class="gvh-card__name">{{ product.title | escape }}</h3>
+      <p class="gvh-card__price">
+        {%- if product.price_varies -%}From {% endif -%}
+        {{- product.price_min | money -}}
+      </p>
+    </div>
+    {%- if line != blank -%}
+      <p class="gvh-card__line">{{ line | escape }}</p>
+    {%- endif -%}
+    {%- if note != blank -%}
+      <p class="gvh-card__note">{{ note | escape }}</p>
+    {%- endif -%}
+    <span class="gvh-card__cta">View product</span>
+  </div>
+</a>

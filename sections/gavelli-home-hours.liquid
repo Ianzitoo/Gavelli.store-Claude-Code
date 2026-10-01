@@ -1,0 +1,250 @@
+{%- comment -%}
+  GAVELLI — "Ordinary Hours" (v2).
+  One house through one day. The times are the navigation: a horizontal row
+  in the order of the day. Choosing one crossfades the scene (0.6s) and moves
+  the section's ground to that hour's tone (Linen at breakfast to Ink at
+  night) in the same 0.6s. The first scene shows on arrival; nothing plays by
+  itself. Brand world only: no product, link or button.
+
+  - Scene: full width. 2:1 on desktop, 3:2 on tablet, 4:5 on phones, cut
+    from one 3:2 master around its focal point.
+  - Phones: the times alone (the scene's name is in the caption below);
+    tap only, no swipe.
+  - Accessible: an ARIA tab list (arrow keys, Home, End); the captions are
+    the tab panels. Reduced motion: instant change.
+{%- endcomment -%}
+
+{{ 'gavelli-home.css' | asset_url | stylesheet_tag }}
+
+{%- assign first_tone = section.blocks.first.settings.tone | default: 'linen' -%}
+
+<gvh-hours
+  class="gvh gvh-hours gvh-pad-lg"
+  data-tone="{{ first_tone }}"
+  id="{{ section.settings.anchor | default: 'ordinary-hours' | handleize }}"
+  aria-labelledby="GvhHoursHeading-{{ section.id }}"
+  role="region"
+>
+  <div class="page-width gvh-hours__head" data-gv-reveal>
+    {%- if section.settings.label != blank -%}
+      <p class="gv-label">{{ section.settings.label | escape }}</p>
+    {%- endif -%}
+    <h2 class="gvh-h2" id="GvhHoursHeading-{{ section.id }}">
+      {{- section.settings.heading | escape -}}
+      {%- if section.settings.heading_accent != blank %} <span class="gvh-accent">{{ section.settings.heading_accent | escape }}</span>{%- endif -%}
+    </h2>
+  </div>
+
+  <div class="page-width">
+    <div class="gvh-hours__tabs" role="tablist" aria-label="{{ section.settings.tabs_label | default: 'Times of day' | escape }}">
+      {%- for block in section.blocks -%}
+        <button
+          type="button"
+          class="gvh-hours__tab"
+          role="tab"
+          id="GvhHoursTab-{{ block.id }}"
+          aria-controls="GvhHoursPanel-{{ block.id }}"
+          aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+          {% unless forloop.first %}tabindex="-1"{% endunless %}
+          data-tone="{{ block.settings.tone }}"
+          {{ block.shopify_attributes }}
+        >
+          <span class="gvh-hours__time">{{ block.settings.time | escape }}</span>
+          {%- if block.settings.name != blank -%}
+            <span class="gvh-hours__name">{{ block.settings.name | escape }}</span>
+          {%- endif -%}
+        </button>
+      {%- endfor -%}
+    </div>
+  </div>
+
+  <div class="gvh-hours__stage" data-gv-reveal="media">
+    {%- for block in section.blocks -%}
+      <div class="gvh-hours__scene{% if forloop.first %} is-active{% endif %}">
+        {%- if block.settings.image != blank -%}
+          {%- liquid
+            assign focal = block.settings.image.presentation.focal_point | default: '50% 50%'
+            assign focal_style = '--gv-focal: ' | append: focal | append: ';'
+            assign scene_alt = block.settings.image_alt | default: block.settings.image.alt
+          -%}
+          {{
+            block.settings.image
+            | image_url: width: 2400
+            | image_tag:
+              loading: 'lazy',
+              widths: '600, 900, 1200, 1600, 2000, 2400',
+              sizes: '100vw',
+              alt: scene_alt,
+              style: focal_style
+          }}
+        {%- else -%}
+          <span class="gvh-placeholder gvh-placeholder--dark">
+            <span class="gvh-placeholder__label">Placeholder · {{ block.settings.time | escape }} photograph not yet chosen</span>
+          </span>
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+
+  <div class="page-width gvh-hours__captions">
+    {%- for block in section.blocks -%}
+      <div
+        class="gvh-hours__panel"
+        role="tabpanel"
+        id="GvhHoursPanel-{{ block.id }}"
+        aria-labelledby="GvhHoursTab-{{ block.id }}"
+        {% unless forloop.first %}hidden{% endunless %}
+      >
+        <div class="gvh-hours__panel-title">
+          <p class="gv-label">{{ block.settings.time | escape }}</p>
+          <h3 class="gvh-hours__title">{{ block.settings.title | escape }}</h3>
+        </div>
+        {%- if block.settings.text != blank -%}
+          <div class="gvh-lede gvh-hours__text">{{ block.settings.text }}</div>
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+</gvh-hours>
+
+<script>
+  if (!customElements.get('gvh-hours')) {
+    customElements.define('gvh-hours', class extends HTMLElement {
+      connectedCallback() {
+        this.tabs = Array.from(this.querySelectorAll('[role="tab"]'));
+        this.panels = Array.from(this.querySelectorAll('[role="tabpanel"]'));
+        this.scenes = Array.from(this.querySelectorAll('.gvh-hours__scene'));
+        this.tabs.forEach((tab, index) => {
+          tab.addEventListener('click', () => this.select(index));
+          tab.addEventListener('keydown', (event) => this.onKey(event, index));
+        });
+      }
+
+      onKey(event, index) {
+        const last = this.tabs.length - 1;
+        let next = null;
+        if (event.key === 'ArrowRight') next = index === last ? 0 : index + 1;
+        if (event.key === 'ArrowLeft') next = index === 0 ? last : index - 1;
+        if (event.key === 'Home') next = 0;
+        if (event.key === 'End') next = last;
+        if (next === null) return;
+        event.preventDefault();
+        this.select(next);
+        this.tabs[next].focus();
+      }
+
+      select(index) {
+        this.tabs.forEach((tab, i) => {
+          const on = i === index;
+          tab.setAttribute('aria-selected', on ? 'true' : 'false');
+          tab.tabIndex = on ? 0 : -1;
+        });
+        this.panels.forEach((panel, i) => { panel.hidden = i !== index; });
+        this.scenes.forEach((scene, i) => scene.classList.toggle('is-active', i === index));
+        const tone = this.tabs[index] && this.tabs[index].dataset.tone;
+        if (tone) this.dataset.tone = tone;
+      }
+    });
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Home · Ordinary Hours",
+  "tag": "div",
+  "class": "section-gvh-hours",
+  "max_blocks": 5,
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "Ordinary Hours"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "One day at home."
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading, italic ending"
+    },
+    {
+      "type": "text",
+      "id": "tabs_label",
+      "label": "Name of the time list (screen readers)",
+      "default": "Times of day"
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Anchor",
+      "default": "ordinary-hours"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "moment",
+      "name": "Moment",
+      "settings": [
+        {
+          "type": "text",
+          "id": "time",
+          "label": "Time",
+          "default": "07:30"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Short name",
+          "default": "Breakfast",
+          "info": "Under the time on tablet and desktop."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Breakfast, unhurried."
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "info": "One or two sentences. No product, no link."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Photograph",
+          "info": "3:2, 2400px or more, subject in the middle half. Shown 2:1 on desktop, 4:5 on phones; set the focal point."
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Photograph description"
+        },
+        {
+          "type": "select",
+          "id": "tone",
+          "label": "Ground at this hour",
+          "options": [
+            { "value": "linen", "label": "Linen (morning)" },
+            { "value": "paper", "label": "Paper (midday)" },
+            { "value": "stone", "label": "Stone (evening)" },
+            { "value": "ink", "label": "Ink (night)" }
+          ],
+          "default": "linen"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home · Ordinary Hours"
+    }
+  ]
+}
+{% endschema %}

@@ -195,6 +195,9 @@ select:focus-visible {
 .gv-media {
   position: relative;
   overflow: hidden;
+  /* clip, not a scroll container: lets the scroll-driven parallax below
+     follow the page instead of this (never-scrolling) frame. */
+  overflow: clip;
   aspect-ratio: var(--gv-ratio, 4 / 5);
   background: rgba(var(--color-foreground), 0.05);
 }
@@ -779,3 +782,19 @@ html.gv-motion [data-gv-reveal].is-in :where(img, .gv-placeholder) { transform: 
 
 /* Keyboard focus on the sign-up field: the underline doubles in weight. */
 .gv-footer__form:focus-within { box-shadow: 0 1px 0 0 rgb(var(--color-foreground)); }
+/* --- Announcement bar ---------------------------------------------------
+   One quiet line of service information above the header. */
+.announcement-bar__message {
+  min-height: 3.6rem;
+  padding: 0.9rem 0;
+  font-family: var(--font-body-family);
+  font-size: 1.1rem;
+  font-weight: var(--font-body-weight);
+  line-height: 1.6;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+@media screen and (max-width: 749px) {
+  .announcement-bar__message { font-size: 1rem; letter-spacing: 0.12em; }
+}

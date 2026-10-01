@@ -1,0 +1,430 @@
+{%- comment -%}
+  GAVELLI — product page, purchase (PDP V2, 2026-10-01).
+  Gallery + name + value line + price + colour + Add to basket, in the
+  first screen on phones. The form is Dawn's <product-form>, so the basket
+  notification, cart events and analytics work as on any Dawn product page.
+
+  - The first variant (Black) is selected unless the URL names another.
+  - Each variant's featured photograph leads the gallery; photographs not
+    tied to a variant follow it for every colour.
+  - Phones: one row swiped sideways, the next photograph peeking at the edge.
+    Desktop: photographs stacked, the purchase column stays beside them.
+  - Below 750px a slim bar offers Add to basket once the main button has
+    scrolled away (the same form, so it always adds the selected colour).
+  - Other sections on the page can buy with [data-gvp-buy] and show the
+    selection with [data-gvp-colour-name] / [data-gvp-price].
+{%- endcomment -%}
+
+{{ 'gavelli-pdp-v2.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign current = product.selected_or_first_available_variant
+  assign form_id = 'GvpForm-' | append: section.id
+  assign variant_media_ids = ','
+  for v in product.variants
+    if v.featured_media
+      assign variant_media_ids = variant_media_ids | append: v.featured_media.id | append: ','
+    endif
+  endfor
+
+  assign shared_count = 0
+  for media in product.media
+    assign key = ',' | append: media.id | append: ','
+    unless variant_media_ids contains key
+      if media.media_type == 'image'
+        assign shared_count = shared_count | plus: 1
+      endif
+    endunless
+  endfor
+
+  assign visible_count = shared_count
+  if current.featured_media
+    assign visible_count = visible_count | plus: 1
+  endif
+
+  assign gallery_sizes = '(min-width: 990px) 56vw, (min-width: 750px) 70vw, calc(100vw - 7rem)'
+  if visible_count < 2
+    assign gallery_sizes = '(min-width: 990px) 56vw, 100vw'
+  endif
+-%}
+
+<section
+  class="gvp gvp-main color-{{ section.settings.color_scheme }} gradient"
+  id="buy"
+  data-gvp-main
+  data-variant-id="{{ current.id }}"
+  aria-label="{{ product.title | escape }}"
+>
+  <div class="page-width gvp-main__grid">
+    {%- comment -%} Gallery {%- endcomment -%}
+    <div class="gvp-gallery{% if visible_count > 1 %} gvp-gallery--multi{% endif %}" data-gvp-gallery>
+      <ul class="gvp-gallery__track" role="list" tabindex="0" aria-label="Photographs of the {{ product.title | escape }}" data-gvp-track>
+        {%- for v in product.variants -%}
+          {%- if v.featured_media -%}
+            <li class="gvp-gallery__slide" data-variant-slide="{{ v.id }}"{% unless v.id == current.id %} hidden{% endunless %}>
+              {%- liquid
+                assign alt = v.featured_media.alt
+                if alt == blank
+                  assign alt = product.title | append: ', ' | append: v.option1
+                endif
+                assign loading = 'lazy'
+                assign priority = 'auto'
+                if v.id == current.id
+                  assign loading = 'eager'
+                  assign priority = 'high'
+                endif
+              -%}
+              {{
+                v.featured_media
+                | image_url: width: 2000
+                | image_tag:
+                  widths: '400, 600, 800, 1000, 1200, 1600, 2000',
+                  sizes: gallery_sizes,
+                  alt: alt,
+                  loading: loading,
+                  fetchpriority: priority
+              }}
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+        {%- for media in product.media -%}
+          {%- assign key = ',' | append: media.id | append: ',' -%}
+          {%- unless variant_media_ids contains key or media.media_type != 'image' -%}
+            {%- liquid
+              assign focal = media.presentation.focal_point | default: section.settings.shared_focal
+              assign focal_style = '--gvp-focal: ' | append: focal | append: ';'
+            -%}
+            {%- liquid
+              assign shared_index = shared_index | default: 0 | plus: 1
+              assign dup_class = ''
+              if shared_index == 1 and section.settings.desktop_skip_first_shared
+                assign dup_class = ' gvp-gallery__slide--mobile-only'
+              endif
+            -%}
+            <li class="gvp-gallery__slide{{ dup_class }}" data-shared-slide>
+              {{
+                media
+                | image_url: width: 2000
+                | image_tag:
+                  widths: '400, 600, 800, 1000, 1200, 1600, 2000',
+                  sizes: gallery_sizes,
+                  alt: media.alt | default: product.title,
+                  loading: 'lazy',
+                  style: focal_style
+              }}
+            </li>
+          {%- endunless -%}
+        {%- endfor -%}
+      </ul>
+      {%- if visible_count > 1 -%}
+        <p class="gvp-gallery__count" aria-hidden="true">
+          <span data-gvp-count-current>1</span> / <span data-gvp-count-total>{{ visible_count }}</span>
+        </p>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Purchase {%- endcomment -%}
+    <div class="gvp-info">
+      <div class="gvp-info__inner">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="gv-label gvp-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+        <h1 class="gvp-title">{{ product.title | escape }}</h1>
+        {%- if section.settings.value_line != blank -%}
+          <p class="gvp-value">{{ section.settings.value_line | escape }}</p>
+        {%- endif -%}
+
+        <product-form class="gvp-form" data-gvp-product-form>
+          {%- form 'product', product, id: form_id, class: 'gvp-form__form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+            <input type="hidden" name="id" value="{{ current.id }}" data-gvp-id>
+
+            <div class="gvp-buyrow">
+              <p class="gvp-price">
+                <span class="gvp-price__amount" data-gvp-price>{{ current.price | money }}</span>
+                {%- if section.settings.tax_note != blank -%}
+                  <span class="gvp-price__tax">{{ section.settings.tax_note | escape }}</span>
+                {%- endif -%}
+              </p>
+
+              {%- if product.has_only_default_variant == false -%}
+                {%- assign option_name = product.options.first -%}
+                <div class="gvp-colour" role="radiogroup" aria-labelledby="GvpColourLabel-{{ section.id }}" id="gvp-colour">
+                  <p class="gvp-colour__label" id="GvpColourLabel-{{ section.id }}">
+                    {{ option_name | escape }}: <span data-gvp-colour-name>{{ current.option1 | escape }}</span>
+                  </p>
+                  <div class="gvp-swatches">
+                    {%- for v in product.variants -%}
+                      {%- liquid
+                        assign swatch = '#d8d2c6'
+                        assign name = v.option1 | downcase
+                        if name contains 'black'
+                          assign swatch = '#1c1b19'
+                        elsif name contains 'white'
+                          assign swatch = '#f7f5f1'
+                        endif
+                      -%}
+                      <span class="gvp-swatch">
+                        <input
+                          type="radio"
+                          id="GvpColour-{{ section.id }}-{{ v.id }}"
+                          name="gvp-colour-{{ section.id }}"
+                          value="{{ v.id }}"
+                          data-gvp-variant="{{ v.id }}"
+                          {% if v.id == current.id %}checked{% endif %}
+                          {% unless v.available %}aria-describedby="GvpSoldOut-{{ section.id }}"{% endunless %}
+                        >
+                        <label for="GvpColour-{{ section.id }}-{{ v.id }}" title="{{ v.option1 | escape }}">
+                          <span class="gvp-swatch__chip" style="--gvp-chip: {{ swatch }};" aria-hidden="true"></span>
+                          <span class="visually-hidden">{{ v.option1 | escape }}</span>
+                        </label>
+                      </span>
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- endif -%}
+            </div>
+
+            <div class="product-form__error-message-wrapper gvp-error" role="alert" hidden>
+              <span class="product-form__error-message"></span>
+            </div>
+
+            <button
+              type="submit"
+              name="add"
+              id="GvpAdd-{{ section.id }}"
+              class="button button--full-width gvp-atc"
+              data-gvp-atc
+              {% unless current.available %}disabled{% endunless %}
+            >
+              <span data-gvp-atc-label>
+                {%- if current.available -%}{{ section.settings.button_label | escape }}{%- else -%}Sold out{%- endif -%}
+              </span>
+              {%- render 'loading-spinner' -%}
+            </button>
+          {%- endform -%}
+        </product-form>
+
+        {%- if section.settings.delivery_line != blank -%}
+          <p class="gvp-delivery">{{ section.settings.delivery_line | escape }}</p>
+        {%- endif -%}
+
+        {%- liquid
+          assign facts = section.settings.fact_1 | append: '|' | append: section.settings.fact_2 | append: '|' | append: section.settings.fact_3 | split: '|'
+        -%}
+        {%- capture facts_html -%}
+          {%- for fact in facts -%}
+            {%- assign f = fact | strip -%}
+            {%- if f != blank -%}<li>{{ f | escape }}</li>{%- endif -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+        {%- if facts_html != blank -%}
+          <ul class="gvp-facts" role="list">{{ facts_html }}</ul>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Phone purchase bar {%- endcomment -%}
+  <div class="gvp-bar" data-gvp-bar aria-hidden="true" inert>
+    <div class="gvp-bar__text">
+      <p class="gvp-bar__name">{{ product.title | escape }}</p>
+      <p class="gvp-bar__meta">
+        <span data-gvp-colour-name>{{ current.option1 | escape }}</span> · <span data-gvp-price>{{ current.price | money }}</span>
+      </p>
+    </div>
+    <button type="button" class="button gvp-bar__btn" data-gvp-buy {% unless current.available %}disabled{% endunless %}>
+      {{ section.settings.button_label | escape }}
+    </button>
+  </div>
+
+  <script type="application/json" data-gvp-variants>
+    [
+      {%- for v in product.variants -%}
+        {"id": {{ v.id }}, "option": {{ v.option1 | json }}, "price": {{ v.price | money | json }}, "available": {{ v.available | json }}}{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  </script>
+  <script type="application/ld+json">
+    {{ product | structured_data }}
+  </script>
+</section>
+
+<script>
+  (function () {
+    // Runs after the whole page is parsed, so the closing section and the
+    // footer (rendered after this section) can be observed.
+    function init() {
+    var root = document.querySelector('[data-gvp-main]');
+    if (!root || root.dataset.gvpReady) return;
+    root.dataset.gvpReady = 'true';
+
+    var variants = [];
+    try { variants = JSON.parse(root.querySelector('[data-gvp-variants]').textContent); } catch (e) {}
+    var idInput = root.querySelector('[data-gvp-id]');
+    var atc = root.querySelector('[data-gvp-atc]');
+    var atcLabel = root.querySelector('[data-gvp-atc-label]');
+    var form = idInput ? idInput.form : null;
+    var track = root.querySelector('[data-gvp-track]');
+    var bar = root.querySelector('[data-gvp-bar]');
+    var buttonLabel = {{ section.settings.button_label | json }};
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function visibleSlides() {
+      return track ? Array.prototype.filter.call(track.children, function (s) { return !s.hidden; }) : [];
+    }
+
+    function updateCount() {
+      var current = root.querySelector('[data-gvp-count-current]');
+      var total = root.querySelector('[data-gvp-count-total]');
+      if (!current || !track) return;
+      var slides = visibleSlides();
+      if (total) total.textContent = slides.length;
+      var x = track.scrollLeft;
+      var index = 0;
+      slides.forEach(function (s, i) {
+        if (Math.abs(s.offsetLeft - track.offsetLeft - x) < Math.abs(slides[index].offsetLeft - track.offsetLeft - x)) index = i;
+      });
+      current.textContent = index + 1;
+    }
+
+    function select(id) {
+      var v = null;
+      variants.forEach(function (x) { if (String(x.id) === String(id)) v = x; });
+      if (!v) return;
+      idInput.value = v.id;
+      root.dataset.variantId = v.id;
+      document.querySelectorAll('[data-gvp-colour-name]').forEach(function (el) { el.textContent = v.option; });
+      document.querySelectorAll('[data-gvp-price]').forEach(function (el) { el.textContent = v.price; });
+      document.querySelectorAll('[data-variant-slide]').forEach(function (el) {
+        el.hidden = el.getAttribute('data-variant-slide') !== String(v.id);
+      });
+      document.querySelectorAll('[data-gvp-buy]').forEach(function (b) { b.disabled = !v.available; });
+      if (atc) {
+        atc.disabled = !v.available;
+        if (atcLabel) atcLabel.textContent = v.available ? buttonLabel : 'Sold out';
+      }
+      if (track) { track.scrollLeft = 0; updateCount(); }
+      try {
+        var url = new URL(window.location.href);
+        url.searchParams.set('variant', v.id);
+        window.history.replaceState(window.history.state, '', url.toString());
+      } catch (e) {}
+    }
+
+    root.querySelectorAll('[data-gvp-variant]').forEach(function (input) {
+      input.addEventListener('change', function () { if (input.checked) select(input.value); });
+    });
+
+    if (track) {
+      var raf = 0;
+      track.addEventListener('scroll', function () {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(updateCount);
+      }, { passive: true });
+    }
+
+    // Any [data-gvp-buy] button submits the one product form, so the
+    // selected colour is always the one added.
+    function buy() {
+      if (!form || !atc || atc.disabled || atc.getAttribute('aria-disabled') === 'true') return;
+      if (typeof form.requestSubmit === 'function') form.requestSubmit(atc);
+      else atc.click();
+    }
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest && e.target.closest('[data-gvp-buy]');
+      if (!btn) return;
+      e.preventDefault();
+      buy();
+    });
+
+    // Mirror the main button's loading state on the other buy buttons.
+    if (atc && 'MutationObserver' in window) {
+      new MutationObserver(function () {
+        var loading = atc.classList.contains('loading');
+        document.querySelectorAll('[data-gvp-buy]').forEach(function (b) {
+          b.classList.toggle('is-loading', loading);
+          b.setAttribute('aria-busy', loading ? 'true' : 'false');
+        });
+      }).observe(atc, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // "Change colour": back to the colour choice, focus on the selected one.
+    document.addEventListener('click', function (e) {
+      var link = e.target.closest && e.target.closest('[data-gvp-change]');
+      if (!link) return;
+      var group = document.getElementById('gvp-colour');
+      if (!group) return;
+      e.preventDefault();
+      group.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+      var checked = group.querySelector('input:checked');
+      if (checked) setTimeout(function () { checked.focus({ preventScroll: true }); }, reduce ? 0 : 450);
+    });
+
+    // Phone bar: shown once the main button has scrolled above the screen,
+    // hidden while the closing section or the footer is on screen.
+    if (bar && atc && 'IntersectionObserver' in window) {
+      var state = { above: false, close: false, footer: false };
+      // Hide only once the closing section's own button is on screen.
+      var close = document.querySelector('[data-gvp-close] [data-gvp-buy]') || document.querySelector('[data-gvp-close]');
+      var footer = document.querySelector('.gv-footer') || document.querySelector('footer');
+      function render() {
+        var show = state.above && !state.close && !state.footer;
+        bar.classList.toggle('is-visible', show);
+        bar.setAttribute('aria-hidden', show ? 'false' : 'true');
+        if (show) bar.removeAttribute('inert'); else bar.setAttribute('inert', '');
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.target === atc) state.above = !en.isIntersecting && en.boundingClientRect.top < 0;
+          else if (en.target === close) state.close = en.isIntersecting;
+          else state.footer = en.isIntersecting;
+        });
+        render();
+      });
+      io.observe(atc);
+      if (close) io.observe(close);
+      if (footer) io.observe(footer);
+    }
+
+    updateCount();
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Product · Purchase",
+  "tag": "div",
+  "class": "section-gvp-main",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Label", "default": "WiFi smart feeder" },
+    { "type": "text", "id": "value_line", "label": "Value line", "default": "Scheduled feeding, managed from your phone." },
+    { "type": "text", "id": "tax_note", "label": "Tax note", "default": "Taxes included" },
+    { "type": "text", "id": "button_label", "label": "Button", "default": "Add to basket" },
+    { "type": "text", "id": "delivery_line", "label": "Delivery line", "default": "Free UK delivery · 5–10 working days" },
+    { "type": "header", "content": "Short facts" },
+    { "type": "text", "id": "fact_1", "label": "Fact 1", "default": "2-litre capacity" },
+    { "type": "text", "id": "fact_2", "label": "Fact 2", "default": "iOS and Android app" },
+    { "type": "text", "id": "fact_3", "label": "Fact 3", "default": "UK plug" },
+    { "type": "header", "content": "Photographs" },
+    {
+      "type": "text",
+      "id": "shared_focal",
+      "label": "Focal point for in-use photographs",
+      "default": "55% 50%",
+      "info": "Used when a photograph has no focal point set in Files. Horizontal then vertical, e.g. 55% 50%."
+    },
+    {
+      "type": "checkbox",
+      "id": "desktop_skip_first_shared",
+      "label": "On desktop, leave the in-use photograph to the section below",
+      "default": true,
+      "info": "Avoids showing the same photograph twice in a row on large screens. Phones keep it in the gallery."
+    },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-1" }
+  ]
+}
+{% endschema %}
